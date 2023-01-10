@@ -48,11 +48,11 @@ async def logout():
 @app.route("/")
 async def home():
     if 'token' not in session:
-        return await render_template("index.html", oauth_uri=OAUTH_URI)
+        return await render_template("./Templates/index.html", oauth_uri=OAUTH_URI)
 
     async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
         my_user = await client.fetch_my_user()
-        return await render_template("index.html", current_user=my_user, avatar_url=my_user.avatar_url,
+        return await render_template("./Templates/index.html", current_user=my_user, avatar_url=my_user.avatar_url,
                                      user_id=my_user.id)
 
 
@@ -94,5 +94,5 @@ async def callback():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=443, keyfile="./WebCode/rootCAKey.pem", certfile="./WebCode/rootCACert.pem")
+    app.run(port=443, keyfile="./WebCode/rootCAKey.pem", certfile="./WebCode/rootCACert.pem")
     #app.run(port=8080)
