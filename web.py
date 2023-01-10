@@ -9,7 +9,7 @@ from quart import Quart, session, render_template, redirect, request
 load_dotenv()
 
 logging.basicConfig(level="WARN")
-app = Quart(__name__)
+app = Quart(__name__, template_folder='./WebCode/Templates')
 app.secret_key = os.urandom(12)
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 REDIRECT_URI = os.getenv("REDIRECT_URI")
@@ -48,11 +48,11 @@ async def logout():
 @app.route("/")
 async def home():
     if 'token' not in session:
-        return await render_template("./Templates/index.html", oauth_uri=OAUTH_URI)
+        return await render_template("index.html", oauth_uri=OAUTH_URI)
 
     async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
         my_user = await client.fetch_my_user()
-        return await render_template("./Templates/index.html", current_user=my_user, avatar_url=my_user.avatar_url,
+        return await render_template("index.html", current_user=my_user, avatar_url=my_user.avatar_url,
                                      user_id=my_user.id)
 
 
