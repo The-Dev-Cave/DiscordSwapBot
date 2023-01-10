@@ -94,5 +94,5 @@ async def callback():
 
 
 if __name__ == "__main__":
-    app.run(port=8080, keyfile="swab-info-privateKey.key", certfile="swab-info.crt")
-    # app.run(port=8080)
+    app.run(port=8080, keyfile="./WebCode/rootCAKey.pem", certfile="./WebCode/rootCACert.pem")
+    #app.run(port=8080)
