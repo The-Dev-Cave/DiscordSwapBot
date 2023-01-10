@@ -1,0 +1,8 @@
+hikari[speedups, server]
+croniter
+hikari-lightbulb[crontrigger]
+hikari-flare
+python-dotenv
+quart
+asyncpg
+asyncpg-stubs
