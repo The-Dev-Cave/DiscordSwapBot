@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<section>
+    <div class="topnav">
+        <div class="login-container">
+            {% if current_user %}
+            <img src="{{avatar_url}}" style="height: 200px; width: 200px; border-radius: 50%" alt="User Avatar URL">
+                <p>Logged In As {{current_user}}</p>
+                <p>ID: {{user_id}}</p>
+                <a href="/logout"><button>Logout</button></a>
+            {% else %}
+                <a href={{oauth_uri}}><button>Login With Discord</button></a>
+            {% endif %}
+        </div>
+    </div>
+
+</section>
+{% endblock %}
