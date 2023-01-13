@@ -9,7 +9,8 @@ from quart import Quart, session, render_template, redirect, request
 load_dotenv()
 
 logging.basicConfig(level="WARN")
-app = Quart(__name__, template_folder='./WebCode/Templates')
+app = Quart(__name__, template_folder='Website/templates', static_folder='Website/static')
+#app = Quart(__name__)
 app.secret_key = os.urandom(12)
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 REDIRECT_URI = os.getenv("REDIRECT_URI")
@@ -22,7 +23,6 @@ CHANNEL_ID = int(os.environ["CHANNEL_ID"])  # Channel to post in as an int
 @app.before_serving
 async def starting():
     app.discord_rest = hikari.RESTApp()
-    #await app.discord_rest.close()
     await app.discord_rest.start()
 
 
@@ -31,19 +31,17 @@ async def stopping():
     await app.discord_rest.close()
 
 
-# @app.before_request
-# async def before_request():
-#     if not request.is_secure:
-#         url = request.url.replace('http://', 'https://', 1)
-#         code = 301
-#         return redirect(url, code=code)
-
-
 @app.route("/logout")
 async def logout():
     session.clear()
     return redirect("/")
 
+
+@app.route("/", methods=["POST"])
+async def testPost():
+    async with app.discord_rest.acquire(BOT_TOKEN, hikari.TokenType.BOT) as bot_client:
+        await bot_client.create_message(CHANNEL_ID, content="Message Successfully Sent from Website")
+    return redirect("/")
 
 @app.route("/")
 async def home():
@@ -94,5 +92,5 @@ async def callback():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=443, keyfile="./WebCode/rootCAKey.pem", certfile="./WebCode/rootCACert.pem")
+    app.run(host='0.0.0.0', port=443, keyfile="./Website/certs/rootCAKey.pem", certfile="./Website/certs/rootCACert.pem")
     #app.run(port=8080)
