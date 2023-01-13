@@ -1,8 +1,8 @@
 @font-face {
     font-family: "Discord";
-    src: url("Website/static/fonts/UniSansDemoHeavyCAPS.woff") format("woff"),
-    url("Website/static/fonts/UniSansDemoHeavyCAPS.otf") format("opentype"),
-    url("Website/static/fonts/UniSansDemoHeavyCAPS.woff2") format("woff2");
+    src: url("https://swapbot.thedevcave.xyz/fonts/UniSansDemoHeavyCAPS.woff") format("woff"),
+    url("https://swapbot.thedevcave.xyz/fonts/UniSansDemoHeavyCAPS.otf") format("opentype"),
+    url("https://swapbot.thedevcave.xyz/fonts/UniSansDemoHeavyCAPS.woff2") format("woff2");
     }
 
 
