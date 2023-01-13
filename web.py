@@ -40,6 +40,9 @@ async def logout():
 
 @app.route("/", methods=["POST"])
 async def testPost():
+    if 'token' not in session:
+        return
+
     async with app.discord_rest.acquire(BOT_TOKEN, hikari.TokenType.BOT) as bot_client:
         await bot_client.create_message(CHANNEL_ID, content="Message Successfully Sent from Website")
     return redirect("/")
