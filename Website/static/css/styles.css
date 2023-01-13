@@ -5,11 +5,13 @@
     url("https://localhost/static/fonts/UniSansDemoHeavyCAPS.woff2") format("woff2");
     }
 
+
 p {
     font-family: "Discord";
     font-weight: normal;
     font-style: normal;
 }
+
 
 h1 {
     font-family: "Discord";
@@ -17,9 +19,11 @@ h1 {
     font-style: normal;
 }
 
+
 body {
     background-color: rgb(54,57,62);
 }
+
 
 footer {
     font-family: Arial, Helvetica, sans-serif;
