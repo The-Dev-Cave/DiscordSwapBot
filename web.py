@@ -9,7 +9,8 @@ from quart import Quart, session, render_template, redirect, request
 load_dotenv()
 
 logging.basicConfig(level="WARN")
-app = Quart(__name__, template_folder='Website/pages')
+app = Quart(__name__, template_folder='Website/templates', static_folder='Website/static')
+#app = Quart(__name__)
 app.secret_key = os.urandom(12)
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 REDIRECT_URI = os.getenv("REDIRECT_URI")
