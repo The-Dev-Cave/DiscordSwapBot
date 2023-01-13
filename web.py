@@ -1,16 +1,16 @@
 import logging
 import os
-from dotenv import load_dotenv
+import sys
 
+from dotenv import load_dotenv
 import hikari
-import flare
-from quart import Quart, session, render_template, redirect, request
+
+from quart import Quart, session, render_template, redirect, request, url_for, send_from_directory
 
 load_dotenv()
 
 logging.basicConfig(level="WARN")
 app = Quart(__name__, template_folder='Website/templates', static_folder='Website/static')
-#app = Quart(__name__)
 app.secret_key = os.urandom(12)
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 REDIRECT_URI = os.getenv("REDIRECT_URI")
@@ -18,6 +18,7 @@ OAUTH_URI = os.getenv("OAUTH_URI")
 CLIENT_ID = int(os.getenv("CLIENT_ID"))
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 CHANNEL_ID = int(os.environ["CHANNEL_ID"])  # Channel to post in as an int
+MODE = os.getenv("MODE")
 
 
 @app.before_serving
@@ -42,6 +43,7 @@ async def testPost():
     async with app.discord_rest.acquire(BOT_TOKEN, hikari.TokenType.BOT) as bot_client:
         await bot_client.create_message(CHANNEL_ID, content="Message Successfully Sent from Website")
     return redirect("/")
+
 
 @app.route("/")
 async def home():
@@ -92,5 +94,17 @@ async def callback():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=443, keyfile="./Website/certs/rootCAKey.pem", certfile="./Website/certs/rootCACert.pem")
-    #app.run(port=8080)
+    if sys.argv[0] == 'dev' or MODE == 'dev':
+        print("Starting in dev mode.")
+        app.run(host='0.0.0.0',
+                port=8080,
+                debug=True,
+                use_reloader=True
+                )
+    else:
+        print("Starting in prod mode.")
+        app.run(host='0.0.0.0',
+                port=443,
+                keyfile="./Website/certs/rootCAKey.pem",
+                certfile="./Website/certs/rootCACert.pem",
+                )
