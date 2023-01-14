@@ -38,7 +38,8 @@ async def logout():
     return redirect("/")
 
 
-@app.route("/", methods=["POST"])
+#@app.route("/testPost", methods=["POST"])
+@app.route("/testPost")
 async def testPost():
     if 'token' not in session:
         return
