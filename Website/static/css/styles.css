@@ -19,27 +19,35 @@
     font-display: swap;
 }
 
-p {
-    font-family: 'Nasalization Rg';
-    font-weight: normal;
-    font-style: normal;
-}
-
-
-h1 {
-    font-family: 'Nasalization Rg';
-    font-weight: normal;
-    font-style: normal;
-}
-
 
 body {
+    font-family: "Nasalization Rg";
+    color: white;
     background-color: rgb(54,57,62);
+    margin: 0 auto;
 }
 
 
 footer {
+    max-height: 60px;
+    color: white;
+    text-align: center;
     font-family: Arial, Helvetica, sans-serif;
     font-weight: normal;
     font-style: italic;
 }
+
+.account-wrapper {
+    margin: 10% auto;
+    display: block;
+    width: 500px;
+    text-align: center;
+}
+
+.login-wrapper {
+    margin: 10% auto;
+    display: block;
+    width: 500px;
+    text-align: center;
+}
+

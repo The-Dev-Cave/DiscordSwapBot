@@ -44,19 +44,31 @@ async def testPost():
     if 'token' not in session:
         return
 
-    async with app.discord_rest.acquire(BOT_TOKEN, hikari.TokenType.BOT) as bot_client:
-        await bot_client.create_message(CHANNEL_ID, content="Message Successfully Sent from Website")
+    async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+        my_user = await client.fetch_my_user()
+        async with app.discord_rest.acquire(BOT_TOKEN, hikari.TokenType.BOT) as bot_client:
+
+            await bot_client.create_message(CHANNEL_ID, content="Message Successfully Sent from Website")
     return redirect("/")
 
 
 @app.route("/")
+async def login():
+    if 'token' not in session:
+        return await render_template("login.html", oauth_uri=OAUTH_URI)
+
+    if 'token' in session:
+        return redirect("/home")
+
+
+@app.route("/home")
 async def home():
     if 'token' not in session:
-        return await render_template("index.html", oauth_uri=OAUTH_URI)
+        return redirect("/")
 
     async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
         my_user = await client.fetch_my_user()
-        return await render_template("index.html", current_user=my_user, avatar_url=my_user.avatar_url,
+        return await render_template("home.html", current_user=my_user, avatar_url=my_user.avatar_url,
                                      user_id=my_user.id)
 
 
@@ -80,21 +92,7 @@ async def callback():
     session['token'] = access_token
 
     app.add_background_task(background_task)
-
-    # async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
-    #     session['client_guilds'] = [a.id for a in (await (client.fetch_my_guilds()))]
-    # my_user = await client.fetch_my_user()
-    # async with app.discord_rest.acquire(BOT_TOKEN, hikari.TokenType.BOT) as bot_client:
-    #     from bot.interactions.buttons.buttons_posts import ButtonCreatePost
-    #     # session['bot_guilds'] = [a.id for a in (await (bot_client.fetch_my_guilds()))]
-    #     bot_client: hikari.impl.RESTClientImpl
-    #     buttons = await flare.Row(
-    #         ButtonCreatePost(post_type="selling", label="I'm Looking To Sell"),
-    #         ButtonCreatePost(post_type="buying", label="I'm Looking To Buy"),
-    #         ButtonCreatePost(post_type="trading", label="I'm Looking To Trade"),
-    #     )
-    #     await bot_client.create_message(1059970851400863826, content="test", component=buttons)
-    return redirect("/")
+    return redirect("/home")
 
 
 if __name__ == "__main__":
