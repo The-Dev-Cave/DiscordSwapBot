@@ -1,20 +1,33 @@
 @font-face {
     font-family: "Discord";
-    src: url("/static/fonts/UniSansDemoHeavyCAPS.woff") format("woff"),
-    url("/static/fonts/UniSansDemoHeavyCAPS.otf") format("opentype"),
-    url("/static/fonts/UniSansDemoHeavyCAPS.woff2") format("woff2");
+    src: url("static/fonts/Discord/UniSansDemoHeavyCAPS.woff") format("woff"),
+    url("static/fonts/Discord/UniSansDemoHeavyCAPS.otf") format("opentype"),
+    url("static/fonts/Discord/UniSansDemoHeavyCAPS.woff2") format("woff2");
     }
 
+@font-face {
+    font-family: 'Nasalization Rg';
+    src: url('../fonts/Nasalization/NasalizationRg-Regular.eot');
+    src: local('NasalizationRg-Regular'),
+        url('../fonts/Nasalization/NasalizationRg-Regular.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/Nasalization/NasalizationRg-Regular.woff2') format('woff2'),
+        url('../fonts/Nasalization/NasalizationRg-Regular.woff') format('woff'),
+        url('../fonts/Nasalization/NasalizationRg-Regular.ttf') format('truetype'),
+        url('../fonts/Nasalization/NasalizationRg-Regular.svg#NasalizationRg-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
 
 p {
-    font-family: "Discord";
+    font-family: 'Nasalization Rg';
     font-weight: normal;
     font-style: normal;
 }
 
 
 h1 {
-    font-family: "Discord";
+    font-family: 'Nasalization Rg';
     font-weight: normal;
     font-style: normal;
 }
