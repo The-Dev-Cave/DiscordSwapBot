@@ -352,10 +352,10 @@ class ButtonApprovePost(flare.Button):
         post_title = row.get("title")
         user = await ctx.bot.rest.fetch_member(ctx.guild_id, lister_id)
 
-        row = await conn.fetchrow(
-            f"Select 'Buy_Channel_ID','Sell_Channel_ID' from guilds where guild_id={ctx.guild_id}")
+        row_chan = await conn.fetchrow(
+            f"Select buy_channel_id,sell_channel_id from guilds where guild_id={ctx.guild_id}")
 
-        post_types_dict = {"sell": row.get('Sell_Channel_ID'), "buy": row.get('Buy_Channel_ID')}
+        post_types_dict = {"sell": row_chan.get('sell_channel_id'), "buy": row_chan.get('buy_channel_id')}
 
         embed = await buildPostEmbed(post_id=self.post_id, post_type=self.post_type, user=user)
 
@@ -377,7 +377,7 @@ class ButtonApprovePost(flare.Button):
                                                             component=btns_row)
 
         await conn.execute(
-            f"UPDATE {self.post_type} set pending_approval=0, post_snowflake={created_message.id},posted_at='{datetime.datetime.today()}' where id={self.post_id}")
+            f"UPDATE {self.post_type} set pending_approval=FALSE, message_id={created_message.id}, post_date='{datetime.datetime.today()}' where id={self.post_id}")
 
         await ctx.message.delete()
         await conn.close()

@@ -421,7 +421,7 @@ async def update_post(
     conn = await get_database_connection()
     selcected_value = ctx.values[0]
     row = await conn.fetchrow(
-        f"Select 'Buy_Channel_ID','Sell_Channel_ID','User_Bridge_Cat_ID' from guilds where guild_id={ctx.guild_id}")
+        f"Select buy_channel_id,sell_channel_id,'User_Bridge_Cat_ID' from guilds where guild_id={ctx.guild_id}")
     swap_cat_id = row.get('User_Bridge_Cat_ID')
     # Change select menu for edit post to choose what to edit
     # Change to button to ask if sure to change pending, sold, or to remove
@@ -434,15 +434,15 @@ async def update_post(
             ))
         case "pending":
 
-            post_types_dict = {"sell": row.get('Sell_Channel_ID'), "buy": row.get('Buy_Channel_ID')}
+            post_types_dict = {"sell": row.get(sell_channel_id), "buy": row.get(buy_channel_id)}
 
             try:
                 row = await conn.fetchrow(
-                    f"Select post_snowflake, pending, title from {post_type} where id={post_id}")
+                    f"Select message_id, pending, title from {post_type} where id={post_id}")
                 pending = row.get("pending")
 
                 msg = await ctx.bot.rest.fetch_message(
-                    post_types_dict.get(post_type), row.get("post_snowflake")
+                    post_types_dict.get(post_type), row.get("message_id")
                 )
             except:
                 await ctx.respond("Post no longer able to be marked as pending",
@@ -514,9 +514,9 @@ async def update_post(
                 "Post has been marked as sold and removed from respective post channel and user bridge chats related to this post have been closed",
                 components=[])
 
-            row = await conn.fetchrow(f"SELECT post_snowflake from {post_type} where id={post_id}")
+            row = await conn.fetchrow(f"SELECT message_id from {post_type} where id={post_id}")
 
-            await ctx.bot.rest.delete_message(ctx.channel_id, row.get("post_snowflake"))
+            await ctx.bot.rest.delete_message(ctx.channel_id, row.get("message_id"))
 
             channels = ctx.bot.cache.get_guild_channels_view_for_guild(ctx.guild_id)
 
@@ -537,9 +537,9 @@ async def update_post(
                 "Post has been removed from the respective post channel and related user bridge chats have been closed",
                 components=[])
 
-            row = await conn.fetchrow(f"SELECT post_snowflake from {post_type} where id={post_id}")
+            row = await conn.fetchrow(f"SELECT message_id from {post_type} where id={post_id}")
 
-            await ctx.bot.rest.delete_message(ctx.channel_id, row.get("post_snowflake"))
+            await ctx.bot.rest.delete_message(ctx.channel_id, row.get("message_id"))
 
             channels = ctx.bot.cache.get_guild_channels_view_for_guild(ctx.guild_id)
             test2 = itertools.groupby(

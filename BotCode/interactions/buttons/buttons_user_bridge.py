@@ -33,17 +33,17 @@ class ButtonMarkPostPending(flare.Button):
         conn = await get_database_connection()
 
         row = await conn.fetchrow(
-            f"Select 'Buy_Channel_ID','Sell_Channel_ID','User_Bridge_Cat_ID' from guilds where guild_id={ctx.guild_id}")
+            f"Select buy_channel_id,sell_channel_id,'User_Bridge_Cat_ID' from guilds where guild_id={ctx.guild_id}")
         swap_cat_id = row.get("User_Bridge_Cat_ID")
         post_types_dict = {"sell": row.get("Sell_Channel_ID"), "buy": row.get("Buy_Channel_ID")}
         try:
 
             row = await conn.fetchrow(
-                f"Select post_snowflake, pending, title from {self.post_type} where id={self.post_id}")
+                f"Select message_id, pending, title from {self.post_type} where id={self.post_id}")
             pending = row.get("pending")
 
             msg = await ctx.bot.rest.fetch_message(
-                post_types_dict.get(self.post_type), row.get("post_snowflake")
+                post_types_dict.get(self.post_type), row.get("message_id")
             )
         except:
             await ctx.respond("Post no longer able to be marked as pending",
@@ -143,14 +143,14 @@ class ButtonMarkPostSold(flare.Button):
         conn = await get_database_connection()
         post_done_dict = {"sell": "sold", "buy": "bought"}
         row = await conn.fetchrow(
-            f"Select 'Buy_Channel_ID','Sell_Channel_ID','User_Bridge_Cat_ID' from guilds where guild_id={ctx.guild_id}")
-        post_types_dict = {"sell": row.get('Sell_Channel_ID'), "buy": row.get('Buy_Channel_ID')}
+            f"Select buy_channel_id,sell_channel_id,'User_Bridge_Cat_ID' from guilds where guild_id={ctx.guild_id}")
+        post_types_dict = {"sell": row.get(sell_channel_id), "buy": row.get(buy_channel_id)}
         swap_cat_id = row.get("User_Bridge_Cat_ID")
 
-        row = await conn.fetchrow(f"Select post_snowflake from {self.post_type} where id={self.post_id}")
+        row = await conn.fetchrow(f"Select message_id from {self.post_type} where id={self.post_id}")
         try:
 
-            post_snow = row.get("post_snowflake")
+            post_snow = row.get("message_id")
             btn = await flare.Row(
                 ButtonCloseUserBridge(post_id=self.post_id, post_type=self.post_type, post_owner_id=self.post_owner_id,
                                       int_party_id=self.int_party_id))
