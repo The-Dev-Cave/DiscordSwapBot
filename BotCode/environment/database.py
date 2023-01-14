@@ -1,5 +1,6 @@
 import asyncpg
 import lightbulb
+import os
 import hikari
 from lightbulb.ext import tasks
 
@@ -7,18 +8,19 @@ database_plugin = lightbulb.Plugin("Database Functions", include_datastore=True)
 
 
 async def create_pool() -> None:
+    print("Connecting To Database")
+    dsn = f'{os.getenv("DATABASE_CONN_STRING")}'
     pool = await asyncpg.create_pool(
-        dsn="postgresql://neuswap:neuswap@192.168.1.4/newneuswap-dev",
+        dsn=dsn,
         max_size=200,
         max_inactive_connection_lifetime=10,
     )
-
-    database_plugin.d.pool = pool
+    database_plugin.bot.d.pool = pool
     print("pool connected and created")
 
 
 async def get_database_connection() -> asyncpg.Connection:
-    pool: asyncpg.Pool = database_plugin.d.get("pool")
+    pool: asyncpg.Pool = database_plugin.bot.d.get("pool")
     return await pool.acquire()
 
 

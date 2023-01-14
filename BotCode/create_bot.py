@@ -31,5 +31,9 @@ async def create_bot() -> lightbulb.BotApp:
     tasks.load(bot)
 
     bot.load_extensions_from("./BotCode/environment", recursive=True)
+    bot.load_extensions_from("./BotCode/listeners", recursive=True)
+    bot.load_extensions_from("./BotCode/commands", recursive=True)
+    bot.load_extensions_from("./BotCode/functions", recursive=True)
+    bot.load_extensions_from("./BotCode/interactions", recursive=True)
 
     return bot
