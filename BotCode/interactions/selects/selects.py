@@ -227,8 +227,8 @@ async def condition_select_menu(
     options=[
         "Can Deliver (Free)",
         "Can Deliver (Paid)",
-        "Interested Party Pick-Up",
-        "Lister Pick-Up",
+        "Can Pickup (Free)",
+        "Can Pickup (Paid)",
         "Meet Up",
     ],
     min_values=1,
@@ -357,15 +357,17 @@ async def payment_methods_select_menu(
         embed = await buildPostEmbed(
             post_id=post_id, post_type=post_type, user=ctx.user
         )
-
-        if post_id != "buy":
+        await ctx.message.edit(components=[])
+        if post_type == "buy":
             btns_row = await flare.Row(
                 ButtonSendPostToMods(post_id=post_id, post_type=post_type, guild_id=guild_id),
+                # TODO: Add edit post button
             )
         else:
             btns_row = await flare.Row(
                 ButtonSendPostToMods(post_id=post_id, post_type=post_type, guild_id=guild_id),
                 ButtonNewPostPhotos(post_id=post_id, post_type=post_type, guild_id=guild_id),
+                # TODO: Add edit post button
             )
         # add send buttons
         await ctx.respond(embed=embed, component=btns_row)
@@ -434,7 +436,7 @@ async def update_post(
             ))
         case "pending":
 
-            post_types_dict = {"sell": row.get(sell_channel_id), "buy": row.get(buy_channel_id)}
+            post_types_dict = {"sell": row.get('sell_channel_id'), "buy": row.get('buy_channel_id')}
 
             try:
                 row = await conn.fetchrow(

@@ -144,7 +144,7 @@ class ButtonMarkPostSold(flare.Button):
         post_done_dict = {"sell": "sold", "buy": "bought"}
         row = await conn.fetchrow(
             f"Select buy_channel_id,sell_channel_id,'User_Bridge_Cat_ID' from guilds where guild_id={ctx.guild_id}")
-        post_types_dict = {"sell": row.get(sell_channel_id), "buy": row.get(buy_channel_id)}
+        post_types_dict = {"sell": row.get('sell_channel_id'), "buy": row.get('buy_channel_id')}
         swap_cat_id = row.get("User_Bridge_Cat_ID")
 
         row = await conn.fetchrow(f"Select message_id from {self.post_type} where id={self.post_id}")
@@ -197,8 +197,8 @@ class ButtonMarkPostSold(flare.Button):
         int_party = await ctx.bot.rest.fetch_member(guild=ctx.guild_id, user=self.int_party_id)
         lister = await ctx.bot.rest.fetch_member(guild=ctx.guild_id, user=ctx.user.id)
 
-        lister_prof = await conn.fetchrow(f"SELECT 'stage' from profiles where 'user_id'={ctx.user.id}")
-        if int(lister_prof.get("stage")) == 7:
+        lister_prof = await conn.fetchrow(f"SELECT stage from profiles where user_id={ctx.user.id}")
+        if int(lister_prof.get("stage")) == 3:
             embed = hikari.Embed(
                 title=f"Would you like to rate {int_party.display_name} from the completed transaction?",
                 description="This is completely optional")
@@ -207,8 +207,8 @@ class ButtonMarkPostSold(flare.Button):
                 component=await flare.Row(ButtonStartRating(post_type=self.post_type, other_user_id=self.int_party_id),
                                           ButtonNoRating()),
                 embed=embed)
-        int_party_prof = await conn.fetchrow(f"SELECT 'stage' from profiles where 'user_id'={ctx.user.id}")
-        if int(int_party_prof.get("stage")) == 7:
+        int_party_prof = await conn.fetchrow(f"SELECT stage from profiles where user_id={self.int_party_id}")
+        if int(int_party_prof.get("stage")) == 3:
             embed = hikari.Embed(
                 title=f"Would you like to rate {lister.display_name} from the completed transaction?",
                 description="This is completely optional")
@@ -268,7 +268,7 @@ class ButtonCloseUserBridge(flare.Button):
                           component=await flare.Row(delete_channel()))
 
 
-@flare.button(label="Delete Channel")
+@flare.button(label="Delete Channel", style=hikari.ButtonStyle.DANGER)
 async def delete_channel(ctx: flare.MessageContext) -> None:
     await ctx.get_channel().delete()
 

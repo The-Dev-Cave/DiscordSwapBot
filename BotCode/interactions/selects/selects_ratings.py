@@ -133,7 +133,7 @@ async def bad_menu(ctx: flare.MessageContext, other_user_id: int, post_type: str
         await conn.close()
         return
     await conn.execute(
-        f"update profiles set {statement}, 'stars'='stars'+{star_rat}, 'total_ratings'='total_ratings'+1 where 'user_id' = {other_user_id}"
+        f"update profiles set {statement}, 'stars'='stars'+{star_rat}, 'total_ratings'='total_ratings'+1 where user_id = {other_user_id}"
     )
     await conn.close()
 

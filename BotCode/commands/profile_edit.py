@@ -19,7 +19,7 @@ async def check_author_has_profile(context: lightbulb.Context) -> bool:
     conn = await get_database_connection()
 
     row = await conn.fetchrow(
-        f"select 'first_name', 'last_name' from profiles where 'user_id'={user.id} and 'stage'=7"
+        f"select first_name, last_name from profiles where user_id={user.id} and stage=7"
     )
 
     if row is None:
@@ -56,7 +56,7 @@ async def f_name(ctx: lightbulb.SlashContext):
     new_name = ctx.options.name
 
     await conn.execute(
-        f"UPDATE profiles SET 'first_name' = '{new_name.title()}' where 'user_id' = {ctx.user.id}"
+        f"UPDATE profiles SET first_name = '{new_name.title()}' where user_id = {ctx.user.id}"
     )
     await ctx.bot.rest.edit_member(guild=ctx.guild_id, user=ctx.user,
                                    nickname=f'{new_name} {ctx.member.display_name.split(" ")[1]}')
@@ -126,7 +126,7 @@ async def pronouns(ctx: lightbulb.SlashContext):
     new_pronouns = ctx.options.pronouns
 
     await conn.execute(
-        f"UPDATE profiles SET 'pronouns' = '{new_pronouns.title()}' where 'user_id' = {ctx.user.id}"
+        f"UPDATE profiles SET 'pronouns' = '{new_pronouns.title()}' where user_id = {ctx.user.id}"
     )
     await ctx.respond(
         content=f"Displayed pronouns changed to: {new_pronouns.title()}",
@@ -284,7 +284,7 @@ async def profile_image(ctx: lightbulb.SlashContext):
     )
     new_img_url = msg.embeds[0].image.url
     await conn.execute(
-        fr"update profiles set 'tmp_img_url'='{new_img_url}' where 'user_id'={ctx.user.id}"
+        fr"update profiles set 'tmp_img_url'='{new_img_url}' where user_id={ctx.user.id}"
     )
 
     # TODO: Change to flare buttons
@@ -298,7 +298,7 @@ async def profile_image(ctx: lightbulb.SlashContext):
     )
     embed.set_image(profileimage)
     row = await conn.fetchrow(
-        fr"SELECT 'Profile_Picture' FROM profiles where 'user_id'='{ctx.user.id}'"
+        fr"SELECT 'Profile_Picture' FROM profiles where user_id='{ctx.user.id}'"
     )
     url = row.get("profile_image_url")
     embed.set_thumbnail(url)
@@ -322,7 +322,7 @@ async def cmd_viewProfile(ctx: lightbulb.SlashContext):
         user = ctx.user
 
     row = await conn.fetchrow(
-        f"SELECT 'user_id' from profiles where 'user_id'={user.id} and 'stage'=7"
+        f"SELECT user_id from profiles where user_id={user.id} and stage=7"
     )
 
     if row and row.get("id"):  # If user has a good profile, return
