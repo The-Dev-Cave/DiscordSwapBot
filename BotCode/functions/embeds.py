@@ -137,7 +137,7 @@ async def buildPostEmbed(post_id: int, post_type: str, user: hikari.User):
     user_data = await conn.fetchrow(
         f'SELECT first_name, last_name from profiles where user_id={user.id}'
     )
-    name = f'{user_data.get("fname")} {user_data.get("lname")}'
+    name = f'{user_data.get("first_name")} {user_data.get("last_name")}'
     embed = hikari.Embed(title=title, description=description).set_author(
         name=name, icon=user.avatar_url
     )

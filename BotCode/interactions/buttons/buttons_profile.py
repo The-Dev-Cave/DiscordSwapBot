@@ -156,10 +156,10 @@ class ButtonSendToMods(flare.Button):
         row = await conn.fetchrow(f"Select approval_channel_id from guilds where guild_id={self.guild_id}")
 
         profile_apprv_chnl = row.get(approval_channel_id)
-        await conn.execute(f"UPDATE profiles set 'stage'=6 where 'user_id'={user_id}")
+        await conn.execute(f"UPDATE profiles set stage=6 where user_id={user_id}")
 
         # id_image_url = (
-        #     await conn.fetch(f"SELECT 'tmp_img_url' from profiles where 'user_id'={user_id}")
+        #     await conn.fetch(f"SELECT 'tmp_img_url' from profiles where user_id={user_id}")
         # )[0].get("id_image_url")
 
         btns_row = await flare.Row(
@@ -197,7 +197,7 @@ class ButtonProfileApprove(flare.Button):
         conn = await get_database_connection()
         conn: asyncpg.Connection
 
-        await conn.execute(f"UPDATE profiles set 'stage'=7 where 'user_id'={user_id}")
+        await conn.execute(f"UPDATE profiles set stage=7 where user_id={user_id}")
         await ctx.message.delete()
 
         embed = hikari.Embed(

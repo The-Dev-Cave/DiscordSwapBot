@@ -64,7 +64,7 @@ class ModalProfileDeny(flare.Modal, title="Profile Deny"):
         reason = self.text_input_reason.value
 
         user_id = int(self.user_id)
-        await conn.execute(f"UPDATE profiles set 'stage'=0 where 'user_id'={user_id}")
+        await conn.execute(f"UPDATE profiles set stage=0 where user_id={user_id}")
 
         embed = hikari.Embed(title="Profile Denied", description=f"Reason:\n {reason}")
         embed.set_footer(
@@ -164,7 +164,7 @@ class ModalPostSellBuyPart1(flare.Modal, title="Profile Deny"):
 
         embedNextStep = hikari.Embed(
             title="Item Condition",
-            description="Select the item's condition if sell or worse condition you would buy\n",
+            description="Select the item's condition if selling or worse condition you would buy\n",
 
             color=0xFFDD00,
         )

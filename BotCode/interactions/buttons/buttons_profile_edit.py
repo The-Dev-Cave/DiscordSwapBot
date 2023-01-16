@@ -28,13 +28,13 @@ class ButtonApproveChange(flare.Button):
         conn = await get_database_connection()
         msg=""
         if self.change_type == "lname":
-            await conn.execute(f"UPDATE profiles set {self.change_type}='{self.change_to}' where 'user_id'={self.prof_id}")
+            await conn.execute(f"UPDATE profiles set {self.change_type}='{self.change_to}' where user_id={self.prof_id}")
             member = await ctx.bot.rest.fetch_member(guild=ctx.guild_id, user=self.prof_id)
             new_name = f"{member.display_name.split(' ')[0]} {self.change_to}"
             msg = "Your profile update for `Last Name` has been approved"
             await ctx.bot.rest.edit_member(guild=ctx.guild_id, user=self.prof_id, nickname=new_name)
         elif self.change_type == "profile_image_url":
-            await conn.execute(f"UPDATE profiles set 'Profile_Picture'='id_image_url' where 'user_id'={self.prof_id}")
+            await conn.execute(f"UPDATE profiles set 'Profile_Picture'=tmp_img_url where user_id={self.prof_id}")
             msg = "Your profile update for `Profile Image` has been approved"
 
         await ctx.respond("User profile change approved", flags=hikari.MessageFlag.EPHEMERAL)

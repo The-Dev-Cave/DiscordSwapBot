@@ -78,11 +78,13 @@ async def posts_dm(event: hikari.DMMessageCreateEvent):
                 ButtonSendPostToMods(post_id=post_id, post_type=post_type, guild_id=guild_id),
                 ButtonNewPostPhotos(post_id=post_id, post_type=post_type, guild_id=guild_id),
                 ButtonShowMoreImages(post_id=post_id, post_type=post_type)
+                # TODO: Add edit post button
             )
         else:
             btns_row = await flare.Row(
                 ButtonSendPostToMods(post_id=post_id, post_type=post_type, guild_id=guild_id),
                 ButtonNewPostPhotos(post_id=post_id, post_type=post_type, guild_id=guild_id),
+                # TODO: Add edit post button
             )
         await event.author.send(embed=embed, component=btns_row)
         await conn.close()

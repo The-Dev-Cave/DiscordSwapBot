@@ -57,12 +57,18 @@ class ButtonCreatePost(flare.Button):
             await conn.close()
             return
 
-        await conn.execute(
-            rf"INSERT into {post_type} (author_id, stage, guild_id) values ({str(user_id)},1, {ctx.guild_id})"
-        )
+        if post_type == 'sell':
+            await conn.execute(
+                rf"INSERT into sell (author_id, stage, guild_id) values ({str(user_id)},1, {ctx.guild_id})"
+            )
+        else:
+            await conn.execute(
+                rf"INSERT into buy (author_id, guild_id) values ({str(user_id)}, {ctx.guild_id})"
+            )
+
         post_id = (
             await conn.fetch(
-                rf"SELECT id from {post_type} where (cast(author_id as bigint) = {user_id}) and (stage = 1)"
+                rf"SELECT id from {post_type} where (cast(author_id as bigint) = {user_id}) and ((pending_approval = FALSE) and (post_date IS NULL))"
             )
         )[0].get("id")
 
@@ -100,7 +106,7 @@ class ButtonCreatePost(flare.Button):
                 rf"DELETE from {post_type} where (author_id in {str(user_id)}) and (stage = 1)"
             )
             await conn.execute(
-                rf"UPDATE profiles set making_post=0 where 'user_id' = {ctx.user.id}"
+                rf"UPDATE profiles set making_post=0 where user_id = {ctx.user.id}"
             )
             await conn.close()
             return
@@ -219,6 +225,7 @@ class ButtonNoPhoto(flare.Button):
         btns_row = await flare.Row(
             ButtonSendPostToMods(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
             ButtonNewPostPhotos(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
+            # TODO: Add edit post button
         )
         await ctx.respond(embed=embed, component=btns_row)
         # add send buttons
@@ -264,10 +271,11 @@ class ButtonSendPostToMods(flare.Button):
         await conn.execute(
             f"UPDATE {self.post_type} set pending_approval=TRUE where id={self.post_id}"
         )
+        row = None
+        if self.post_type == 'sell':
+            row = await conn.fetchrow(f"SELECT add_images from {self.post_type} where id={self.post_id}")
 
-        row = await conn.fetchrow(f"SELECT add_images from {self.post_type} where id={self.post_id}")
-
-        if row.get("add_images"):
+        if row and row.get("add_images"):
             btns_row = await flare.Row(
                 ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
                 ButtonApprovePost(post_id=self.post_id, post_type=self.post_type),
@@ -347,15 +355,19 @@ class ButtonApprovePost(flare.Button):
 
         await ctx.message.edit(components=[])
 
-        row = (await conn.fetchrow(f"SELECT author_id, title, add_images from {self.post_type} where id={self.post_id}"))
+        row = None
+        if self.post_type == 'sell':
+            row = (await conn.fetchrow(f"SELECT author_id, title, add_images from {self.post_type} where id={self.post_id}"))
+        else:
+            row = (await conn.fetchrow(f"SELECT author_id, title from {self.post_type} where id={self.post_id}"))
         lister_id = row.get("author_id")
         post_title = row.get("title")
         user = await ctx.bot.rest.fetch_member(ctx.guild_id, lister_id)
 
-        row = await conn.fetchrow(
-            f"Select 'Buy_Channel_ID','Sell_Channel_ID' from guilds where guild_id={ctx.guild_id}")
+        row_chan = await conn.fetchrow(
+            f"Select buy_channel_id,sell_channel_id from guilds where guild_id={ctx.guild_id}")
 
-        post_types_dict = {"sell": row.get('Sell_Channel_ID'), "buy": row.get('Buy_Channel_ID')}
+        post_types_dict = {"sell": row_chan.get('sell_channel_id'), "buy": row_chan.get('buy_channel_id')}
 
         embed = await buildPostEmbed(post_id=self.post_id, post_type=self.post_type, user=user)
 
@@ -377,7 +389,7 @@ class ButtonApprovePost(flare.Button):
                                                             component=btns_row)
 
         await conn.execute(
-            f"UPDATE {self.post_type} set pending_approval=0, post_snowflake={created_message.id},posted_at='{datetime.datetime.today()}' where id={self.post_id}")
+            f"UPDATE {self.post_type} set pending_approval=FALSE, message_id={created_message.id}, post_date='{datetime.datetime.today()}' where id={self.post_id}")
 
         await ctx.message.delete()
         await conn.close()
@@ -463,7 +475,7 @@ class ButtonContactLister(flare.Button):
         channel_name = f"{user_name[0][0]}{user_name[1]}-{self.post_id}"
 
         conn = await get_database_connection()
-        swap_cat_id = await conn.fetchval(f"Select 'User_Bridge_cat_ID' from guilds where guild_id={ctx.guild_id}")
+        swap_cat_id = await conn.fetchval(f"Select user_bridge_cat_id from guilds where guild_id={ctx.guild_id}")
 
         channel = await ctx.bot.rest.create_guild_text_channel(guild=ctx.guild_id,
                                                                name=channel_name,
@@ -473,8 +485,10 @@ class ButtonContactLister(flare.Button):
                              description=f"Only the lister can mark as pending or sold and neither will close the channel\nMarking as sold will close other channels connect to this post\nRun `/viewprofile user` to see basic info about the other person and their photo for identification\n[Link to Original Post]({msg_url})",
                              color=0x00FF00,
                              url=msg_url)
-        row = await conn.fetchrow(f"SELECT add_images from {self.post_type} where id={self.post_id}")
-        if row.get("add_images"):
+        row = None
+        if self.post_type == 'sell':
+            row = await conn.fetchrow(f"SELECT add_images from {self.post_type} where id={self.post_id}")
+        if row and row.get("add_images"):
             btns_row = await flare.Row(ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
                                        ButtonMarkPostPending(post_id=self.post_id, post_type=self.post_type,
                                                              post_owner_id=self.post_owner_id),
