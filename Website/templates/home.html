@@ -1,13 +1,18 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="static/css/styles.css">
     <link rel="stylesheet" href="static/css/buttons.css">
+    <link rel="stylesheet" href="static/css/mobile.css">
+    <link rel="stylesheet" href="static/css/tablet.css">
+    <link rel="stylesheet" href="static/css/screen.css">
+    <link rel="stylesheet" href="static/css/hdscreen.css">
     <title>Login - My Webpage</title>
 </head>
 <main>
     <body>
-        <div name="logged-in" class="account-wrapper">
+        <div name="logged-in" class="centered">
             <img src="{{avatar_url}}" style="height: 200px; width: 200px; border-radius: 50%; border: 5px solid white" alt="User Avatar URL">
             <br>
             <p>Login Successful</p>
@@ -19,7 +24,7 @@
         </div>   
     </body>
 </main>
-<footer>
+<footer class="footer">
     <br>
     &copy; Copyright 2023 by <a href="https://swapbot.thedevcave.xyz/">TheDevCave</a>
 </footer>

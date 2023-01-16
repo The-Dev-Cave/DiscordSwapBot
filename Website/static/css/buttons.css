@@ -23,20 +23,13 @@
     box-shadow: rgba(80, 63, 205, 0.5) 0 1px 30px;
     transition-duration: .1s;
   }
-  
-  @media (min-width: 768px) {
-    .button-36 {
-      padding: 0 2.6rem;
-    }
-  }
-  
  
+  
 a.button1 {
     display:inline-block;
-    padding:0.3em 1.2em;
-    border:0.1em solid #FFFFFF;
-    margin:0.5em 0.5em 0.3em 0.5em;
-    border-radius:0.12em;
+    padding:0.3em 1.2em 0.6em;
+    /* border:0.1em solid #FFFFFF; */
+    border-radius:0.3em;
     box-sizing: border-box;
     text-decoration:none;
     font-family: "Nasalization Rg";
@@ -50,9 +43,15 @@ a.button1:hover {
     background-color:#FFFFFF;
 }
 
-@media all and (max-width:30em) {
+@media all and (max-width:10em) {
     a.button1{
     display:block;
     margin:0.4em auto;
     }
+}
+
+@media (min-width: 768px) {
+  .button-36 {
+    padding: 0 2.6rem;
+  }
 }
