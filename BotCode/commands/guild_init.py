@@ -5,6 +5,7 @@ from hikari import PermissionOverwriteType, Permissions
 
 from BotCode.environment.database import get_database_connection
 from BotCode.interactions.buttons.buttons_posts import ButtonCreatePost
+from BotCode.interactions.buttons.buttons_profile import ButtonCreateProfile
 
 guild_init_plugin = lightbulb.Plugin("Commands for initializing bot messages")
 
@@ -87,10 +88,19 @@ async def init_guild(ctx: lightbulb.SlashContext):
         )
     )
 
+    build_profile_embed = hikari.Embed(
+        title="Build Your Profile",
+        description="Click the button below to build your"
+                    " profile and get access to the"
+                    " rest of the server",
+    )
+
     user_bridge_cat = await ctx.bot.rest.create_guild_category(ctx.guild_id, "SwapBot - User Bridge", reason="Initialize SwapBot", permission_overwrites=[deny_all_everyone, allow_bot])
     post_cat = await ctx.bot.rest.create_guild_category(ctx.guild_id, "SwapBot", reason="Initialize SwapBot")
     create_post_chnl = await ctx.bot.rest.create_guild_text_channel(ctx.guild_id, "Make-A-Post", category=post_cat, permission_overwrites=[deny_send_everyone, allow_bot, allow_view_everyone])
     await create_post_chnl.send(embed=embed, component=buttons)
+    btn_row = await flare.Row(ButtonCreateProfile(label="Build Profile"))
+    await create_post_chnl.send(embed=build_profile_embed, component=btn_row)
     buy_channel = await ctx.bot.rest.create_guild_text_channel(ctx.guild_id, "Looking-To-Buy", category=post_cat, permission_overwrites=[deny_send_everyone, allow_bot, allow_view_everyone])
     sell_channel = await ctx.bot.rest.create_guild_text_channel(ctx.guild_id, "Looking-To-Sell", category=post_cat, permission_overwrites=[deny_send_everyone, allow_bot, allow_view_everyone])
 
