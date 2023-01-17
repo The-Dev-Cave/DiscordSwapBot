@@ -1,81 +1,70 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
     <link rel="icon" type="image/x-icon" href="static/assets/favicon.ico">
+
     <link rel="stylesheet" href="static/css/styles.css">
     <link rel="stylesheet" href="static/css/buttons.css">
     <link rel="stylesheet" href="static/css/navbar.css">
 
     <link rel="stylesheet" href="static/css/mobile.css">
     <link rel="stylesheet" href="static/css/desktop.css">
-    <title>Login - My Webpage</title>
+    <title>Homepage - SwapBot</title>
 
 </head>
 <main>
     <header>
-        <!-- MOBILE SITE CONSTRUCTION REDIRECT -->
-        <script type="text/javascript">
-            var toConstruction = function (event){
-                if (window.innerWidth < 885){
-                    window.location.href = "/construction";
-                }
-            };
-            window.addEventListener('resize', toConstruction, false);
-            window.addEventListener('load', toConstruction, false);
-        </script>
-
-            <!-- FULL LENGTH BANNER -->
-            <div class="hero">
-                <!-- MAIN MENU -->
-                <nav>
-                    <img src="static/assets/favicon.ico" class="logo" alt="SwapBot">
-                        <ul>
-                            <li><a href="#">Home</a></li>
-                            <li><a href="#">Features</a></li>
-                            <li><a href="#">About</a></li>
-                            <li><a href="#">Contact</a></li>
-                        </ul>
+        <!-- FULL LENGTH BANNER -->
+        <div id="brand"><img src="static/assets/logo.png" class="logo" alt="SwapBot"><a href="/">SwapBot Dashbaord</a></div>
+            <!-- MAIN MENU -->
+            <nav>
+                <ul>
+                    <li><a href="/home">Home</a></li>
+                    <li><a href="#">Features</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
                     <img src="{{avatar_url}}" class="user-pic" alt="Profile Menu" onclick="toggleMenu()">
+                </ul>
 
-                    <!-- PROFILE SUB-MENU -->
-                    <div class="sub-menu-wrap" id="subMenu">
-                        <div class="sub-menu">
-                            <div class="user-info">
-                                <img src="{{avatar_url}}">
-                                <h3>Zach Lesniewski</h3>
-                            </div>
-                            <hr>
-                            <a href="#" class="sub-menu-link">
-                                <img src="static/assets/setting.png" style="height: 30px; width: 30px; border-radius: 50%;">
-                                <p>Edit Profile</p>
-                                <span>></span>
-                            </a>
-                            <a href="#" class="sub-menu-link">
-                                <img src="static/assets/logout.png" style="height: 30px; width: 30px; border-radius: 50%;">
-                                <p>Logout</p>
-                                <span>></span>
-                            </a>
+                <!-- PROFILE SUB-MENU -->
+                <div class="sub-menu-wrap" id="subMenu">
+                    <div class="sub-menu">
+                        <div class="user-info">
+                            <img src="{{avatar_url}}">
+                            <h3>Zach Lesniewski</h3>
                         </div>
+                        <hr>
+                        <a href="#" class="sub-menu-link">
+                            <img src="static/assets/setting.png" style="height: 30px; width: 30px; border-radius: 50%;">
+                            <p>Edit Profile</p>
+                            <span>></span>
+                        </a>
+                        <a href="/logout" class="sub-menu-link">
+                            <img src="static/assets/logout.png" style="height: 30px; width: 30px; border-radius: 50%;">
+                            <p>Logout</p>
+                            <span>></span>
+                        </a>
                     </div>
-                </nav>
+                </div>
+            </nav>
 
-                <!-- MOBILE MENU -->
-                <!-- <div id="mobileMenu">
-                    <div class="bar1"></div>
-                    <div class="bar2"></div>
-                    <div class="bar3"></div>
-                    <div class="bar4"></div>
-                    <div class="bar5"></div>
-                    <div class="bar6"></div>
-                    <ul>
-                        <li><a>Home</a></li>
-                        <li><a>Features</a></li>
-                        <li><a>About</a></li>
-                        <li><a>Contact</a></li>
-                        <li><a>Edit Profile</a></li>
-                        <li><a>Logout</a></li>
-                    </ul>
-                </div> -->
+            <!-- MOBILE MENU -->
+            <div id="hamburger-icon" onclick="toggleMobileMenu(this)">
+                <div class="bar1"></div>
+                <div class="bar2"></div>
+                <div class="bar3"></div>
+                <ul class="mobile-menu">
+                    <li><a href="/home">Home</a></li>
+                    <li><a href="#">Features</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Edit Profile</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                </ul>
             </div>
     </header>
     <body>
@@ -90,13 +79,7 @@
             <br>
             <a href="/logout" class="button1">Logout</a>
         </div>   
-
-    <script>
-        let subMenu = document.getElementById("subMenu");
-        function toggleMenu(){
-            subMenu.classList.toggle("open-menu");
-        }
-    </script>
+        <script src="static/scripts/index.js"></script>
     </body>
 </main>
 <footer class="footer">
