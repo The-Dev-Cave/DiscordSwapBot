@@ -1,19 +1,78 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width">
+    <link rel="icon" type="image/x-icon" href="static/assets/favicon.ico">
     <link rel="stylesheet" href="static/css/styles.css">
     <link rel="stylesheet" href="static/css/buttons.css">
+    <link rel="stylesheet" href="static/css/navbar.css">
+
     <link rel="stylesheet" href="static/css/mobile.css">
     <link rel="stylesheet" href="static/css/tablet.css">
-    <link rel="stylesheet" href="static/css/screen.css">
-    <link rel="stylesheet" href="static/css/hdscreen.css">
+    <link rel="stylesheet" href="static/css/standardDef.css">
+    <link rel="stylesheet" href="static/css/highDef.css">
     <title>Login - My Webpage</title>
+
 </head>
 <main>
     <body>
+        <script type="text/javascript">
+            var toConstruction = function (event){
+                if (window.innerWidth < 769){
+                    window.location.href = "/construction";
+                }
+            };
+            window.addEventListener('resize', toConstruction, false);
+            window.addEventListener('load', toConstruction, false);
+        </script>
+        <div class="hero">
+            <nav>
+                <img src="static/assets/favicon.ico" class="logo" alt="SwapBot">
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Features</a></li>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                <img src="{{avatar_url}}" class="user-pic" alt="Profile Menu" onclick="toggleMenu()">
+                <div class="sub-menu-wrap" id="subMenu">
+                    <div class="sub-menu">
+                        <div class="user-info">
+                            <img src="{{avatar_url}}">
+                            <h3>Zach Lesniewski</h3>
+                        </div>
+                        <hr>
+                        <a href="#" class="sub-menu-link">
+                            <img src="static/assets/setting.png" style="height: 30px; width: 30px; border-radius: 50%;">
+                            <p>Edit Profile</p>
+                            <span>></span>
+                        </a>
+                        <a href="#" class="sub-menu-link">
+                            <img src="static/assets/logout.png" style="height: 30px; width: 30px; border-radius: 50%;">
+                            <p>Logout</p>
+                            <span>></span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+            <div id="mobileMenu">
+                <div class="bar1"></div>
+                <div class="bar2"></div>
+                <div class="bar3"></div>
+                <div class="bar4"></div>
+                <div class="bar5"></div>
+                <div class="bar6"></div>
+                <ul>
+                    <li><a>Home</a></li>
+                    <li><a>Features</a></li>
+                    <li><a>About</a></li>
+                    <li><a>Contact</a></li>
+                    <li><a>Edit Profile</a></li>
+                    <li><a>Logout</a></li>
+                </ul>
+            </div>
+        </div>
         <div name="logged-in" class="centered">
-            <img src="{{avatar_url}}" style="height: 200px; width: 200px; border-radius: 50%; border: 5px solid white" alt="User Avatar URL">
+            <img src="{{avatar_url}}" style="height: 250px; width: 250px; border-radius: 50%; border: 2px solid white" alt="User Avatar URL">
             <br>
             <p>Login Successful</p>
             <p>Logged In As: {{current_user}}<br>UID: {{user_id}}</p>
@@ -22,6 +81,13 @@
             <br>
             <a href="/logout" class="button1">Logout</a>
         </div>   
+
+    <script>
+        let subMenu = document.getElementById("subMenu");
+        function toggleMenu(){
+            subMenu.classList.toggle("open-menu");
+        }
+    </script>
     </body>
 </main>
 <footer class="footer">

@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <!-- <link rel="stylesheet" href={{ url_for('static', filename='css/style.css')}}> -->
     <link rel="icon" type="image/x-icon" href="static/assets/favicon.ico">
     <link rel="stylesheet" href="static/css/styles.css">
     <link rel="stylesheet" href="static/css/buttons.css">
@@ -11,9 +10,18 @@
 </head>
 <main>
     <body>
-        <div name="login" class="centered">
-            <h1>Welcome to the<br>SwapBot Dashboard!<br></h1>
-            <a href={{oauth_uri}}><button class="button-36">Login With Discord</button></a>
+        <script type="text/javascript">
+            var toConstruction = function (event){
+                if (window.innerWidth >= 769){
+                    window.location.href = "/home";
+                }
+            };
+            window.addEventListener('resize', toConstruction, false);
+            window.addEventListener('load', toConstruction, false);
+        </script>
+        <div class="centered">
+            <img src="static/assets/construction.png" alt="Under Construction" class="constructionImg">
+            <h1>Mobile Site<br>Under Construction</h1>
         </div>        
     </body>
 </main>

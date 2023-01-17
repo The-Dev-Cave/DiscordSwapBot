@@ -52,3 +52,21 @@ footer {
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+footer a{
+    color:  rgb(0, 175, 244);
+    background-color: transparent;
+    text-decoration: none;
+}
+
+footer:hover a {
+    color: rgb(0, 175, 244);
+    background-color: transparent;
+    text-decoration: underline;
+}
+
+.constructionImg {
+    width: 256px;
+    border-radius: 50%;
+    background-color: #36393e;
+}

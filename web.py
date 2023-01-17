@@ -38,7 +38,6 @@ async def logout():
     return redirect("/")
 
 
-#@app.route("/testPost", methods=["POST"])
 @app.route("/testPost")
 async def testPost():
     if 'token' not in session:
@@ -69,7 +68,18 @@ async def home():
     async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
         my_user = await client.fetch_my_user()
         return await render_template("home.html", current_user=my_user, avatar_url=my_user.avatar_url,
-                                     user_id=my_user.id)
+                                     user_id=my_user.id, current_name=my_user.username)
+
+
+@app.route("/construction")
+async def construction():
+    if 'token' not in session:
+        return redirect("/")
+
+    async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+        my_user = await client.fetch_my_user()
+        return await render_template("construction.html", current_user=my_user, avatar_url=my_user.avatar_url,
+                                     user_id=my_user.id, current_name=my_user.username)
 
 
 async def background_task():
