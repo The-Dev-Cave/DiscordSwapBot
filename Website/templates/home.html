@@ -14,7 +14,8 @@
 
 </head>
 <main>
-    <body>
+    <header>
+        <!-- MOBILE SITE CONSTRUCTION REDIRECT -->
         <script type="text/javascript">
             var toConstruction = function (event){
                 if (window.innerWidth < 769){
@@ -24,53 +25,63 @@
             window.addEventListener('resize', toConstruction, false);
             window.addEventListener('load', toConstruction, false);
         </script>
-        <div class="hero">
-            <nav>
-                <img src="static/assets/favicon.ico" class="logo" alt="SwapBot">
-                    <ul>
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">Features</a></li>
-                        <li><a href="#">About</a></li>
-                        <li><a href="#">Contact</a></li>
-                    </ul>
-                <img src="{{avatar_url}}" class="user-pic" alt="Profile Menu" onclick="toggleMenu()">
-                <div class="sub-menu-wrap" id="subMenu">
-                    <div class="sub-menu">
-                        <div class="user-info">
-                            <img src="{{avatar_url}}">
-                            <h3>Zach Lesniewski</h3>
+
+            <!-- FULL LENGTH BANNER -->
+            <div class="hero">
+                <!-- MAIN MENU -->
+                <nav>
+                    <img src="static/assets/favicon.ico" class="logo" alt="SwapBot">
+                        <ul>
+                            <li><a href="#">Home</a></li>
+                            <li><a href="#">Features</a></li>
+                            <li><a href="#">About</a></li>
+                            <li><a href="#">Contact</a></li>
+                        </ul>
+                    <img src="{{avatar_url}}" class="user-pic" alt="Profile Menu" onclick="toggleMenu()">
+
+                    <!-- PROFILE SUB-MENU -->
+                    <div class="sub-menu-wrap" id="subMenu">
+                        <div class="sub-menu">
+                            <div class="user-info">
+                                <img src="{{avatar_url}}">
+                                <h3>Zach Lesniewski</h3>
+                            </div>
+                            <hr>
+                            <a href="#" class="sub-menu-link">
+                                <img src="static/assets/setting.png" style="height: 30px; width: 30px; border-radius: 50%;">
+                                <p>Edit Profile</p>
+                                <span>></span>
+                            </a>
+                            <a href="#" class="sub-menu-link">
+                                <img src="static/assets/logout.png" style="height: 30px; width: 30px; border-radius: 50%;">
+                                <p>Logout</p>
+                                <span>></span>
+                            </a>
                         </div>
-                        <hr>
-                        <a href="#" class="sub-menu-link">
-                            <img src="static/assets/setting.png" style="height: 30px; width: 30px; border-radius: 50%;">
-                            <p>Edit Profile</p>
-                            <span>></span>
-                        </a>
-                        <a href="#" class="sub-menu-link">
-                            <img src="static/assets/logout.png" style="height: 30px; width: 30px; border-radius: 50%;">
-                            <p>Logout</p>
-                            <span>></span>
-                        </a>
                     </div>
-                </div>
-            </nav>
-            <div id="mobileMenu">
-                <div class="bar1"></div>
-                <div class="bar2"></div>
-                <div class="bar3"></div>
-                <div class="bar4"></div>
-                <div class="bar5"></div>
-                <div class="bar6"></div>
-                <ul>
-                    <li><a>Home</a></li>
-                    <li><a>Features</a></li>
-                    <li><a>About</a></li>
-                    <li><a>Contact</a></li>
-                    <li><a>Edit Profile</a></li>
-                    <li><a>Logout</a></li>
-                </ul>
+                </nav>
+
+                <!-- MOBILE MENU -->
+                <!-- <div id="mobileMenu">
+                    <div class="bar1"></div>
+                    <div class="bar2"></div>
+                    <div class="bar3"></div>
+                    <div class="bar4"></div>
+                    <div class="bar5"></div>
+                    <div class="bar6"></div>
+                    <ul>
+                        <li><a>Home</a></li>
+                        <li><a>Features</a></li>
+                        <li><a>About</a></li>
+                        <li><a>Contact</a></li>
+                        <li><a>Edit Profile</a></li>
+                        <li><a>Logout</a></li>
+                    </ul>
+                </div> -->
             </div>
-        </div>
+    </header>
+    <body>
+        
         <div name="logged-in" class="centered">
             <img src="{{avatar_url}}" style="height: 250px; width: 250px; border-radius: 50%; border: 2px solid white" alt="User Avatar URL">
             <br>
