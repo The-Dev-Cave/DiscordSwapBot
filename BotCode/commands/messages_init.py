@@ -25,7 +25,6 @@ async def cmd_init(ctx: lightbulb.SlashContext) -> None:
     buttons = await flare.Row(
         ButtonCreatePost(post_type="sell", label="I'm Looking To Sell", guild_id=ctx.guild_id),
         ButtonCreatePost(post_type="buy", label="I'm Looking To Buy", guild_id=ctx.guild_id),
-        # ButtonCreatePost(post_type="trading", label="I'm Looking To Trade"),
     )
 
     await init_commands_plugin.bot.rest.create_message(
