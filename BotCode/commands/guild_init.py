@@ -98,9 +98,9 @@ async def init_guild(ctx: lightbulb.SlashContext):
     user_bridge_cat = await ctx.bot.rest.create_guild_category(ctx.guild_id, "SwapBot - User Bridge", reason="Initialize SwapBot", permission_overwrites=[deny_all_everyone, allow_bot])
     post_cat = await ctx.bot.rest.create_guild_category(ctx.guild_id, "SwapBot", reason="Initialize SwapBot")
     create_post_chnl = await ctx.bot.rest.create_guild_text_channel(ctx.guild_id, "Make-A-Post", category=post_cat, permission_overwrites=[deny_send_everyone, allow_bot, allow_view_everyone])
-    await create_post_chnl.send(embed=embed, component=buttons)
     btn_row = await flare.Row(ButtonCreateProfile(label="Build Profile"))
     await create_post_chnl.send(embed=build_profile_embed, component=btn_row)
+    await create_post_chnl.send(embed=embed, component=buttons)
     buy_channel = await ctx.bot.rest.create_guild_text_channel(ctx.guild_id, "Looking-To-Buy", category=post_cat, permission_overwrites=[deny_send_everyone, allow_bot, allow_view_everyone])
     sell_channel = await ctx.bot.rest.create_guild_text_channel(ctx.guild_id, "Looking-To-Sell", category=post_cat, permission_overwrites=[deny_send_everyone, allow_bot, allow_view_everyone])
 
