@@ -1,7 +1,7 @@
 import logging
 import os
 import sys
-
+import ssl, asyncpg
 from dotenv import load_dotenv
 import hikari
 
@@ -20,11 +20,29 @@ CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 CHANNEL_ID = int(os.environ["CHANNEL_ID"])  # Channel to post in as an int
 MODE = os.getenv("MODE")
 
+# Reveal type for type hinting when coding
+app.swapbotDBpool: asyncpg.Pool
+app.discord_rest: hikari.RESTApp
 
 @app.before_serving
 async def starting():
     app.discord_rest = hikari.RESTApp()
     await app.discord_rest.start()
+
+    sslctx = ssl.create_default_context(ssl.Purpose.SERVER_AUTH,
+                                        cafile=r"Website/certs/SwapBot-PostgreSQL-ca-certificate.crt")
+    sslctx.check_hostname = True
+    print("Connecting To Database")
+    dsn = os.getenv("DATABASE_CONN_STRING")
+
+    pool = await asyncpg.create_pool(
+        dsn=dsn,
+        max_size=200,
+        max_inactive_connection_lifetime=10,
+        ssl=sslctx,
+    )
+    print("pool connected and created")
+    app.swapbotDBpool = pool
 
 
 @app.after_serving
