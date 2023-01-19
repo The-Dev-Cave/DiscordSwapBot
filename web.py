@@ -64,8 +64,10 @@ async def testPost():
     async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
         my_user = await client.fetch_my_user()
         async with app.discord_rest.acquire(BOT_TOKEN, hikari.TokenType.BOT) as bot_client:
-
-            await bot_client.create_message(CHANNEL_ID, content="Message Successfully Sent from Website")
+            row = app.swapbotDBpool.fetchrow("Select * from profiles where user_id = ?", (my_user.id,))
+            first_name = row.get("first_name")
+            last_name = row.get("last_name")
+            await bot_client.create_message(CHANNEL_ID, content=f"Message Successfully Sent from Website\n{first_name} {last_name}")
     return redirect("/")
 
 
