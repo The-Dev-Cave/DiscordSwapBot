@@ -101,18 +101,25 @@ async def testPost():
     return redirect("/")
 
 
-@app.route("/submitInfo", methods=["POST"])
-def submitInfo():
+@app.route("/submitInfo", methods=["POST", "GET"])
+async def submitInfo():
     if request.method == "GET":
         return "The URL /submitInfo is accessed directly. Try going to '/form' to submit form"
     if request.method == "POST":
-        fName = request.form["fname"]
-        lName = request.form["lname"]
-        pNouns = request.form["pnouns"]
-        email = request.form["email"]
+
+        prof = await request.form
+        print(prof)
+        fName = prof.get("fname")
+        lName = prof.get("lname")
+        pNouns = prof.get("pnouns")
+        email = prof.get("email")
+        print(fName + ' | ' + pNouns + ' | ' + email)
         print("Submit Successful")
-        print(fName + ' ' + lName + ' | ' + pNouns + ' | ' + email)
-    return("/profile")
+
+
+        await app.swapbotDBpool.execute("UPDATE profiles set first_name=$0, pronouns=$1, email=$2 where user_id=$3", fName, pNouns, email, session['my_user'].id)
+
+    return redirect("/profile")
 
 
 @app.route("/construction")
@@ -144,6 +151,9 @@ async def callback():
 
         access_token = token.access_token
     session['token'] = access_token
+
+    async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+        session['my_user'] = await client.fetch_my_user()
 
     app.add_background_task(background_task)
     return redirect("/home")
