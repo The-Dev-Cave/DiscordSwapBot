@@ -117,7 +117,7 @@ async def submitInfo():
         print("Submit Successful")
 
 
-        await app.swapbotDBpool.execute("UPDATE profiles set first_name=$0, pronouns=$1, email=$2 where user_id=$3", fName, pNouns, email, session['my_user'].id)
+        await app.swapbotDBpool.execute("UPDATE profiles set first_name=$1, pronouns=$2, email=$3 where user_id=$4", fName, pNouns, email, session['uid'])
 
     return redirect("/profile")
 
@@ -153,7 +153,8 @@ async def callback():
     session['token'] = access_token
 
     async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
-        session['my_user'] = await client.fetch_my_user()
+        user = await client.fetch_my_user()
+        session['uid'] = user.id
 
     app.add_background_task(background_task)
     return redirect("/home")
