@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <link rel="icon" type="image/x-icon" href="static/assets/favicon.ico">
+
+    <link rel="stylesheet" href="static/css/styles.css">
+    <link rel="stylesheet" href="static/css/buttons.css">
+    <link rel="stylesheet" href="static/css/navbar.css">
+    <link rel="stylesheet" href="static/css/profile.css">
+
+    <!-- <link rel="stylesheet" href="static/css/mobile.css">
+    <link rel="stylesheet" href="static/css/desktop.css"> -->
+    <title>Profile - SwapBot</title>
+
+</head>
+<main>
+    <header>
+        <!-- FULL LENGTH BANNER -->
+        <div id="brand"><img src="static/assets/logo.png" class="logo" alt="SwapBot"><a href="/">SwapBot Dashbaord</a></div>
+            <!-- MAIN MENU -->
+            <nav>
+                <ul>
+                    <li><a href="/home">Home</a></li>
+                    <li><a href="#">Features</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <img src="{{avatar_url}}" class="user-pic" alt="Profile Menu" onclick="toggleMenu()">
+                </ul>
+
+                <!-- PROFILE SUB-MENU -->
+                <div class="sub-menu-wrap" id="subMenu">
+                    <div class="sub-menu">
+                        <div class="user-info">
+                            <img src="{{avatar_url}}">
+                            <h3>{{first_name}} {{last_name}}</h3>
+                        </div>
+                        <hr>
+                        <a href="#" class="sub-menu-link">
+                            <img src="static/assets/setting.png" style="height: 30px; width: 30px; border-radius: 50%;">
+                            <p>Edit Profile</p>
+                            <span>></span>
+                        </a>
+                        <a href="/logout" class="sub-menu-link">
+                            <img src="static/assets/logout.png" style="height: 30px; width: 30px; border-radius: 50%;">
+                            <p>Logout</p>
+                            <span>></span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- MOBILE MENU -->
+            <div id="hamburger-icon" onclick="toggleMobileMenu(this)">
+                <div class="bar1"></div>
+                <div class="bar2"></div>
+                <div class="bar3"></div>
+                <ul class="mobile-menu">
+                    <li><a href="/home">Home</a></li>
+                    <li><a href="#">Features</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Edit Profile</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                </ul>
+            </div>
+    </header>
+    <body>
+        <div class="centered" style="border-radius: 1em; background: rgb(30,33,36); padding: 2em 2em; width: 50%">
+            <div style="float: left; width:25%;">
+                <table style="margin-left: auto; margin-right: auto;">
+                    <tr>
+                        <td style="height: auto;">
+                            <div class="imgBox">
+                                <div>
+                                    <img src="{{pfp}}" class="pfp"/>
+                                </div>
+                                <div class="hoverImg">
+                                    <img src="static/assets/profile.png" style="width: 100px;"/>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="discordName" style="height: auto; text-align: center;"><br>{{current_user}}</td>
+                    </tr>
+                    <tr>
+                        <td class="UID" style="height: auto; text-align: center;"><br>{{user_id}}</td>
+                    </tr>
+                </table>
+            </div>
+            <div style="float: left; width:75%; padding-bottom: 2em;">
+                <table style="margin-left: auto; margin-right: auto;">
+                    <th colspan="2">General Information</th>
+                    <form method="POST" action="/submitInfo">
+                    <tr>
+                        <td class="input-label">First Name:</td>
+                        <td><input type="text" id="fname" name="fname" placeholder="{{first_name}}"></td>
+                    </tr>
+                    <tr>
+                        <td class="input-label">Last Name:</td>
+                        <td><input type="text" id="lname" name="lname" value="{{last_name}}" disabled></td>
+                    </tr>
+                    <tr>
+                        <td class="input-label">Pronouns:</td>
+                        <td><input type="text" id="pnouns" name="pnouns" placeholder="{{pronouns}}"></td>
+                    </tr>
+                    <tr>
+                        <td class="input-label">Email:</td>
+                        <td><input type="text" id="email" name="email" placeholder="{{email}}"></td>
+                    </tr>
+                    </form>
+                </table>
+            </div>
+            <div style="text-align: right;">
+                <a href="/submitInfo" class="button1">SAVE</a>
+            </div>
+        </div>
+    </body>
+    <footer class="footer">
+    &copy; Copyright 2023 by <a href="https://swapbot.thedevcave.xyz/">TheDevCave</a>
+    </footer>
+</main>
+<script src="static/scripts/index.js"></script>
+<script src="static/scripts/profile.js"></script>
+</html>
