@@ -33,14 +33,14 @@ class ButtonMarkPostPending(flare.Button):
         conn = await get_database_connection()
 
         row = await conn.fetchrow(
-            f"Select buy_channel_id,sell_channel_id,'User_Bridge_Cat_ID' from guilds where guild_id={ctx.guild_id}")
-        swap_cat_id = row.get("User_Bridge_Cat_ID")
-        post_types_dict = {"sell": row.get("Sell_Channel_ID"), "buy": row.get("Buy_Channel_ID")}
+            f"Select buy_channel_id,sell_channel_id,user_bridge_cat_id from guilds where guild_id={ctx.guild_id}")
+        swap_cat_id = row.get("user_bridge_cat_id")
+        post_types_dict = {"sell": row.get("sell_channel_id"), "buy": row.get("buy_channel_id")}
         try:
 
             row = await conn.fetchrow(
-                f"Select message_id, pending, title from {self.post_type} where id={self.post_id}")
-            pending = row.get("pending")
+                f"Select message_id, post_status, title from {self.post_type} where id={self.post_id}")
+            pending = row.get("post_status")
 
             msg = await ctx.bot.rest.fetch_message(
                 post_types_dict.get(self.post_type), row.get("message_id")
@@ -60,12 +60,12 @@ class ButtonMarkPostPending(flare.Button):
             )
             await msg.edit(embed=embed)
             await conn.execute(
-                f"update {self.post_type} set pending=1 where id={self.post_id}"
+                f"update {self.post_type} set post_status=1 where id={self.post_id}"
             )
             await ctx.respond(embed=hikari.Embed(
-                title="Post is marked as pending",
-                description="Click the button again to mark as not pending",
-            ))
+                title="Post has been marked as **PENDING** ",
+                description="",
+                color=0xFFDD00))
 
             channels = ctx.bot.cache.get_guild_channels_view_for_guild(ctx.guild_id)
 
@@ -91,7 +91,7 @@ class ButtonMarkPostPending(flare.Button):
             embed.__setattr__("title", row.get("title"))
             await msg.edit(embed=embed)
             await conn.execute(
-                f"update {self.post_type} set pending=0 where id={self.post_id}"
+                f"update {self.post_type} set post_status=0 where id={self.post_id}"
             )
             await ctx.respond(embed=hikari.Embed(title="Post is marked as **AVAILABLE**",
                                                  description="", color=0x00FF00))
@@ -143,9 +143,9 @@ class ButtonMarkPostSold(flare.Button):
         conn = await get_database_connection()
         post_done_dict = {"sell": "sold", "buy": "bought"}
         row = await conn.fetchrow(
-            f"Select buy_channel_id,sell_channel_id,'User_Bridge_Cat_ID' from guilds where guild_id={ctx.guild_id}")
+            f"Select buy_channel_id,sell_channel_id,user_bridge_cat_id from guilds where guild_id={ctx.guild_id}")
         post_types_dict = {"sell": row.get('sell_channel_id'), "buy": row.get('buy_channel_id')}
-        swap_cat_id = row.get("User_Bridge_Cat_ID")
+        swap_cat_id = row.get("user_bridge_cat_id")
 
         row = await conn.fetchrow(f"Select message_id from {self.post_type} where id={self.post_id}")
         try:
@@ -198,21 +198,23 @@ class ButtonMarkPostSold(flare.Button):
         lister = await ctx.bot.rest.fetch_member(guild=ctx.guild_id, user=ctx.user.id)
 
         lister_prof = await conn.fetchrow(f"SELECT stage from profiles where user_id={ctx.user.id}")
-        if int(lister_prof.get("stage")) == 3:
-            embed = hikari.Embed(
-                title=f"Would you like to rate {int_party.display_name} from the completed transaction?",
-                description="This is completely optional")
-
-            await ctx.user.send(
-                component=await flare.Row(ButtonStartRating(post_type=self.post_type, other_user_id=self.int_party_id),
-                                          ButtonNoRating()),
-                embed=embed)
-        int_party_prof = await conn.fetchrow(f"SELECT stage from profiles where user_id={self.int_party_id}")
-        if int(int_party_prof.get("stage")) == 3:
+        if lister_prof and (int(lister_prof.get("stage")) == 3):
             embed = hikari.Embed(
                 title=f"Would you like to rate {lister.display_name} from the completed transaction?",
                 description="This is completely optional")
+
             await ctx.bot.rest.create_message(await ctx.bot.rest.create_dm_channel(self.int_party_id),
+                                              component=await flare.Row(ButtonStartRating(post_type=self.post_type,
+                                                                                          other_user_id=lister.id),
+                                                                        ButtonNoRating()),
+                                              embed=embed)
+
+        int_party_prof = await conn.fetchrow(f"SELECT stage from profiles where user_id={self.int_party_id}")
+        if int_party_prof and (int(int_party_prof.get("stage")) == 3):
+            embed = hikari.Embed(
+                title=f"Would you like to rate {int_party.display_name} from the completed transaction?",
+                description="This is completely optional")
+            await ctx.bot.rest.create_message(await ctx.bot.rest.create_dm_channel(self.post_owner_id),
                                               component=await flare.Row(ButtonStartRating(post_type=self.post_type,
                                                                                           other_user_id=lister.id),
                                                                         ButtonNoRating()),

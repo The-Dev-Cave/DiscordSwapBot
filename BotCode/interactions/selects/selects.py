@@ -423,8 +423,8 @@ async def update_post(
     conn = await get_database_connection()
     selcected_value = ctx.values[0]
     row = await conn.fetchrow(
-        f"Select buy_channel_id,sell_channel_id,'User_Bridge_Cat_ID' from guilds where guild_id={ctx.guild_id}")
-    swap_cat_id = row.get('User_Bridge_Cat_ID')
+        f"Select buy_channel_id,sell_channel_id,user_bridge_cat_id from guilds where guild_id={ctx.guild_id}")
+    swap_cat_id = row.get('user_bridge_cat_id')
     # Change select menu for edit post to choose what to edit
     # Change to button to ask if sure to change pending, sold, or to remove
     #   and let them know to click dismiss message to cancel / finish
@@ -440,8 +440,8 @@ async def update_post(
 
             try:
                 row = await conn.fetchrow(
-                    f"Select message_id, pending, title from {post_type} where id={post_id}")
-                pending = row.get("pending")
+                    f"Select message_id, post_status, title from {post_type} where id={post_id}")
+                pending = row.get("post_status")
 
                 msg = await ctx.bot.rest.fetch_message(
                     post_types_dict.get(post_type), row.get("message_id")
@@ -461,7 +461,7 @@ async def update_post(
                 )
                 await msg.edit(embed=embed)
                 await conn.execute(
-                    f"update {post_type} set pending=1 where id={post_id}"
+                    f"update {post_type} set post_status=1 where id={post_id}"
                 )
                 await ctx.edit_response(content="Post marked as pending and any open chats have been notified",
                                         components=[])
@@ -490,7 +490,7 @@ async def update_post(
                 embed.__setattr__("title", row.get("title"))
                 await msg.edit(embed=embed)
                 await conn.execute(
-                    f"update {post_type} set pending=0 where id={post_id}"
+                    f"update {post_type} set post_status=0 where id={post_id}"
                 )
                 await ctx.edit_response(content="Post no longer marked as pending", components=[])
                 channels = ctx.bot.cache.get_guild_channels_view_for_guild(ctx.guild_id)
