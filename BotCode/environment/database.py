@@ -1,3 +1,5 @@
+import ssl
+
 import asyncpg
 import lightbulb
 import os
@@ -8,12 +10,17 @@ database_plugin = lightbulb.Plugin("Database Functions", include_datastore=True)
 
 
 async def create_pool() -> None:
+    sslctx = ssl.create_default_context(ssl.Purpose.SERVER_AUTH,
+                                        cafile=r"Website/certs/SwapBot-PostgreSQL-ca-certificate.crt")
+    sslctx.check_hostname = True
     print("Connecting To Database")
-    dsn = f'{os.getenv("DATABASE_CONN_STRING")}'
+    dsn = os.getenv("DATABASE_CONN_STRING")
+
     pool = await asyncpg.create_pool(
         dsn=dsn,
         max_size=200,
         max_inactive_connection_lifetime=10,
+        ssl=sslctx,
     )
     database_plugin.bot.d.pool = pool
     print("pool connected and created")

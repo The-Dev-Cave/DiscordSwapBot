@@ -28,17 +28,26 @@ async def init_guild(ctx: lightbulb.SlashContext):
         return
     await conn.close()
 
+    error = ""
+
     apprv_chnl = ctx.options.__getitem__("approval-channel")
-    if apprv_chnl and (apprv_chnl.type == "GUILD_CATEGORY"):
+    if apprv_chnl and (apprv_chnl.type != "GUILD_TEXT"):
         apprv_chnl = None
+        error.__add__("Not a valid text channel for `Post Approvals`.  Do not provide option to have SwapBot make the channel or supply a different channel\n")
 
     public_logs_chnl = ctx.options.__getitem__("public-logs")
-    if public_logs_chnl and (public_logs_chnl.type == "GUILD_CATEGORY"):
+    if public_logs_chnl and (public_logs_chnl.type != "GUILD_TEXT"):
         public_logs_chnl = None
+        error.__add__("Not a valid text channel for `Public Logs`.  Do not provide option to have SwapBot make the channel or supply a different channel\n")
 
     mod_logs_chnl = ctx.options.__getitem__("moderator-logs")
-    if mod_logs_chnl and (mod_logs_chnl.type == "GUILD_CATEGORY"):
+    if mod_logs_chnl and (mod_logs_chnl.type != "GUILD_TEXT"):
         mod_logs_chnl = None
+        error.__add__("Not a valid text channel for `Moderator Logs`.  Do not provide option to have SwapBot make the channel or supply a different channel\n")
+
+    if error != "":
+        await ctx.respond(error, flags=hikari.MessageFlag.EPHEMERAL)
+        return
 
     mod_role: hikari.Role = ctx.options.__getitem__("moderator-role")
 
