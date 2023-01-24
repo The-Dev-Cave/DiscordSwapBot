@@ -1,9 +1,5 @@
-import logging
-import os
-import sys
-import ssl, asyncpg
+import logging, os, sys, ssl, asyncpg, hikari, json
 from dotenv import load_dotenv
-import hikari
 
 from quart import Quart, session, render_template, redirect, request, url_for, send_from_directory
 
@@ -44,10 +40,44 @@ async def starting():
     print("pool connected and created")
     app.swapbotDBpool = pool
 
-
 @app.after_serving
 async def stopping():
     await app.discord_rest.close()
+
+
+@app.route("/")
+async def login():
+    if 'token' not in session:
+        return await render_template("login.html", oauth_uri=OAUTH_URI)
+
+    if 'token' in session:
+        return redirect("/home")
+
+
+@app.route("/home")
+async def home():
+    if 'token' not in session:
+        return redirect("/")
+
+    async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+        my_user = await client.fetch_my_user()
+        row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
+        return await render_template("home.html", current_user=my_user, avatar_url=my_user.avatar_url,
+                                     user_id=my_user.id, current_name=my_user.username, first_name=row.get('first_name'), last_name=row.get('last_name'))
+
+
+@app.route("/profile")
+async def profile():
+    if 'token' not in session:
+        return redirect("/")
+
+    async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+        my_user = await client.fetch_my_user()
+        row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
+        return await render_template("profile.html", current_user=my_user, avatar_url=my_user.avatar_url,
+                                     user_id=my_user.id, current_name=my_user.username, 
+                                     first_name=row.get('first_name'), last_name=row.get('last_name'),
+                                     pronouns=row.get('pronouns'), email=row.get('email'), pfp=row.get('profile_picture'))
 
 
 @app.route("/logout")
@@ -71,24 +101,25 @@ async def testPost():
     return redirect("/")
 
 
-@app.route("/")
-async def login():
-    if 'token' not in session:
-        return await render_template("login.html", oauth_uri=OAUTH_URI)
+@app.route("/submitInfo", methods=["POST", "GET"])
+async def submitInfo():
+    if request.method == "GET":
+        return "The URL /submitInfo is accessed directly. Try going to '/form' to submit form"
+    if request.method == "POST":
 
-    if 'token' in session:
-        return redirect("/home")
+        prof = await request.form
+        print(prof)
+        fName = prof.get("fname")
+        lName = prof.get("lname")
+        pNouns = prof.get("pnouns")
+        email = prof.get("email")
+        print(fName + ' | ' + pNouns + ' | ' + email)
+        print("Submit Successful")
 
 
-@app.route("/home")
-async def home():
-    if 'token' not in session:
-        return redirect("/")
+        await app.swapbotDBpool.execute("UPDATE profiles set first_name=$1, pronouns=$2, email=$3 where user_id=$4", fName, pNouns, email, session['uid'])
 
-    async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
-        my_user = await client.fetch_my_user()
-        return await render_template("home.html", current_user=my_user, avatar_url=my_user.avatar_url,
-                                     user_id=my_user.id, current_name=my_user.username)
+    return redirect("/profile")
 
 
 @app.route("/construction")
@@ -120,6 +151,10 @@ async def callback():
 
         access_token = token.access_token
     session['token'] = access_token
+
+    async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+        user = await client.fetch_my_user()
+        session['uid'] = user.id
 
     app.add_background_task(background_task)
     return redirect("/home")

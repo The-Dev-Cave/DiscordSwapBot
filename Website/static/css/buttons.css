@@ -22,12 +22,13 @@
   .button-36:hover {
     box-shadow: rgba(80, 63, 205, 0.5) 0 1px 30px;
     transition-duration: .1s;
+    cursor: pointer;
   }
  
   
-a.button1 {
+.button1 {
     display:inline-block;
-    padding:0.3em 1.2em 0.6em;
+    padding:0.6em 1.2em 0.6em;
     /* border:0.1em solid #FFFFFF; */
     border-radius:0.3em;
     box-sizing: border-box;
@@ -38,15 +39,16 @@ a.button1 {
     transition: all 0.2s;
 }
 
-a.button1:hover {
+.button1:hover {
     color:#000000;
     background-color:#FFFFFF;
+    cursor: pointer;
 }
 
 @media all and (max-width:10em) {
-    a.button1{
+    .button1{
     display:block;
-    margin:0.4em auto;
+    margin:0.6em auto;
     }
 }
 
