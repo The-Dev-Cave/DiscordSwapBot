@@ -61,6 +61,19 @@ input:disabled {
     background: rgb(39,42,47);
 }
 
+input[type='submit']:disabled{
+    display: none;
+    background-color: gray;
+    width: 50%;
+}
+
+input[type='submit']:enabled{
+    display: block;
+    background-color: rgb(0, 175, 244);
+    width: 50%;
+}
+
+
 ::placeholder {
     color: white;
     font-weight: bold;

@@ -95,10 +95,10 @@
             <div style="float: left; width:75%; padding-bottom: 2em;">
                 <table style="margin-left: auto; margin-right: auto;">
                     <th colspan="2">General Information</th>
-                    <form method="POST" action="/submitInfo">
+                    <form method="POST" action="/submitInfo" id="profileForm">
                     <tr>
                         <td class="input-label">First Name:</td>
-                        <td><input type="text" id="fname" name="fname" placeholder="{{first_name}}"></td>
+                        <td><input type="text" id="fname" name="fname" value="{{first_name}}" disabled></td>
                     </tr>
                     <tr>
                         <td class="input-label">Last Name:</td>
@@ -106,29 +106,29 @@
                     </tr>
                     <tr>
                         <td class="input-label">Pronouns:</td>
-                        <td><input type="text" id="pnouns" name="pnouns" placeholder="{{pronouns}}"></td>
+                        <td><input type="text" id="pnouns" name="pnouns" value="{{pronouns}}" disabled></td>
                     </tr>
                     <tr>
                         <td class="input-label">Email:</td>
-                        <td><input type="text" id="email" name="email" placeholder="{{email}}"></td>
+                        <td><input type="text" id="email" name="email" value="{{email}}"disabled></td>
                     </tr>
                     <tr>
-                        <td>
-                            <input type="submit" value="SAVE" class="button1">
+                        <td colspan="2" align="center">
+                            <input type="submit" value="SAVE" class="button1" id="savtBtn" disabled>
                         </td>
                     </tr>
                 </form>
+                <div style="text-align: right;" onclick="editProf()" id="editBtn">
+                    <a class="button1">EDIT</a>
+                </div>
             </table>
         </div>
-        <div style="text-align: right;">
-            <a type="submit" href="/submitInfo" class="button1">SAVE</a>
         </div>
-        </div>
+        <script src="static/scripts/index.js"></script>
+        <script src="static/scripts/profile.js"></script>
     </body>
-    <footer class="footer">
-    &copy; Copyright 2023 by <a href="https://swapbot.thedevcave.xyz/">TheDevCave</a>
-    </footer>
 </main>
-<script src="static/scripts/index.js"></script>
-<script src="static/scripts/profile.js"></script>
+<footer class="footer">
+&copy; Copyright 2023 by <a href="https://swapbot.thedevcave.xyz/">TheDevCave</a>
+</footer>
 </html>
