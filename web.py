@@ -62,7 +62,7 @@ async def home():
     async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
         my_user = await client.fetch_my_user()
         row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
-        return await render_template("login.html", current_user=my_user, avatar_url=my_user.avatar_url,
+        return await render_template("home.html", current_user=my_user, avatar_url=my_user.avatar_url,
                                      user_id=my_user.id, current_name=my_user.username, first_name=row.get('first_name'), last_name=row.get('last_name'))
 
 
