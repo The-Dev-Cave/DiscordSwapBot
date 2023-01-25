@@ -6,3 +6,4 @@ python-dotenv
 quart
 asyncpg
 asyncpg-stubs
+uvloop
