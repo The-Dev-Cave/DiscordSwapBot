@@ -16,14 +16,14 @@ guild_init_plugin = lightbulb.Plugin("Commands for initializing bot messages")
 @lightbulb.option("public-logs", "Optional: Log channel for all users to see post history or one will be created", type=hikari.TextableGuildChannel, required=False)
 @lightbulb.option("moderator-logs", "Optional: Log channel for mods only or one will be created", type=hikari.TextableGuildChannel, required=False)
 @lightbulb.option("moderator-role", "Role to use bot moderation features", type=hikari.Role, required=True)
-@lightbulb.command("initialize", "Create channels and categories for bot features to work", auto_defer=True)
+@lightbulb.command("initialize", "Create channels and categories for bot features to work", auto_defer=True, ephemeral=True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def init_guild(ctx: lightbulb.SlashContext):
     conn = await get_database_connection()
 
     row = await conn.fetchrow(f"Select guild_id from guilds where guild_id={ctx.guild_id}")
     if row:
-        await ctx.respond(f"Guild already initialized, use `/settings` to change <@{ctx.bot.get_me().id}> settings")
+        await ctx.respond(f"Guild already initialized, use `/settings` to change <@{ctx.bot.get_me().id}> settings", flags=hikari.MessageFlag.EPHEMERAL)
         await conn.close()
         return
     await conn.close()
@@ -179,7 +179,7 @@ async def init_guild(ctx: lightbulb.SlashContext):
     await conn.execute(f"INSERT INTO guilds (guild_id, buy_channel_id, sell_channel_id, approval_channel_id, user_bridge_cat_id, logs_channel_id, mod_log_channel_id, mod_role_id) values"
                        f"({ctx.guild_id}, {buy_channel.id}, {sell_channel.id}, {apprv_chnl.id}, {user_bridge_cat.id}, {public_logs_chnl.id}, {mod_logs_chnl.id}, {mod_role.id})")
     await conn.close()
-    await ctx.respond(f"<@{ctx.bot.get_me().id}> channels and categories initialized")
+    await ctx.respond(f"<@{ctx.bot.get_me().id}> channels and categories initialized", flags=hikari.MessageFlag.EPHEMERAL)
 
 
 def load(bot: lightbulb.BotApp):

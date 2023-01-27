@@ -137,11 +137,7 @@ class ModalPostSellBuyPart1(flare.Modal, title="Profile Deny"):
             else:
                 cost = int(third_input)
             await ctx.interaction.message.edit(
-                component=await flare.Row(
-                    ButtonCancel(
-                        post_id=self.post_id, post_type=self.post_type, label="Cancel"
-                    )
-                )
+                components=[]
             )
             embed.add_field("Cost or Budget", f"{cost}")
 
@@ -175,7 +171,9 @@ class ModalPostSellBuyPart1(flare.Modal, title="Profile Deny"):
                     condition_select_menu(
                         post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id
                     )
-                ),
+                ), flare.Row(
+                    ButtonCancel(post_id=self.post_id, post_type=self.post_type, label="Cancel")
+                )
             ),
         )
 

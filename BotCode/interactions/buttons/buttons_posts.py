@@ -200,7 +200,7 @@ class ButtonNoPhoto(flare.Button):
 
     def __init__(self, post_id, post_type, guild_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.style = hikari.ButtonStyle.DANGER
+        self.style = hikari.ButtonStyle.SECONDARY
         self.label = "No Photo"
         self.emoji = None
         self.disabled = False
@@ -225,6 +225,8 @@ class ButtonNoPhoto(flare.Button):
         btns_row = await flare.Row(
             ButtonSendPostToMods(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
             ButtonNewPostPhotos(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
+            ButtonCancel(post_id=self.post_id, post_type=self.post_type, label="Cancel")
+
             # TODO: Add edit post button
         )
         await ctx.respond(embed=embed, component=btns_row)
@@ -299,9 +301,10 @@ class ButtonNewPostPhotos(flare.Button):
     post_id: int
     post_type: str
     guild_id: hikari.Snowflake
+
     def __init__(self, post_id, post_type, guild_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.style = hikari.ButtonStyle.DANGER
+        self.style = hikari.ButtonStyle.SECONDARY
         self.label = "New Photo(s)"
         self.emoji = None
         self.disabled = False
@@ -327,7 +330,8 @@ class ButtonNewPostPhotos(flare.Button):
         await ctx.respond(
             embed=embed,
             component=await flare.Row(
-                ButtonNoPhoto(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id)
+                ButtonNoPhoto(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
+                ButtonCancel(post_id=self.post_id, post_type=self.post_type, label="Cancel Post")
             ),
         )
 

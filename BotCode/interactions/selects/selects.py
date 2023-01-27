@@ -8,6 +8,7 @@ import lightbulb
 
 from BotCode.environment.database import get_database_connection
 
+
 selects_plugin = lightbulb.Plugin("User Bridge Buttons")
 
 
@@ -189,6 +190,7 @@ selects_plugin = lightbulb.Plugin("User Bridge Buttons")
 async def condition_select_menu(
         ctx: flare.MessageContext, post_id: int = 0, post_type: str = "No Type", guild_id: hikari.Snowflake = 123
 ):
+    from BotCode.interactions.buttons.buttons_posts import ButtonCancel
     conn = await get_database_connection()
     conn: asyncpg.Connection
 
@@ -215,6 +217,8 @@ async def condition_select_menu(
                 meetup_select_menu(
                     post_type=post_type, post_id=post_id, guild_id=guild_id
                 )
+            ), flare.Row(
+                ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel")
             )
         ),
     )
@@ -230,15 +234,17 @@ async def condition_select_menu(
         "Can Pickup (Free)",
         "Can Pickup (Paid)",
         "Meet Up",
+        "Shipping (Add. Cost)",
+        "Shipping (No Add. Cost)"
     ],
     min_values=1,
     max_values=5,
 )
 async def meetup_select_menu(
-        ctx: flare.MessageContext, post_id: int = 0, post_type: str = "No Type", guild_id: hikari.Snowflake=123
+        ctx: flare.MessageContext, post_id: int = 0, post_type: str = "No Type", guild_id: hikari.Snowflake = 123
 ):
     from BotCode.interactions.buttons.buttons_posts import ButtonNoPhoto
-
+    from BotCode.interactions.buttons.buttons_posts import ButtonCancel
     conn = await get_database_connection()
     conn: asyncpg.Connection
 
@@ -286,6 +292,8 @@ async def meetup_select_menu(
         components=await asyncio.gather(
             flare.Row(
                 payment_methods_select_menu(post_type=post_type, post_id=post_id, guild_id=guild_id)
+            ), flare.Row(
+                ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel")
             )
         ),
     )
@@ -309,7 +317,7 @@ async def meetup_select_menu(
     max_values=5,
 )
 async def payment_methods_select_menu(
-        ctx: flare.MessageContext, post_id: int = 0, post_type: str = "No Type", guild_id: hikari.Snowflake=123
+        ctx: flare.MessageContext, post_id: int = 0, post_type: str = "No Type", guild_id: hikari.Snowflake = 123
 ):
     from BotCode.interactions.buttons.buttons_posts import (
         ButtonNoPhoto,
@@ -318,7 +326,7 @@ async def payment_methods_select_menu(
     )
 
     from BotCode.functions.embeds import buildPostEmbed
-
+    from BotCode.interactions.buttons.buttons_posts import ButtonCancel
     conn = await get_database_connection()
     conn: asyncpg.Connection
 
@@ -345,7 +353,8 @@ async def payment_methods_select_menu(
             embeds=[embed, embed_nextstep],
             component=await flare.Row(
                 ButtonNoPhoto(post_id=post_id, post_type=post_type, guild_id=guild_id)
-            ),
+                , ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel")
+            )
         )
     else:
         resp_code = await conn.execute(
@@ -358,20 +367,21 @@ async def payment_methods_select_menu(
             post_id=post_id, post_type=post_type, user=ctx.user
         )
         await ctx.message.edit(components=[])
-        if post_type == "buy":
-            btns_row = await flare.Row(
-                ButtonSendPostToMods(post_id=post_id, post_type=post_type, guild_id=guild_id),
-                # TODO: Add edit post button
-            )
-        else:
-            btns_row = await flare.Row(
-                ButtonSendPostToMods(post_id=post_id, post_type=post_type, guild_id=guild_id),
-                ButtonNewPostPhotos(post_id=post_id, post_type=post_type, guild_id=guild_id),
-                # TODO: Add edit post button
-            )
+        # if post_type == "buy":
+        btns_row = await flare.Row(
+            ButtonSendPostToMods(post_id=post_id, post_type=post_type, guild_id=guild_id),
+            ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel")
+            # TODO: Add edit post button
+        )
+        # else:
+        #     btns_row = await flare.Row(
+        #         ButtonSendPostToMods(post_id=post_id, post_type=post_type, guild_id=guild_id),
+        #         ButtonNewPostPhotos(post_id=post_id, post_type=post_type, guild_id=guild_id),
+        #         ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel")
+        #         # TODO: Add edit post button
+        #     )
         # add send buttons
         await ctx.respond(embed=embed, component=btns_row)
-
 
     await conn.close()
 
