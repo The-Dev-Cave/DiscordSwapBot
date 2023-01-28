@@ -1,6 +1,7 @@
 import lightbulb
 import hikari
 from BotCode.environment.database import get_database_connection
+from BotCode.functions.send_logs import send_mod_log
 
 guild_settings_plugin = lightbulb.Plugin("Commands for initializing bot messages")
 
@@ -20,13 +21,13 @@ async def guild_set():
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def expiry(ctx: lightbulb.SlashContext):
     guild_id = ctx.guild_id
-    days = ctx.options.expiry
+    days = ctx.options.days
 
     conn = await get_database_connection()
     await conn.execute("UPDATE guilds set expiry_time=$1 where guild_id=$2", days, guild_id)
     await conn.close()
-    # TODO: Send mod log
-    await ctx.respond(content=f"Set post expiry time to {days} days", flags=hikari.MessageFlag.EPHEMERAL)
+    await send_mod_log(guild_id=guild_id, text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has changed **Post Expiry** to **{days}** day(s)")
+    await ctx.respond(content=f"Set post expiry time to **{days}** days", flags=hikari.MessageFlag.EPHEMERAL)
 
 
 @guild_set.child()
@@ -42,7 +43,9 @@ async def post_approval(ctx: lightbulb.SlashContext):
     await conn.execute("UPDATE guilds set post_approval=$1 where guild_id=$2", option, guild_id)
     await conn.close()
     # TODO: Send mod log
-    await ctx.respond(content=f"Set post approval to {option}", flags=hikari.MessageFlag.EPHEMERAL)
+    await send_mod_log(guild_id=guild_id,
+                       text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has changed **Post Approval** to **{option}**")
+    await ctx.respond(content=f"Set post approval to **{option}**", flags=hikari.MessageFlag.EPHEMERAL)
 
 
 @guild_set.child()
@@ -60,13 +63,22 @@ async def profile_enabled(ctx: lightbulb.SlashContext):
                            guild_id)
         await ctx.respond(content=f"Set profile required and profile_enabled to {option}",
                           flags=hikari.MessageFlag.EPHEMERAL)
+        await send_mod_log(guild_id=guild_id,
+                           text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has changed **Profile Enabled ** to **{option}** which set **Profile Required** to **False** if it was enabled")
+        await ctx.respond(
+            content=f"Set profile enabled to **{option}** which set **Profile Required** to **False** if it was enabled",
+            flags=hikari.MessageFlag.EPHEMERAL)
 
     else:
         await conn.execute("UPDATE guilds set profile_enabled=$1 where guild_id=$2", option, guild_id)
-        await ctx.respond(content=f"Set profile enabled to {option}", flags=hikari.MessageFlag.EPHEMERAL)
+        await ctx.respond(content=f"Set profile enabled to **{option}**", flags=hikari.MessageFlag.EPHEMERAL)
+        await send_mod_log(guild_id=guild_id,
+                           text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has changed **Profile Enabled** to **{option}**")
+        await ctx.respond(
+            content=f"Set profile enabled to **{option}**.  If you want to require profiles do </set profile-required:1066868724008755251> and set it to **True**",
+            flags=hikari.MessageFlag.EPHEMERAL)
     await conn.close()
     # TODO: Send mod log
-    await ctx.respond(content=f"Set profile enabled to {option}", flags=hikari.MessageFlag.EPHEMERAL)
 
 
 @guild_set.child()
@@ -81,10 +93,14 @@ async def profile_required(ctx: lightbulb.SlashContext):
     conn = await get_database_connection()
     if option:
         await conn.execute("UPDATE guilds set profile_required=$1, profile_enabled=TRUE where guild_id=$2", option, guild_id)
+        await send_mod_log(guild_id=guild_id,
+                           text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has changed **Profile Required** to **{option}** which set **Profile Required** to **True** if it was disabled")
         await ctx.respond(content=f"Set profile required and profile_enabled to {option}", flags=hikari.MessageFlag.EPHEMERAL)
 
     else:
         await conn.execute("UPDATE guilds set profile_required=$1 where guild_id=$2", option, guild_id)
+        await send_mod_log(guild_id=guild_id,
+                           text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has changed **Profile Required** to **{option}**")
         await ctx.respond(content=f"Set profile required to {option}", flags=hikari.MessageFlag.EPHEMERAL)
 
     await conn.close()
@@ -102,6 +118,8 @@ async def ratings_enabled(ctx: lightbulb.SlashContext):
 
     conn = await get_database_connection()
     await conn.execute("UPDATE guilds set ratings_enabled=$1 where guild_id=$2", option, guild_id)
+    await send_mod_log(guild_id=guild_id,
+                       text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has changed **Ratings Enabled** to **{option}**")
     await ctx.respond(content=f"Set ratings enabled to {option}", flags=hikari.MessageFlag.EPHEMERAL)
 
     await conn.close()
@@ -122,8 +140,12 @@ async def renew_count(ctx: lightbulb.SlashContext):
     await conn.close()
     # TODO: Send mod log
     if times == -1:
+        await send_mod_log(guild_id=guild_id,
+                           text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has changed **Renew Amount** to **UNLIMITED**")
         await ctx.respond(content=f"Set post renewal amount to unlimited times", flags=hikari.MessageFlag.EPHEMERAL)
     else:
+        await send_mod_log(guild_id=guild_id,
+                           text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has changed **Profile Enabled** to **{times}**")
         await ctx.respond(content=f"Set post renewal amount to {times} time(s)", flags=hikari.MessageFlag.EPHEMERAL)
 
 
@@ -136,11 +158,14 @@ async def buy_channel(ctx: lightbulb.SlashContext):
     guild_id = ctx.guild_id
     channel = ctx.options.channel
 
-    if channel and (channel.type != "GUILD_TEXT"):
+    if channel and (channel.type.__str__() != "GUILD_TEXT"):
         await ctx.respond("Not a valid text channel", flags=hikari.MessageFlag.EPHEMERAL)
         return
     conn = await get_database_connection()
     await conn.execute("UPDATE guilds set buy_channel_id=$1 where guild_id=$2", channel.id, guild_id)
+    await send_mod_log(guild_id=guild_id,
+                       text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has changed **Buy Post Channel** to <#{channel.id}>")
+    await ctx.respond(content=f"Set **Buy Post Channel** to <#{channel.id}>", flags=hikari.MessageFlag.EPHEMERAL)
     await conn.close()
     # TODO: Send mod log
 
@@ -154,11 +179,14 @@ async def sell_channel(ctx: lightbulb.SlashContext):
     guild_id = ctx.guild_id
     channel = ctx.options.channel
 
-    if channel and (channel.type != "GUILD_TEXT"):
+    if channel and (channel.type.__str__() != "GUILD_TEXT"):
         await ctx.respond("Not a valid text channel", flags=hikari.MessageFlag.EPHEMERAL)
         return
     conn = await get_database_connection()
     await conn.execute("UPDATE guilds set sell_channel_id=$1 where guild_id=$2", channel.id, guild_id)
+    await send_mod_log(guild_id=guild_id,
+                       text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has changed **Sell Post Channel** to <#{channel.id}>")
+    await ctx.respond(content=f"Set **Sell Post Channel** to <#{channel.id}>", flags=hikari.MessageFlag.EPHEMERAL)
     await conn.close()
     # TODO: Send mod log
 
@@ -172,11 +200,14 @@ async def approval_channel(ctx: lightbulb.SlashContext):
     guild_id = ctx.guild_id
     channel = ctx.options.channel
 
-    if channel and (channel.type != "GUILD_TEXT"):
+    if channel and (channel.type.__str__() != "GUILD_TEXT"):
         await ctx.respond("Not a valid text channel", flags=hikari.MessageFlag.EPHEMERAL)
         return
     conn = await get_database_connection()
     await conn.execute("UPDATE guilds set approval_channel_id=$1 where guild_id=$2", channel.id, guild_id)
+    await send_mod_log(guild_id=guild_id,
+                       text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has changed **Post Approval Channel** to <#{channel.id}>")
+    await ctx.respond(content=f"Set **Post Approval Channel** to <#{channel.id}>", flags=hikari.MessageFlag.EPHEMERAL)
     await conn.close()
     # TODO: Send mod log
 
@@ -190,11 +221,14 @@ async def approval_channel(ctx: lightbulb.SlashContext):
     guild_id = ctx.guild_id
     channel = ctx.options.channel
 
-    if channel and (channel.type != "GUILD_TEXT"):
+    if channel and (channel.type.__str__() != "GUILD_TEXT"):
         await ctx.respond("Not a valid text channel", flags=hikari.MessageFlag.EPHEMERAL)
         return
     conn = await get_database_connection()
     await conn.execute("UPDATE guilds set logs_channel_id=$1 where guild_id=$2", channel.id, guild_id)
+    await send_mod_log(guild_id=guild_id,
+                       text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has changed **Public Logs Channel** to <#{channel.id}>")
+    await ctx.respond(content=f"Set **Public Logs Channel** to <#{channel.id}>", flags=hikari.MessageFlag.EPHEMERAL)
     await conn.close()
     # TODO: Send mod log
 
@@ -208,11 +242,14 @@ async def approval_channel(ctx: lightbulb.SlashContext):
     guild_id = ctx.guild_id
     channel = ctx.options.channel
 
-    if channel and (channel.type != "GUILD_TEXT"):
+    if channel and (channel.type.__str__() != "GUILD_TEXT"):
         await ctx.respond("Not a valid text channel", flags=hikari.MessageFlag.EPHEMERAL)
         return
     conn = await get_database_connection()
     await conn.execute("UPDATE guilds set mod_log_channel_id=$1 where guild_id=$2", channel.id, guild_id)
+    await send_mod_log(guild_id=guild_id,
+                       text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has changed **Mod Logs Channel** to <#{channel.id}>")
+    await ctx.respond(content=f"Set **Mod Logs Channel** to <#{channel.id}>", flags=hikari.MessageFlag.EPHEMERAL)
     await conn.close()
     # TODO: Send mod log
 
@@ -228,6 +265,9 @@ async def approval_channel(ctx: lightbulb.SlashContext):
 
     conn = await get_database_connection()
     await conn.execute("UPDATE guilds set mod_role_id=$1 where guild_id=$2", role.id, guild_id)
+    await send_mod_log(guild_id=guild_id,
+                       text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has changed **Mod Role** to <#{role.id}>")
+    await ctx.respond(content=f"Set **Mod Role** to <#{role.id}>", flags=hikari.MessageFlag.EPHEMERAL)
     await conn.close()
     # TODO: Send mod log
 
@@ -239,13 +279,15 @@ async def approval_channel(ctx: lightbulb.SlashContext):
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def approval_channel(ctx: lightbulb.SlashContext):
     guild_id = ctx.guild_id
-    channel = ctx.options.channel
-
-    if channel and (channel.type != "GUILD_CATEGORY"):
+    category: hikari.TextableGuildChannel = ctx.options.category
+    if category and (category.type.__str__() != "GUILD_CATEGORY"):
         await ctx.respond("Not a guild category", flags=hikari.MessageFlag.EPHEMERAL)
         return
     conn = await get_database_connection()
-    await conn.execute("UPDATE guilds set user_bridge_cat_id=$1 where guild_id=$2", channel.id, guild_id)
+    await conn.execute("UPDATE guilds set user_bridge_cat_id=$1 where guild_id=$2", category.id, guild_id)
+    await send_mod_log(guild_id=guild_id,
+                       text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has changed **User Bridge Category** to <#{category.id}>")
+    await ctx.respond(content=f"Set **User Bridge Category** to <#{category.id}>", flags=hikari.MessageFlag.EPHEMERAL)
     await conn.close()
     # TODO: Send mod log
 
