@@ -8,6 +8,7 @@ import lightbulb
 
 from BotCode.environment.database import get_database_connection
 from BotCode.functions.embeds import buildPostEmbed
+from BotCode.functions.send_logs import send_mod_log
 from BotCode.interactions.buttons.buttons_user_bridge import ButtonMarkPostPending, ButtonMarkPostSold, \
     ButtonCloseUserBridge, ButtonShowMoreImages
 from BotCode.interactions.modals import ModalPostSellBuyPart1, ModalPostDeny
@@ -396,6 +397,8 @@ class ButtonApprovePost(flare.Button):
             f"UPDATE {self.post_type} set pending_approval=FALSE, message_id={created_message.id}, post_date='{datetime.datetime.today()}' where id={self.post_id}")
 
         await ctx.message.delete()
+        await send_mod_log(guild_id=ctx.guild_id,
+                           text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has **APPROVED** __{post_title}__")
         await conn.close()
 
 

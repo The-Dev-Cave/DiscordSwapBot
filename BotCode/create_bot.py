@@ -19,6 +19,7 @@ async def create_bot() -> lightbulb.BotApp:
     bot = lightbulb.BotApp(
         token=BOT_TOKEN,
         intents=hikari.Intents.ALL_UNPRIVILEGED | hikari.Intents.GUILD_MEMBERS,
+        help_class=None
     )
 
     @bot.command()

@@ -5,6 +5,7 @@ import lightbulb
 import flare
 
 from BotCode.environment.database import get_database_connection
+from BotCode.functions.send_logs import send_public_log
 from BotCode.interactions.buttons.buttons_ratings import ButtonNoRating, ButtonStartRating
 
 buttons_user_bridge_plugin = lightbulb.Plugin("User Bridge Buttons")
@@ -66,6 +67,7 @@ class ButtonMarkPostPending(flare.Button):
                 title="Post has been marked as **PENDING** ",
                 description="",
                 color=0xFFDD00))
+            await send_public_log(guild_id=ctx.guild_id, text=f"**{self.post_type.upper()}:** <@{self.post_owner_id}> **UPDATED** listing __{row.get('title')}__ to **PENDING**")
 
             channels = ctx.bot.cache.get_guild_channels_view_for_guild(ctx.guild_id)
 
@@ -95,6 +97,8 @@ class ButtonMarkPostPending(flare.Button):
             )
             await ctx.respond(embed=hikari.Embed(title="Post is marked as **AVAILABLE**",
                                                  description="", color=0x00FF00))
+            await send_public_log(guild_id=ctx.guild_id,
+                                  text=f"**{self.post_type.upper()}:** <@{self.post_owner_id}> **UPDATED** listing __{row.get('title')}__ to **AVAILABLE**")
             channels = ctx.bot.cache.get_guild_channels_view_for_guild(ctx.guild_id)
 
             test2 = itertools.groupby(
@@ -179,6 +183,8 @@ class ButtonMarkPostSold(flare.Button):
                 description=f"The post has been deleted from the <#{post_types_dict.get(self.post_type)}> channel.\nThe other channels connected have been deleted and this channel will be left open until you close it",
             ),
         )
+        await send_public_log(guild_id=ctx.guild_id,
+                              text=f"**{self.post_type.upper()}:** <@{self.post_owner_id}> has **SOLD** listing __{row.get('title')}__")
         channels = ctx.bot.cache.get_guild_channels_view_for_guild(ctx.guild_id)
 
         test2 = itertools.groupby(

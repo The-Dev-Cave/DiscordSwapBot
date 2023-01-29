@@ -5,6 +5,7 @@ import flare
 import hikari
 import lightbulb
 
+from BotCode.functions.send_logs import send_mod_log
 from BotCode.interactions.selects.selects import condition_select_menu
 from BotCode.environment.database import get_database_connection
 
@@ -217,6 +218,8 @@ class ModalPostDeny(flare.Modal, title="Profile Deny"):
         await ctx.respond(
             "User has been notified of denial", flags=hikari.MessageFlag.EPHEMERAL
         )
+        await send_mod_log(guild_id=ctx.guild_id,
+                           text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has **DENIED** __{post.get('title')}__ for reason:\n```{reason}```")
 
         await conn.close()
 

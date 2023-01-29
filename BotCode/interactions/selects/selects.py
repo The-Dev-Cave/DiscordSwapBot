@@ -7,7 +7,7 @@ import hikari
 import lightbulb
 
 from BotCode.environment.database import get_database_connection
-
+from BotCode.functions.send_logs import send_public_log
 
 selects_plugin = lightbulb.Plugin("User Bridge Buttons")
 
@@ -440,7 +440,7 @@ async def update_post(
     #   and let them know to click dismiss message to cancel / finish
     match selcected_value:
         case "edit":
-            await ctx.edit_response(content="Not implemented. Will be in update 3.1.0", components=[])
+            await ctx.edit_response(content="Not implemented yet", components=[])
             await ctx.edit_response(component=await asyncio.gather(
                 flare.Row(edit_post(post_id=post_id, post_type=post_type)),
             ))
@@ -450,7 +450,7 @@ async def update_post(
 
             try:
                 row = await conn.fetchrow(
-                    f"Select message_id, post_status, title from {post_type} where id={post_id}")
+                    f"Select message_id, post_status, title, author_id from {post_type} where id={post_id}")
                 pending = row.get("post_status")
 
                 msg = await ctx.bot.rest.fetch_message(
@@ -475,6 +475,8 @@ async def update_post(
                 )
                 await ctx.edit_response(content="Post marked as pending and any open chats have been notified",
                                         components=[])
+                await send_public_log(guild_id=ctx.guild_id,
+                                      text=f"**{post_type.upper()}:** <@{row.get('author_id')}> **UPDATED** listing __{row.get('title')}__ to **PENDING**")
                 channels = ctx.bot.cache.get_guild_channels_view_for_guild(ctx.guild_id)
 
                 test2 = itertools.groupby(
@@ -504,6 +506,8 @@ async def update_post(
                 )
                 await ctx.edit_response(content="Post no longer marked as pending", components=[])
                 channels = ctx.bot.cache.get_guild_channels_view_for_guild(ctx.guild_id)
+                await send_public_log(guild_id=ctx.guild_id,
+                                      text=f"**{post_type.upper()}:** <@{row.get('author_id')}> **UPDATED** listing __{row.get('title')}__ to **AVAILABLE**")
 
                 test2 = itertools.groupby(
                     filter(lambda c: isinstance(c[1], hikari.GuildTextChannel), channels.items()),
@@ -526,8 +530,9 @@ async def update_post(
                 "Post has been marked as sold and removed from respective post channel and user bridge chats related to this post have been closed",
                 components=[])
 
-            row = await conn.fetchrow(f"SELECT message_id from {post_type} where id={post_id}")
-
+            row = await conn.fetchrow(f"SELECT message_id, title, author_id from {post_type} where id={post_id}")
+            await send_public_log(guild_id=ctx.guild_id,
+                                  text=f"**{post_type.upper()}:** <@{row.get('author_id')}> has **SOLD** listing __{row.get('title')}__")
             await ctx.bot.rest.delete_message(ctx.channel_id, row.get("message_id"))
 
             channels = ctx.bot.cache.get_guild_channels_view_for_guild(ctx.guild_id)
@@ -549,7 +554,9 @@ async def update_post(
                 "Post has been removed from the respective post channel and related user bridge chats have been closed",
                 components=[])
 
-            row = await conn.fetchrow(f"SELECT message_id from {post_type} where id={post_id}")
+            row = await conn.fetchrow(f"SELECT message_id, title, author_id from {post_type} where id={post_id}")
+            await send_public_log(guild_id=ctx.guild_id,
+                                  text=f"**{post_type.upper()}:** <@{row.get('author_id')}> has **REMOVED** listing __{row.get('title')}__")
 
             await ctx.bot.rest.delete_message(ctx.channel_id, row.get("message_id"))
 
@@ -572,14 +579,14 @@ async def update_post(
 @flare.select(
     placeholder="Choose What To Edit",
     options=[
-        hikari.SelectMenuOption(label="Title", value="title", description="", emoji=None, is_default=False),
-        hikari.SelectMenuOption(label="Description", value="description", description="", emoji=None, is_default=False),
+        # hikari.SelectMenuOption(label="Title", value="title", description="", emoji=None, is_default=False),
+        # hikari.SelectMenuOption(label="Description", value="description", description="", emoji=None, is_default=False),
         hikari.SelectMenuOption(label="Condition", value="condition", description="", emoji=None, is_default=False),
         hikari.SelectMenuOption(label="Cost/Looking For", value="cost_look", description="", emoji=None,
                                 is_default=False),
         hikari.SelectMenuOption(label="Payment Methods", value="payment", description="", emoji=None, is_default=False),
-        hikari.SelectMenuOption(label="Location", value="location", description="", emoji=None, is_default=False),
-        hikari.SelectMenuOption(label="Meetup", value="meetup", description="", emoji=None, is_default=False),
+        # hikari.SelectMenuOption(label="Location", value="location", description="", emoji=None, is_default=False),
+        # hikari.SelectMenuOption(label="Meetup", value="meetup", description="", emoji=None, is_default=False),
         hikari.SelectMenuOption(label="Photos", value="photos", description="", emoji=None, is_default=False),
     ]
 )

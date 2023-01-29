@@ -1,17 +1,28 @@
 import flare
 import lightbulb
 import hikari
+
+from BotCode.environment.database import get_database_connection
 from BotCode.interactions.buttons.buttons_profile import ButtonCreateProfile
 from BotCode.interactions.buttons.buttons_posts import ButtonCreatePost
 
 init_commands_plugin = lightbulb.Plugin("Commands for initializing bot messages")
 
 
+@lightbulb.Check
+async def user_have_mod_role(context: lightbulb.Context) -> bool:
+    conn = await get_database_connection()
+    role_id = await conn.fetchval("select mod_role_id from guilds where guild_id=$1", context.guild_id)
+    roles = context.member.role_ids
+    return roles.__contains__(role_id)
+
+
 @init_commands_plugin.command()
+@lightbulb.add_checks(user_have_mod_role)
 @lightbulb.app_command_permissions(
     perms=hikari.Permissions.ADMINISTRATOR, dm_enabled=False
 )
-@lightbulb.command("postinit", "Initialize create posts message")
+@lightbulb.command("initpost", "Initialize create posts message")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def cmd_init(ctx: lightbulb.SlashContext) -> None:
     embed = hikari.Embed(
@@ -36,6 +47,7 @@ async def cmd_init(ctx: lightbulb.SlashContext) -> None:
 
 
 @init_commands_plugin.command()
+@lightbulb.add_checks(user_have_mod_role)
 @lightbulb.app_command_permissions(
     perms=hikari.Permissions.ADMINISTRATOR, dm_enabled=False
 )
@@ -60,6 +72,13 @@ async def cmd_intProfile(ctx: lightbulb.SlashContext):
         component=row,
     )
     return
+
+
+@cmd_init.set_error_handler()
+@cmd_intProfile.set_error_handler()
+async def mod_role_error_handler(event: lightbulb.CommandErrorEvent) -> bool:
+    await event.context.respond(f"Must have the role set as the mod role {event.bot.get_me().mention} and have administrator to run this command", flags=hikari.MessageFlag.EPHEMERAL)
+    return True
 
 
 def load(bot: lightbulb.BotApp):
