@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <link rel="icon" type="image/x-icon" href="static/assets/favicon.ico">
+
+    <link rel="stylesheet" href="static/css/styles.css">
+    <link rel="stylesheet" href="static/css/buttons.css">
+    <link rel="stylesheet" href="static/css/navbar.css">
+
+    <link rel="stylesheet" href="static/css/mobile.css">
+    <link rel="stylesheet" href="static/css/desktop.css">
+    <title>No Profile - SwapBot</title>
+
+</head>
+<main>
+    <header>
+        <!-- FULL LENGTH BANNER -->
+        <div id="brand"><img src="static/assets/logo.png" class="logo" alt="SwapBot"><a href="/">SwapBot Dashbaord</a></div>
+            <!-- MAIN MENU -->
+            <nav>
+                <ul>
+                    <li><a href="/home">Home</a></li>
+                    <li><a href="#">Features</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="/logout" style="color: rgb(211, 0, 0); font-weight: bold;">Logout</a></li>
+                </ul>
+                </div>
+            </nav>
+
+            <!-- MOBILE MENU -->
+            <div id="hamburger-icon" onclick="toggleMobileMenu(this)">
+                <div class="bar1"></div>
+                <div class="bar2"></div>
+                <div class="bar3"></div>
+                <ul class="mobile-menu">
+                    <li><a href="/home">Home</a></li>
+                    <li><a href="#">Features</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                </ul>
+            </div>
+    </header>
+    <body>
+        
+        <div name="logged-in" class="centered">
+            <h2>No Profile Detected!</h2>
+            <br>
+            <h3 style="padding-bottom: 3%;">We require you to make a profile before being able to use the site!</h3>
+            <a href="/make-profile"><button class="button-36">Create a Profile</button></a>
+        </div>   
+        <script src="static/scripts/index.js"></script>
+    </body>
+</main>
+<footer class="footer">
+    <br>
+    &copy; Copyright 2023 by <a href="https://swapbot.thedevcave.xyz/">TheDevCave</a>
+</footer>
+</html>

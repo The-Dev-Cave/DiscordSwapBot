@@ -10,3 +10,14 @@ document.getElementById("editBtn").onclick = function(){
     }
 
 }
+
+window.onload = function () {
+    var fileupload = document.getElementById("FileUpload1");
+    var image = document.getElementById("imgFileUpload");
+    image.onclick = function () {
+        fileupload.click();
+    };
+    fileupload.onchange = function () {
+        document.getElementById('pfpForm').submit()
+    }
+};

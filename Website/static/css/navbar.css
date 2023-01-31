@@ -61,6 +61,7 @@ right: 0.5%;
 max-height: 0px;
 overflow: hidden;
 transition: max-height 0.5s;
+z-index: 10;
 }
 
 .sub-menu-wrap.open-menu {
@@ -69,6 +70,7 @@ max-height: 400px;
 
 .sub-menu {
 background: rgb(30,33,36);
+border: 2px solid #282b30;
 padding: 20px;
 margin: 10px;
 border-radius: 0.3em;
