@@ -27,14 +27,14 @@
                     <li><a href="#">Features</a></li>
                     <li><a href="#">About</a></li>
                     <li><a href="#">Contact</a></li>
-                    <img src="{{avatar_url}}" class="user-pic" alt="Profile Menu" onclick="toggleMenu()">
+                    <img src="{{pfp}}" class="user-pic" alt="Profile Menu" onclick="toggleMenu()">
                 </ul>
 
                 <!-- PROFILE SUB-MENU -->
                 <div class="sub-menu-wrap" id="subMenu">
                     <div class="sub-menu">
                         <div class="user-info">
-                            <img src="{{avatar_url}}">
+                            <img src="{{pfp}}">
                             <h3>{{first_name}} {{last_name}}</h3>
                         </div>
                         <hr>
@@ -70,7 +70,7 @@
     <body>
         
         <div name="logged-in" class="centered">
-            <img src="{{avatar_url}}" style="height: 250px; width: 250px; border-radius: 50%; border: 2px solid white" alt="User Avatar URL">
+            <img src="{{pfp}}" style="height: 250px; width: 250px; border-radius: 50%; border: 2px solid white" alt="User Avatar URL">
             <br>
             <p>Login Successful</p>
             <p>Logged In As: {{current_user}}<br>UID: {{user_id}}</p>

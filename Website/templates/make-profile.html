@@ -50,15 +50,17 @@
     <body>
         <div class="centered" id="profile-container">
             <div style="float: left; width:25%;">
-                <table style="margin-left: auto; margin-right: auto;">
+                <table style="margin-left: auto; margin-right: auto; height: 100%;">
                     <tr>
                         <td>
-                            <div class="imgBox">
-                                <div>
-                                    <img src="static/assets/profile_placeholder.jpg" class="pfp"/>
-                                </div>
+                            <div class="imgBox" style="display: inline-block; position: relative; width: 100%;">
+                                <div style="margin-top: 100%;"></div>
+                                <div style="background-image: url('static/assets/profile_placeholder.jpg');" class="pfp"></div>
                                 <div class="hoverImg">
-                                    <img src="static/assets/profile.png" style="width: 100%;"/>
+                                    <form method="POST" action="/submitPFP" id="pfpMakeForm" enctype="multipart/form-data">
+                                        <img id="makePFPimg" alt="Select File" title="Select File" src="static/assets/profile.png" style="width: 100%;"/>
+                                        <input type="file" id="FileUpload2" name='pfpFile' style="display: none;" accept="image/*" />
+                                    </form>
                                 </div>
                             </div>
                         </td>
@@ -71,7 +73,7 @@
                     </tr>
                 </table>
             </div>
-            <div style="float: left; width:75%; padding-bottom: 2em; padding-left: 10%;">
+            <div style="float: left; width:75%; padding-left: 10%;">
                 <table style="margin-left: auto; margin-right: auto;">
                     <th colspan="2">General Information</th>
                     <form method="POST" action="/submitInfo" id="profileForm">
@@ -92,7 +94,7 @@
                         <td><input type="text" id="email" name="email" placeholder="Email (Not Required)"></td>
                     </tr>
                     <tr>
-                        <td colspan="2" align="center">
+                        <td colspan="2" align="center" style="padding-top: 5%;">
                             <input type="submit" value="SUBMIT" class="button1" id="savtBtn">
                         </td>
                     </tr>

@@ -28,14 +28,14 @@
                     <li><a href="#">Features</a></li>
                     <li><a href="#">About</a></li>
                     <li><a href="#">Contact</a></li>
-                    <img src="{{avatar_url}}" class="user-pic" alt="Profile Menu" onclick="toggleMenu()">
+                    <img src="{{pfp}}" class="user-pic" alt="Profile Menu" onclick="toggleMenu()">
                 </ul>
 
                 <!-- PROFILE SUB-MENU -->
                 <div class="sub-menu-wrap" id="subMenu">
                     <div class="sub-menu">
                         <div class="user-info">
-                            <img src="{{avatar_url}}">
+                            <img src="{{pfp}}">
                             <h3>{{first_name}} {{last_name}}</h3>
                         </div>
                         <hr>
@@ -74,19 +74,14 @@
                 <table style="margin-left: auto; margin-right: auto;">
                     <tr>
                         <td>
-                            <div class="imgBox">
-                                <div style="border-radius: 50%;">
-                                    <img src="{{pfp}}" class="pfp"/>
-                                </div>
+                            <div class="imgBox" style="display: inline-block; position: relative; width: 100%;">
+                                <div style="margin-top: 100%;"></div>
+                                <div style="background-image: url({{pfp}});" class="pfp"></div>
                                 <div class="hoverImg">
-                                    <form method="POST" action="/submitPFP" id="pfpForm">
+                                    <form method="POST" action="/submitPFP" id="pfpForm" enctype="multipart/form-data">
                                         <img id="imgFileUpload" alt="Select File" title="Select File" src="static/assets/profile.png" style="width: 100%;"/>
-                                        <input type="file" id="FileUpload1" style="display: none;" accept="image/*" />
+                                        <input type="file" id="FileUpload1" name='pfpFile' style="display: none;" accept="image/*" />
                                     </form>
-                                    <form method=post action="/submitPFP" enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
-    </form>
                                 </div>
                             </div>
                         </td>
@@ -99,38 +94,36 @@
                     </tr>
                 </table>
             </div>
-            <div style="float: left; width:75%; padding-bottom: 2em; padding-left: 10%;">
+            <div style="float: left; width:70%; padding-left: 10%;">
                 <form method="POST" action="/submitInfo" id="profileForm">
-                <table style="margin-left: auto; margin-right: auto;">
-                    <th colspan="2">General Information</th>
-                    
-                    <tr>
-                        <td class="input-label">First Name:</td>
-                        <td><input type="text" id="fname" name="fname" value="{{first_name}}" disabled></td>
-                    </tr>
-                    <tr>
-                        <td class="input-label">Last Name:</td>
-                        <td><input type="text" id="lname" name="lname" value="{{last_name}}" disabled></td>
-                    </tr>
-                    <tr>
-                        <td class="input-label">Pronouns:</td>
-                        <td><input type="text" id="pnouns" name="pnouns" value="{{pronouns}}" disabled></td>
-                    </tr>
-                    <tr>
-                        <td class="input-label">Email:</td>
-                        <td><input type="text" id="email" name="email" value="{{email}}" placeholder="N/A" disabled></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" align="center">
-                            <input type="submit" value="SAVE" class="button1" id="savtBtn" disabled>
-                        </td>
-                    </tr>
-                    <div style="text-align: right;" onclick="editProf()" id="editBtn">
-                        <a class="button1">EDIT</a>
-                    </div>
-                </table>
+                    <table style="margin-left: auto; margin-right: auto;">
+                        <th colspan="2">General Information<img src="static/assets/edit_pencil.png" style="height: 1em; padding-left: 1em; cursor: pointer;" id="editBtn"/></th>
+                        
+                        <tr>
+                            <td class="input-label">First Name:</td>
+                            <td><input type="text" id="fname" name="fname" value="{{first_name}}" disabled></td>
+                        </tr>
+                        <tr>
+                            <td class="input-label">Last Name:</td>
+                            <td><input type="text" id="lname" name="lname" value="{{last_name}}" disabled></td>
+                        </tr>
+                        <tr>
+                            <td class="input-label">Pronouns:</td>
+                            <td><input type="text" id="pnouns" name="pnouns" value="{{pronouns}}" disabled></td>
+                        </tr>
+                        <tr>
+                            <td class="input-label">Email:</td>
+                            <td><input type="text" id="email" name="email" value="{{email}}" placeholder="N/A" disabled></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" align="center">
+                                <input type="submit" value="SAVE" class="button1" id="savtBtn" disabled>
+                            </td>
+                        </tr>
+                        
+                    </table>
                 </form>
-            </div>
+            </div>    
         </div>
         <script src="static/scripts/index.js"></script>
         <script src="static/scripts/profile.js"></script>
