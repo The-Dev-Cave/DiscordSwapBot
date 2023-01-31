@@ -1,4 +1,5 @@
 import logging, os, sys, ssl, asyncpg, hikari, json
+from io import BytesIO
 from dotenv import load_dotenv
 
 from quart import Quart, session, render_template, redirect, request
@@ -15,6 +16,9 @@ CLIENT_ID = int(os.getenv("CLIENT_ID"))
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 CHANNEL_ID = int(os.environ["CHANNEL_ID"])  # Channel to post in as an int
 MODE = os.getenv("MODE")
+
+UPLOAD_FOLDER = '/root/DiscordSwapBot/Website/certs'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Reveal type for type hinting when coding
 app.swapbotDBpool: asyncpg.Pool
@@ -162,11 +166,10 @@ async def submitInfo():
 @app.route("/submitPFP", methods=["POST"])
 async def submitPFP():
     if request.method == "POST":
-
-        pfpForm = await request.form
-        print(pfpForm)
-        imageFile = pfpForm.get('FileUpload1')
-        print(imageFile)
+        image = (await request.files)['file']
+        buffer = BytesIO()
+        img = await image.save(buffer)
+        print(img)
         print("Submit Successful")
 
         # async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
