@@ -14,7 +14,7 @@
 
     <!-- <link rel="stylesheet" href="static/css/mobile.css">
     <link rel="stylesheet" href="static/css/desktop.css"> -->
-    <title>Profile - SwapBot</title>
+    <title>Profile Creator - SwapBot</title>
 
 </head>
 <main>
@@ -28,28 +28,8 @@
                     <li><a href="#">Features</a></li>
                     <li><a href="#">About</a></li>
                     <li><a href="#">Contact</a></li>
-                    <img src="{{pfp}}" class="user-pic" alt="Profile Menu" onclick="toggleMenu()">
+                    <li><a href="/logout" style="color: rgb(211, 0, 0); font-weight: bold;">Logout</a></li>
                 </ul>
-
-                <!-- PROFILE SUB-MENU -->
-                <div class="sub-menu-wrap" id="subMenu">
-                    <div class="sub-menu">
-                        <div class="user-info">
-                            <img src="{{pfp}}">
-                            <h3>{{first_name}} {{last_name}}</h3>
-                        </div>
-                        <hr>
-                        <a href="#" class="sub-menu-link">
-                            <img src="static/assets/setting.png" style="height: 30px; width: 30px; border-radius: 50%;">
-                            <p>Edit Profile</p>
-                            <span>></span>
-                        </a>
-                        <a href="/logout" class="sub-menu-link">
-                            <img src="static/assets/logout.png" style="height: 30px; width: 30px; border-radius: 50%;">
-                            <p>Logout</p>
-                            <span>></span>
-                        </a>
-                    </div>
                 </div>
             </nav>
 
@@ -63,7 +43,6 @@
                     <li><a href="#">Features</a></li>
                     <li><a href="#">About</a></li>
                     <li><a href="#">Contact</a></li>
-                    <li><a href="#">Edit Profile</a></li>
                     <li><a href="/logout">Logout</a></li>
                 </ul>
             </div>
@@ -71,12 +50,12 @@
     <body>
         <div class="centered" id="profile-container">
             <div style="float: left; width:25%;">
-                <table style="margin-left: auto; margin-right: auto;">
+                <table style="margin-left: auto; margin-right: auto; height: 100%;">
                     <tr>
                         <td>
                             <div class="imgBox" style="display: inline-block; position: relative; width: 100%;">
                                 <div style="margin-top: 100%;"></div>
-                                <div style="background-image: url({{pfp}});" class="pfp"></div>
+                                <div style="background-image: url('static/assets/profile_placeholder.jpg');" class="pfp"></div>
                                 <div class="hoverImg">
                                     <form method="POST" action="/submitPFP" id="pfpForm" enctype="multipart/form-data">
                                         <img id="imgFileUpload" alt="Select File" title="Select File" src="static/assets/profile.png" style="width: 100%;"/>
@@ -94,36 +73,34 @@
                     </tr>
                 </table>
             </div>
-            <div style="float: left; width:70%; padding-left: 10%;">
-                <form method="POST" action="/submitInfo" id="profileForm">
-                    <table style="margin-left: auto; margin-right: auto;">
-                        <th colspan="2">General Information<img src="static/assets/edit_pencil.png" style="height: 1em; padding-left: 1em; cursor: pointer;" id="editBtn"/></th>
-                        
-                        <tr>
-                            <td class="input-label">First Name:</td>
-                            <td><input type="text" id="fname" name="fname" value="{{first_name}}" disabled></td>
-                        </tr>
-                        <tr>
-                            <td class="input-label">Last Name:</td>
-                            <td><input type="text" id="lname" name="lname" value="{{last_name}}" disabled></td>
-                        </tr>
-                        <tr>
-                            <td class="input-label">Pronouns:</td>
-                            <td><input type="text" id="pnouns" name="pnouns" value="{{pronouns}}" disabled></td>
-                        </tr>
-                        <tr>
-                            <td class="input-label">Email:</td>
-                            <td><input type="text" id="email" name="email" value="{{email}}" placeholder="N/A" disabled></td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" align="center">
-                                <input type="submit" value="SAVE" class="button1" id="savtBtn" disabled>
-                            </td>
-                        </tr>
-                        
-                    </table>
+            <div style="float: left; width:75%; padding-left: 10%;">
+                <table style="margin-left: auto; margin-right: auto;">
+                    <th colspan="2">General Information</th>
+                    <form method="POST" action="/submitInfo" id="profileForm">
+                    <tr>
+                        <td class="input-label">First Name:</td>
+                        <td><input type="text" id="fname" name="fname" placeholder="Preferred First Name"></td>
+                    </tr>
+                    <tr>
+                        <td class="input-label">Last Name:</td>
+                        <td><input type="text" id="lname" name="lname" placeholder="Legal Last Name"></td>
+                    </tr>
+                    <tr>
+                        <td class="input-label">Pronouns:</td>
+                        <td><input type="text" id="pnouns" name="pnouns" placeholder="Preferred Pronouns"></td>
+                    </tr>
+                    <tr>
+                        <td class="input-label">Email:</td>
+                        <td><input type="text" id="email" name="email" placeholder="Email (Not Required)"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" align="center" style="padding-top: 5%;">
+                            <input type="submit" value="SUBMIT" class="button1" id="savtBtn">
+                        </td>
+                    </tr>
                 </form>
-            </div>    
+            </table>
+        </div>
         </div>
         <script src="static/scripts/index.js"></script>
         <script src="static/scripts/profile.js"></script>

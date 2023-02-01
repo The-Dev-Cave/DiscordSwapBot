@@ -13,7 +13,7 @@
 
     <link rel="stylesheet" href="static/css/mobile.css">
     <link rel="stylesheet" href="static/css/desktop.css">
-    <title>Homepage - SwapBot</title>
+    <title>No Profile - SwapBot</title>
 
 </head>
 <main>
@@ -27,28 +27,8 @@
                     <li><a href="#">Features</a></li>
                     <li><a href="#">About</a></li>
                     <li><a href="#">Contact</a></li>
-                    <img src="{{pfp}}" class="user-pic" alt="Profile Menu" onclick="toggleMenu()">
+                    <li><a href="/logout" style="color: rgb(211, 0, 0); font-weight: bold;">Logout</a></li>
                 </ul>
-
-                <!-- PROFILE SUB-MENU -->
-                <div class="sub-menu-wrap" id="subMenu">
-                    <div class="sub-menu">
-                        <div class="user-info">
-                            <img src="{{pfp}}">
-                            <h3>{{first_name}} {{last_name}}</h3>
-                        </div>
-                        <hr>
-                        <a href="/profile" class="sub-menu-link">
-                            <img src="static/assets/setting.png" style="height: 30px; width: 30px; border-radius: 50%;">
-                            <p>Edit Profile</p>
-                            <span>></span>
-                        </a>
-                        <a href="/logout" class="sub-menu-link">
-                            <img src="static/assets/logout.png" style="height: 30px; width: 30px; border-radius: 50%;">
-                            <p>Logout</p>
-                            <span>></span>
-                        </a>
-                    </div>
                 </div>
             </nav>
 
@@ -62,7 +42,6 @@
                     <li><a href="#">Features</a></li>
                     <li><a href="#">About</a></li>
                     <li><a href="#">Contact</a></li>
-                    <li><a href="#">Edit Profile</a></li>
                     <li><a href="/logout">Logout</a></li>
                 </ul>
             </div>
@@ -70,14 +49,10 @@
     <body>
         
         <div name="logged-in" class="centered">
-            <img src="{{pfp}}" style="height: 250px; width: 250px; border-radius: 50%; border: 2px solid white" alt="User Avatar URL">
+            <h2>No Profile Detected!</h2>
             <br>
-            <p>Login Successful</p>
-            <p>Logged In As: {{current_user}}<br>UID: {{user_id}}</p>
-            <br>
-            <a href='/testPost' class="button1">Post Test to Guild</a>
-            <br>
-            <a href="/logout" class="button1">Logout</a>
+            <h3 style="padding-bottom: 3%;">We require you to make a profile before being able to use the site!</h3>
+            <a href="/make-profile"><button class="button-36">Create a Profile</button></a>
         </div>   
         <script src="static/scripts/index.js"></script>
     </body>

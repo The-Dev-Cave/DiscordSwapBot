@@ -5,15 +5,21 @@
 
 .imgBox {
     position: relative;
-    float: left;
-    width: 250px;
-    height: 250px;
-    background-color: rgb(0, 175, 244);
+    display: inline-block;
+    width: 100%;
     border-radius: 50%;
+    cursor: pointer;
 }
 
 .pfp {
-    width: 250px;
+    position: absolute; 
+    top:0; 
+    bottom: 0; 
+    left: 0; 
+    right: 0;
+    background-position: center; 
+    background-size: cover; 
+    background-repeat: no-repeat;
     border-radius: 50%;
     border: 5px solid rgb(0, 175, 244);
 }
@@ -24,10 +30,15 @@
     top: 50%;
     transform: translate(-50%, -50%);
     display: none;
+    border: 2px black;    
+}
+
+.imgBox:hover {
+    background-color: rgb(0, 175, 244);
 }
 
 .imgBox:hover .hoverImg {
-    display: block;
+    display: block;    
 }
 
 .imgBox:hover .pfp {
@@ -75,7 +86,7 @@ input[type='submit']:enabled{
 
 
 ::placeholder {
-    color: white;
+    color: rgb(170, 170, 170);
     font-weight: bold;
     opacity: 1;
 }
@@ -106,4 +117,19 @@ th {
 
 a.button1 {
     background-color: rgb(0, 175, 244);
+}
+
+#profile-container{
+    border-radius: 1em;
+    background: rgb(30,33,36);
+    border: 2px solid #282b30;
+    padding: 2em 2em;
+    width: 50%;
+}
+
+@media screen and (min-width: 720px) and (max-width: 1080px){
+
+    #profile-container{
+        width: 70%;
+    }
 }

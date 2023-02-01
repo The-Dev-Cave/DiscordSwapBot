@@ -20,10 +20,12 @@ margin-right: 5px;
     
 .user-pic {
 width: 40px;
+height: 40px;
 border-radius: 50%;
 cursor: pointer;
 margin-left: 30px;
 border: 2px solid rgb(0, 175, 244);
+object-fit: cover;
 }
 
 /* TEXT FORMAT */
@@ -61,6 +63,7 @@ right: 0.5%;
 max-height: 0px;
 overflow: hidden;
 transition: max-height 0.5s;
+z-index: 10;
 }
 
 .sub-menu-wrap.open-menu {
@@ -69,6 +72,7 @@ max-height: 400px;
 
 .sub-menu {
 background: rgb(30,33,36);
+border: 2px solid #282b30;
 padding: 20px;
 margin: 10px;
 border-radius: 0.3em;
@@ -85,9 +89,11 @@ font-weight: 500;
 
 .user-info img {
 width: 50px;
+height: 50px;
 border-radius: 50%;
 border: 2px solid white;
 margin-right: 15px;
+object-fit: cover;
 }
 
 .sub-menu hr {
