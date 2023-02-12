@@ -49,10 +49,19 @@ class ButtonCreatePost(flare.Button):
             await conn.fetch(f"SELECT making_post from profiles where user_id={user_id}")
         )[0].get("making_post")
 
-
         if making_post:
             await ctx.respond(
                 "You have a post in progress. Cancel the current one or finish the one in progress to make a new post",
+                flags=hikari.MessageFlag.EPHEMERAL,
+            )
+            await conn.close()
+            return
+
+        profile_required = await conn.fetchval("SELECT profile_required from guilds where guild_id=$1", ctx.guild_id)
+        profile_stage = await conn.fetchval("SELECT stage from profiles where user_id=$1", ctx.user.id)
+        if profile_required and (profile_stage != 4):
+            await ctx.respond(
+                "This guild requires a profile to be made. Please use </profile create:1234> to make your profile or go to https://swapbot.thedevcave.xyz)",
                 flags=hikari.MessageFlag.EPHEMERAL,
             )
             await conn.close()
@@ -245,7 +254,7 @@ class ButtonSendPostToMods(flare.Button):
     def __init__(self, post_id, post_type, guild_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.style = hikari.ButtonStyle.SUCCESS
-        self.label = "Send Post For Approval"
+        self.label = "Finish Post"
         self.emoji = None
         self.disabled = False
 
@@ -259,8 +268,8 @@ class ButtonSendPostToMods(flare.Button):
         conn: asyncpg.Connection
 
         user_embed = hikari.Embed(
-            title="Post sent to mods for approval",
-            description="Feel free to start making another post if you want. You do not need to wait for this post to be looked at by mods",
+            title="Post sent to guild",
+            description="Feel free to start making another post if you want. You do not need to wait for this post to be looked at by mods if approval is enabled",
         )
         await ctx.respond(embed=user_embed)
 
@@ -271,8 +280,11 @@ class ButtonSendPostToMods(flare.Button):
 
         await ctx.message.edit(components=[])
 
+        post_approval: bool = await conn.fetchval("SELECT post_approval from guilds where guild_id=$1", ctx.guild_id)
+
+
         await conn.execute(
-            f"UPDATE {self.post_type} set pending_approval=TRUE where id={self.post_id}"
+            f"UPDATE {self.post_type} set pending_approval={post_approval} where id={self.post_id}"
         )
         row = None
         if self.post_type == 'sell':
@@ -290,9 +302,47 @@ class ButtonSendPostToMods(flare.Button):
                 ButtonDenyPost(post_id=self.post_id, post_type=self.post_type),
             )
 
-        await ctx.bot.rest.create_message(
-            channel=approve_channel, embed=post_embed, component=btns_row
-        )
+        if post_approval:
+            await ctx.bot.rest.create_message(
+                channel=approve_channel, embed=post_embed, component=btns_row
+            )
+        else:
+            row = None
+            if self.post_type == 'sell':
+                row = (await conn.fetchrow(
+                    f"SELECT author_id, title, add_images from {self.post_type} where id={self.post_id}"))
+            else:
+                row = (await conn.fetchrow(f"SELECT author_id, title from {self.post_type} where id={self.post_id}"))
+            lister_id = row.get("author_id")
+            post_title = row.get("title")
+            user = await ctx.bot.rest.fetch_member(ctx.guild_id, lister_id)
+
+            row_chan = await conn.fetchrow(
+                f"Select buy_channel_id,sell_channel_id from guilds where guild_id={ctx.guild_id}")
+
+            post_types_dict = {"sell": row_chan.get('sell_channel_id'), "buy": row_chan.get('buy_channel_id')}
+
+            embed = await buildPostEmbed(post_id=self.post_id, post_type=self.post_type, user=user)
+
+            if row.get("add_images"):
+                btns_row = await flare.Row(
+                    ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
+                    ButtonContactLister(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id,
+                                        post_title=post_title),
+                    ButtonUpdatePost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id)
+                )
+            else:
+                btns_row = await flare.Row(
+                    ButtonContactLister(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id,
+                                        post_title=post_title),
+                    ButtonUpdatePost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id)
+                )
+
+            created_message = await ctx.bot.rest.create_message(channel=post_types_dict[self.post_type], embed=embed,
+                                                                component=btns_row)
+
+            await conn.execute(
+                f"UPDATE {self.post_type} set pending_approval=FALSE, message_id={created_message.id}, post_date='{datetime.datetime.today()}' where id={self.post_id}")
         await conn.execute(f"UPDATE profiles set making_post=0 where user_id={ctx.user.id}")
 
         await conn.close()

@@ -19,9 +19,6 @@ async def expired():
     # print("task ran")
     conn = await get_database_connection()
 
-    # selling = []
-    # buying = []
-    # trading = []
     rows = []
     today = datetime.date.today()
 
@@ -32,6 +29,9 @@ async def expired():
         rows.append(row)
 
     i = 0
+    curr_guild_id = None
+    expiry = 7
+    renew_count = 3
     for item in rows:
         post_type = ""
         if i == 0:
@@ -51,18 +51,24 @@ async def expired():
             title = row.get("title")
             post_snow = row.get("message_id")
             expires = row.get("renew_count")
+            guild_id = row.get("guild_id")
+            if str(guild_id) != str(curr_guild_id):
+                curr_guild_id = guild_id
+                guild_row = await conn.fetch("SELECT expiry_time,renewal_count from guilds where guild_id=$1", guild_id)
+                expiry = guild_row.get("expiry_time")
+                renew_count = guild_row.get('renewal_count')
             user = await expired_PL.bot.rest.fetch_user(user_id)
             if posted_at is None:
                 continue
             delta = (today - posted_at).days
-            if delta >= 7:
+            if delta >= expiry:
                 await conn.execute(
                     f"update {table} set renew_count={expires + 1},notified_expiry=TRUE where id={post_id}"
                 )
                 btns = await flare.Row(ButtonRepost(post_id=post_id, post_type=post_type),
                                        ButtonNoRepost(post_id=post_id, post_type=post_type))
 
-                row_chnls = await conn.fetchrow("SELECT buy_channel_id,sell_channel_id from guilds where guild_id=$1", row.get("guild_id"))
+                row_chnls = await conn.fetchrow("SELECT buy_channel_id,sell_channel_id from guilds where guild_id=$1", guild_id)
 
                 match post_type:
                     # Try catch, error out ping mods
@@ -79,7 +85,7 @@ async def expired():
                     #     await expired_PL.bot.rest.delete_message(
                     #         await get_trd_post_chn_id(), post_snow
                     #     )
-                if expires < 3:
+                if expires < renew_count:
                     await user.send(
                         embed=hikari.Embed(
                             title=f"{title} - Post has expired, repost?",

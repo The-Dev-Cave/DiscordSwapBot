@@ -36,7 +36,7 @@ async def posts_dm(event: hikari.DMMessageCreateEvent):
     post_type = types.get(post_type_int)
 
     post = await conn.fetchrow(
-        f"SELECT id, stage, guild_id from {post_type} where author_id='{event.author.id}' and pending_approval is FALSE"
+        f"SELECT id, stage, guild_id from {post_type} where author_id='{event.author.id}' and pending_approval is FALSE and post_date is not NULL"
     )
     guild_id = post.get("guild_id")
 
