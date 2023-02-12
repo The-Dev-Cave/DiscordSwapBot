@@ -329,13 +329,15 @@ class ButtonSendPostToMods(flare.Button):
                     ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
                     ButtonContactLister(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id,
                                         post_title=post_title),
-                    ButtonUpdatePost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id)
+                    ButtonUpdatePost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id),
+                    ButtonReportPost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id)
                 )
             else:
                 btns_row = await flare.Row(
                     ButtonContactLister(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id,
                                         post_title=post_title),
-                    ButtonUpdatePost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id)
+                    ButtonUpdatePost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id),
+                    ButtonReportPost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id)
                 )
 
             created_message = await ctx.bot.rest.create_message(channel=post_types_dict[self.post_type], embed=embed,
@@ -431,13 +433,15 @@ class ButtonApprovePost(flare.Button):
                 ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
                 ButtonContactLister(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id,
                                     post_title=post_title),
-                ButtonUpdatePost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id)
+                ButtonUpdatePost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id),
+                ButtonReportPost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id)
             )
         else:
             btns_row = await flare.Row(
                 ButtonContactLister(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id,
                                     post_title=post_title),
-                ButtonUpdatePost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id)
+                ButtonUpdatePost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id),
+                ButtonReportPost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id)
             )
 
         created_message = await ctx.bot.rest.create_message(channel=post_types_dict[self.post_type], embed=embed,
@@ -608,6 +612,43 @@ class ButtonUpdatePost(flare.Button):
             ),
             flags=hikari.MessageFlag.EPHEMERAL
         )
+
+
+class ButtonReportPost(flare.Button):
+    post_id: int
+    post_type: str
+    post_owner_id: int
+
+    def __init__(self, post_id, post_type, post_owner_id, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.style = hikari.ButtonStyle.DANGER
+        self.label = "Update Post"
+        self.emoji = None
+        self.disabled = False
+
+        # custom attributes
+        self.post_id = post_id
+        self.post_type = post_type
+        self.post_owner_id = post_owner_id
+
+    async def callback(self, ctx: flare.MessageContext) -> None:
+        # if ctx.user.id != self.post_owner_id:
+        #     await ctx.respond("You must be the post lister to update it", flags=hikari.MessageFlag.EPHEMERAL)
+        #     return
+
+        await ctx.respond(content="Report sent to mods", flags=hikari.MessageFlag.EPHEMERAL)
+
+        conn = await get_database_connection()
+        row = await conn.fetchrow("SELECT * from $1 where id=$2", self.post_type, self.post_id)
+
+        reported_msg = (
+            await ctx.bot.rest.fetch_message(
+                ctx.channel_id, ctx.message
+            )).make_link(ctx.channel_id)
+
+        await send_mod_log(ctx.guild_id, f"{ctx.author.mention} ({ctx.author.username}#{ctx.author.discriminator}) has reported [{row.get('title')}]({reported_msg})")
+
+
 
 
 def load(bot: lightbulb.BotApp):

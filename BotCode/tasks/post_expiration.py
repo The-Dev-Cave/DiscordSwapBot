@@ -8,7 +8,8 @@ import hikari
 
 from BotCode.environment.database import get_database_connection
 from BotCode.functions.embeds import buildPostEmbed
-from BotCode.interactions.buttons.buttons_posts import ButtonContactLister, ButtonUpdatePost
+from BotCode.interactions.buttons.buttons_posts import ButtonContactLister, ButtonUpdatePost, ButtonReportPost
+from BotCode.interactions.buttons.buttons_user_bridge import ButtonShowMoreImages
 
 expired_PL = lightbulb.Plugin("statusUpdater")
 
@@ -123,8 +124,11 @@ class ButtonRepost(flare.Button):
 
     async def callback(self, ctx: flare.MessageContext) -> None:
         conn = await get_database_connection()
-
-        post = await conn.fetchrow(f"SELECT title,author_id,guild_id from {self.post_type} where id={self.post_id}")
+        post = None
+        if self.post_type == 'sell':
+            post = await conn.fetchrow(f"SELECT title,author_id,guild_id,add_images from sell where id={self.post_id}")
+        else:
+            post = await conn.fetchrow(f"SELECT title,author_id,guild_id from buy where id={self.post_id}")
         await ctx.message.edit(components=[])
         await ctx.respond(
             embed=hikari.Embed(
@@ -134,10 +138,25 @@ class ButtonRepost(flare.Button):
         )
         lister = int(post.get("author_id"))
         post_title = post.get("title")
-        btns_row = await flare.Row(
-            ButtonContactLister(post_id=self.post_id, post_type=self.post_type, post_owner_id=lister, post_title=post_title),
-            ButtonUpdatePost(post_id=self.post_id, post_type=self.post_type, post_owner_id=lister)
-        )
+        # btns_row = await flare.Row(
+        #     ButtonContactLister(post_id=self.post_id, post_type=self.post_type, post_owner_id=lister, post_title=post_title),
+        #     ButtonUpdatePost(post_id=self.post_id, post_type=self.post_type, post_owner_id=lister)
+        # )
+        if post.get("add_images"):
+            btns_row = await flare.Row(
+                ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
+                ButtonContactLister(post_id=self.post_id, post_type=self.post_type, post_owner_id=lister,
+                                    post_title=post_title),
+                ButtonUpdatePost(post_id=self.post_id, post_type=self.post_type, post_owner_id=lister),
+                ButtonReportPost(post_id=self.post_id, post_type=self.post_type, post_owner_id=lister)
+            )
+        else:
+            btns_row = await flare.Row(
+                ButtonContactLister(post_id=self.post_id, post_type=self.post_type, post_owner_id=lister,
+                                    post_title=post_title),
+                ButtonUpdatePost(post_id=self.post_id, post_type=self.post_type, post_owner_id=lister),
+                ButtonReportPost(post_id=self.post_id, post_type=self.post_type, post_owner_id=lister)
+            )
 
         row_chnls = await conn.fetchrow("SELECT buy_channel_id,sell_channel_id from guilds where guild_id=$1", post.get("guild_id"))
         post_types_channel_dict = {"sell": row_chnls.get('buy_channel_id'), "buy": row_chnls.get('sell_channel_id')}
