@@ -589,7 +589,7 @@ class ButtonUpdatePost(flare.Button):
 
     def __init__(self, post_id, post_type, post_owner_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.style = hikari.ButtonStyle.DANGER
+        self.style = hikari.ButtonStyle.PRIMARY
         self.label = "Update Post"
         self.emoji = None
         self.disabled = False
@@ -620,7 +620,7 @@ class ButtonReportPost(flare.Button):
 
     def __init__(self, post_id, post_type, post_owner_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.style = hikari.ButtonStyle.PRIMARY
+        self.style = hikari.ButtonStyle.DANGER
         self.label = "Report Post"
         self.emoji = None
         self.disabled = False
