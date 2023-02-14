@@ -26,20 +26,20 @@
                 <ul>
                     <li><a href="/home">Home</a></li>
                     <li><a href="#">Features</a></li>
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Contact</a></li>
-                    <img src="{{pfp}}" class="user-pic" alt="Profile Menu" onclick="toggleMenu()">
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    <img src="{{avatar_url}}" class="user-pic" alt="Profile Menu" onclick="toggleMenu()">
                 </ul>
 
                 <!-- PROFILE SUB-MENU -->
                 <div class="sub-menu-wrap" id="subMenu">
                     <div class="sub-menu">
                         <div class="user-info">
-                            <img src="{{pfp}}">
+                            <img src="{{avatar_url}}">
                             <h3>{{first_name}} {{last_name}}</h3>
                         </div>
                         <hr>
-                        <a href="#" class="sub-menu-link">
+                        <a href="/profile" class="sub-menu-link">
                             <img src="static/assets/setting.png" style="height: 30px; width: 30px; border-radius: 50%;">
                             <p>Edit Profile</p>
                             <span>></span>
@@ -61,8 +61,8 @@
                 <ul class="mobile-menu">
                     <li><a href="/home">Home</a></li>
                     <li><a href="#">Features</a></li>
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Contact</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/contact">Contact</a></li>
                     <li><a href="#">Edit Profile</a></li>
                     <li><a href="/logout">Logout</a></li>
                 </ul>
@@ -74,13 +74,13 @@
                 <table style="margin-left: auto; margin-right: auto;">
                     <tr>
                         <td>
-                            <div class="imgBox" style="display: inline-block; position: relative; width: 100%;">
+                            <div class="imgBox disabled" style="display: inline-block; position: relative; width: 100%;" id="imgBox">
                                 <div style="margin-top: 100%;"></div>
                                 <div style="background-image: url({{pfp}});" class="pfp"></div>
-                                <div class="hoverImg">
+                                <div class="hoverImg disabled" id="hoverBox">
                                     <form method="POST" action="/submitPFP" id="pfpForm" enctype="multipart/form-data">
                                         <img id="imgFileUpload" alt="Select File" title="Select File" src="static/assets/profile.png" style="width: 100%;"/>
-                                        <input type="file" id="FileUpload1" name='pfpFile' style="display: none;" accept="image/*" />
+                                        <input type="file" id="FileUpload1" name='pfpFile' style="display: none;" accept="image/*" disabled/>
                                     </form>
                                 </div>
                             </div>

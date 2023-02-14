@@ -75,3 +75,13 @@ footer:hover a {
     border-radius: 50%;
     background-color: #36393e;
 }
+
+#discord{
+    color: rgb(0, 175, 244);
+    text-decoration: none;
+}
+
+#discord:hover {
+    transform: scale(1.1);
+    transition: 0.3s;
+}

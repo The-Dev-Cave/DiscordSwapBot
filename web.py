@@ -69,14 +69,16 @@ async def home():
         if row == None:
             return redirect("/noprofile")
         else:
+            pfpImg = row.get('profile_picture')
+            if pfpImg == None:
+                pfpImg = 'static/assets/profile_placeholder.jpg'
             return await render_template("home.html", current_user=my_user,
                                         user_id=my_user.id, current_name=my_user.username, 
                                         first_name=row.get('first_name'), last_name=row.get('last_name'),
-                                        pfp=row.get('profile_picture'))
+                                        avatar_url=pfpImg)
 
-
-@app.route("/profile")
-async def profile():
+@app.route("/about")
+async def about():
     if 'token' not in session:
         return redirect("/")
 
@@ -86,14 +88,57 @@ async def profile():
         if row == None:
             return redirect("/noprofile")
         else:
+            pfpImg = row.get('profile_picture')
+            if pfpImg == None:
+                pfpImg = 'static/assets/profile_placeholder.jpg'
+            return await render_template("about.html", current_user=my_user,
+                                        user_id=my_user.id, current_name=my_user.username, 
+                                        first_name=row.get('first_name'), last_name=row.get('last_name'),
+                                        avatar_url=pfpImg)
+
+@app.route("/contact")
+async def contact():
+    if 'token' not in session:
+        return redirect("/")
+
+    async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+        client:hikari.impl.RESTClientImpl
+        my_user = await client.fetch_my_user()
+
+        row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
+        fName = row.get('first_name')
+        lName = row.get('last_name')
+
+        if row == None:
+            return redirect("/noprofile")
+        else:
+            pfpImg = row.get('profile_picture')
+            if pfpImg == None:
+                pfpImg = 'static/assets/profile_placeholder.jpg'
+            return await render_template("contact.html", current_user=my_user,
+                                        user_id=my_user.id, current_name=my_user.username, 
+                                        first_name=fName, last_name=lName,
+                                        avatar_url=pfpImg, EuName=session['EuName'], ZuName=session['ZuName'], Epfp=session['Epfp'], Zpfp=session['Zpfp'])
+
+@app.route("/profile")
+async def profile():
+    if 'token' not in session:
+        return redirect("/make-profile")
+
+    async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+        my_user = await client.fetch_my_user()
+        row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
+        if row == None:
+            return redirect("/noprofile")
+        else:
             if row.get('profile_picture') == None:
-                avatar = 'static/assets/profile_placeholder.jpg'
+                pfpImg = 'static/assets/profile_placeholder.jpg'
             else:
-                avatar = row.get('profile_picture')
+                pfpImg = row.get('profile_picture')
             return await render_template("profile.html", current_user=my_user, avatar_url=my_user.avatar_url,
                                         user_id=my_user.id, current_name=my_user.username, 
                                         first_name=row.get('first_name'), last_name=row.get('last_name'),
-                                        pronouns=row.get('pronouns'), email=row.get('email'), pfp=avatar)
+                                        pronouns=row.get('pronouns'), email=row.get('email'), pfp=pfpImg)
 
 
 @app.route("/make-profile")
@@ -101,11 +146,18 @@ async def makeProf():
     if 'token' not in session:
         return redirect("/")
     
+
     async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+        if session['pfpURL'] == None:
+            pfpImg = 'static/assets/profile_placeholder.jpg'
+        else:
+            pfpImg = session['pfpURL']
+
         my_user = await client.fetch_my_user()
         row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
         if row == None:
-            return await render_template("make-profile.html", current_user=my_user, avatar_url=my_user.avatar_url,
+            print('PAGE LOAD: ' + pfpImg)
+            return await render_template("make-profile.html", current_user=my_user, avatar_url=pfpImg,
                                         user_id=my_user.id, current_name=my_user.username)
         else:
             return redirect("/home")
@@ -147,21 +199,21 @@ async def submitInfo():
     if request.method == "POST":
 
         prof = await request.form
-        print(prof)
         fName = prof.get("fname")
         lName = prof.get("lname")
         pNouns = prof.get("pnouns")
         email = prof.get("email")
-        print(fName + ' | ' + pNouns + ' | ' + email)
-        print("Submit Successful")
 
+        print(fName + ' | ' + pNouns + ' | ' + pNouns + ' | ' + email)
+        print("Submit Successful")
+        print('PFP SUBMIT: ' + session['pfpURL'])
         async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
             my_user = await client.fetch_my_user()
             row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
             if row == None:
-                await app.swapbotDBpool.execute("INSERT INTO profiles (first_name, last_name, pronouns, email, user_id) VALUES ($1, $2, $3, $4, $5)", fName, lName, pNouns, email, session['uid'])
+                await app.swapbotDBpool.execute("INSERT INTO profiles (first_name, last_name, pronouns, email, user_id, profile_picture) VALUES ($1, $2, $3, $4, $5, $6)", fName, lName, pNouns, email, session['uid'], session['pfpURL'])
             else:
-                await app.swapbotDBpool.execute("UPDATE profiles set first_name=$1, last_name=$2, pronouns=$3, email=$4 where user_id=$5", fName, lName, pNouns, email, session['uid'])
+                await app.swapbotDBpool.execute("UPDATE profiles set first_name=$1, last_name=$2, pronouns=$3, email=$4, profile_picture=$6 where user_id=$5", fName, lName, pNouns, email, session['uid'], session['pfpURL'])
         return redirect("/profile")
 
 
@@ -170,7 +222,6 @@ async def submitPFP():
     if request.method == "POST":
         pfpIMG = (await request.files)['pfpFile'].read()
         
-        # print(image)
         print(f"PFP Submit Successful by UID: {session['uid']}")
 
         async with app.discord_rest.acquire(BOT_TOKEN, hikari.TokenType.BOT) as bot_client:
@@ -179,15 +230,16 @@ async def submitPFP():
             pfpProxy = hikari.Embed(title="UPLOAD SUCCESSFUL:  New PFP Uploaded")
             pfpProxy.set_image(pfpIMG)
             dmEmbed = await dmChan.send(embed=pfpProxy)
-            pfpURL = dmEmbed.embeds[0].image.url
+            session['pfpURL'] = dmEmbed.embeds[0].image.url
+            
 
-            async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
-                my_user = await client.fetch_my_user()
-                row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
-                if row == None:
-                    await app.swapbotDBpool.execute("INSERT INTO profiles (profile_picture, user_id) VALUES ($1, $2)", pfpURL, session['uid'])
-                else:
-                    await app.swapbotDBpool.execute("UPDATE profiles set profile_picture=$1 where user_id=$2", pfpURL, session['uid'])
+            # async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+            #     my_user = await client.fetch_my_user()
+            #     row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
+            #     if row == None:
+            #         await app.swapbotDBpool.execute("INSERT INTO profiles (profile_picture, user_id) VALUES ($1, $2)", pfpURL, session['uid'])
+            #     else:
+            #         await app.swapbotDBpool.execute("UPDATE profiles set profile_picture=$1 where user_id=$2", pfpURL, session['uid'])
 
         return redirect("/profile")
 
@@ -225,8 +277,20 @@ async def callback():
     async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
         user = await client.fetch_my_user()
         session['uid'] = user.id
+        session['pfpURL'] = None
+        print('AUTHORIZATION')
+
+    async with app.discord_rest.acquire(BOT_TOKEN, hikari.TokenType.BOT) as bot_client:
+            bot_client:hikari.impl.RESTClientImpl
+            elijah = await bot_client.fetch_user(138128209517477888)
+            zach = await bot_client.fetch_user(304796852476444673)
+            session['Epfp'] = str(elijah.avatar_url)
+            session['Zpfp'] = str(zach.avatar_url)
+            session['EuName'] = elijah.username
+            session['ZuName'] = zach.username
 
     app.add_background_task(background_task)
+
     return redirect("/home")
 
 

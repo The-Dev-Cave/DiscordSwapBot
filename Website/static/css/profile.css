@@ -3,6 +3,11 @@
     width: 50%;
   }
 
+.disabled {
+    pointer-events: none;
+    display: none;
+}
+
 .imgBox {
     position: relative;
     display: inline-block;
