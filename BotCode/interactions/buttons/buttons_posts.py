@@ -314,10 +314,10 @@ class ButtonSendPostToMods(flare.Button):
                 row = (await conn.fetchrow(f"SELECT author_id, title from {self.post_type} where id={self.post_id}"))
             lister_id = row.get("author_id")
             post_title = row.get("title")
-            user = await ctx.bot.rest.fetch_member(ctx.guild_id, lister_id)
+            user = await ctx.bot.rest.fetch_member(self.guild_id, lister_id)
 
             row_chan = await conn.fetchrow(
-                f"Select buy_channel_id,sell_channel_id from guilds where guild_id={ctx.guild_id}")
+                f"Select buy_channel_id,sell_channel_id from guilds where guild_id={self.guild_id}")
 
             post_types_dict = {"sell": row_chan.get('sell_channel_id'), "buy": row_chan.get('buy_channel_id')}
 
