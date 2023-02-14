@@ -280,8 +280,7 @@ class ButtonSendPostToMods(flare.Button):
 
         await ctx.message.edit(components=[])
 
-        post_approval: bool = await conn.fetchval("SELECT post_approval from guilds where guild_id=$1", ctx.guild_id)
-
+        post_approval: bool = await conn.fetchval("SELECT post_approval from guilds where guild_id=$1", self.guild_id)
 
         await conn.execute(
             f"UPDATE {self.post_type} set pending_approval={post_approval} where id={self.post_id}"
@@ -621,8 +620,8 @@ class ButtonReportPost(flare.Button):
 
     def __init__(self, post_id, post_type, post_owner_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.style = hikari.ButtonStyle.DANGER
-        self.label = "Update Post"
+        self.style = hikari.ButtonStyle.PRIMARY
+        self.label = "Report Post"
         self.emoji = None
         self.disabled = False
 
@@ -639,16 +638,19 @@ class ButtonReportPost(flare.Button):
         await ctx.respond(content="Report sent to mods", flags=hikari.MessageFlag.EPHEMERAL)
 
         conn = await get_database_connection()
-        row = await conn.fetchrow("SELECT * from $1 where id=$2", self.post_type, self.post_id)
+        row = await conn.fetchrow(f"SELECT * from {self.post_type} where id=$1", self.post_id)
+        guild_data = await conn.fetchrow("SELECT sell_channel_id, buy_channel_id from guilds where guild_id=$1", ctx.guild_id)
 
-        reported_msg = (
+        channel = guild_data.get("sell_channel_id") if self.post_type == "sell" else guild_data.get("buy_channel_id")
+
+        msg_url = (
             await ctx.bot.rest.fetch_message(
                 ctx.channel_id, ctx.message
-            )).make_link(ctx.channel_id)
+            )
+        ).make_link(ctx.guild_id)
 
-        await send_mod_log(ctx.guild_id, f"{ctx.author.mention} ({ctx.author.username}#{ctx.author.discriminator}) has reported [{row.get('title')}]({reported_msg})")
-
-
+        # await send_mod_log(ctx.guild_id, f"{ctx.author.mention} ({ctx.author.username}#{ctx.author.discriminator}) has reported [{row.get('title')}]({msg_url})")
+        await send_mod_log(ctx.guild_id, f"{ctx.author.mention} ({ctx.author.username}#{ctx.author.discriminator}) has reported **__{row.get('title')}__** in <#{channel}>")
 
 
 def load(bot: lightbulb.BotApp):

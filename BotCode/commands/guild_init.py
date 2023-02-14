@@ -19,7 +19,6 @@ async def user_have_mod_role(context: lightbulb.Context) -> bool:
 
 
 @guild_init_plugin.command()
-@lightbulb.add_checks(user_have_mod_role)
 @lightbulb.app_command_permissions(perms=hikari.Permissions.ADMINISTRATOR, dm_enabled=False)
 @lightbulb.option("approval-channel", "Optional: Channel for mods to approve post if post approval enabled", type=hikari.TextableGuildChannel, required=False)
 @lightbulb.option("public-logs", "Optional: Log channel for all users to see post history or one will be created", type=hikari.TextableGuildChannel, required=False)
@@ -92,7 +91,7 @@ async def init_guild(ctx: lightbulb.SlashContext):
             )
     deny_send_everyone = hikari.PermissionOverwrite(
         id=ctx.guild_id,
-        type=PermissionOverwriteType.ROLE,
+        type=PermissionOverwriteType.MEMBER,
         deny=(
                 Permissions.SEND_MESSAGES
         )
@@ -106,6 +105,29 @@ async def init_guild(ctx: lightbulb.SlashContext):
         )
     )
 
+    looking_overwrites = [
+        hikari.PermissionOverwrite(
+            id=ctx.guild_id,
+            type=PermissionOverwriteType.ROLE,
+            allow=(
+                    Permissions.VIEW_CHANNEL
+                    | Permissions.READ_MESSAGE_HISTORY
+            ),
+            deny=(
+                Permissions.SEND_MESSAGES
+            )
+        ),
+        hikari.PermissionOverwrite(
+            id=ctx.bot.get_me().id,
+            type=PermissionOverwriteType.MEMBER,
+            allow=(
+                    Permissions.VIEW_CHANNEL
+                    | Permissions.READ_MESSAGE_HISTORY
+                    | Permissions.SEND_MESSAGES
+            )
+        )
+    ]
+
     build_profile_embed = hikari.Embed(
         title="Build Your Profile",
         description="Click the button below to build your"
@@ -115,12 +137,12 @@ async def init_guild(ctx: lightbulb.SlashContext):
 
     user_bridge_cat = await ctx.bot.rest.create_guild_category(ctx.guild_id, "SwapBot - User Bridge", reason="Initialize SwapBot", permission_overwrites=[deny_all_everyone, allow_bot])
     post_cat = await ctx.bot.rest.create_guild_category(ctx.guild_id, "SwapBot", reason="Initialize SwapBot")
-    create_post_chnl = await ctx.bot.rest.create_guild_text_channel(ctx.guild_id, "Make-A-Post", category=post_cat, permission_overwrites=[deny_send_everyone, allow_bot, allow_view_everyone])
+    create_post_chnl = await ctx.bot.rest.create_guild_text_channel(ctx.guild_id, "Make-A-Post", category=post_cat, permission_overwrites=looking_overwrites)
     btn_row = await flare.Row(ButtonCreateProfile(label="Build Profile"))
     await create_post_chnl.send(embed=build_profile_embed, component=btn_row)
     await create_post_chnl.send(embed=embed, component=buttons)
-    buy_channel = await ctx.bot.rest.create_guild_text_channel(ctx.guild_id, "Looking-To-Buy", category=post_cat, permission_overwrites=[deny_send_everyone, allow_bot, allow_view_everyone])
-    sell_channel = await ctx.bot.rest.create_guild_text_channel(ctx.guild_id, "Looking-To-Sell", category=post_cat, permission_overwrites=[deny_send_everyone, allow_bot, allow_view_everyone])
+    buy_channel = await ctx.bot.rest.create_guild_text_channel(ctx.guild_id, "Looking-To-Buy", category=post_cat, permission_overwrites=looking_overwrites)
+    sell_channel = await ctx.bot.rest.create_guild_text_channel(ctx.guild_id, "Looking-To-Sell", category=post_cat, permission_overwrites=looking_overwrites)
 
     if not apprv_chnl:
         overwrites = [

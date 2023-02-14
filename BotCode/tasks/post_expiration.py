@@ -55,7 +55,7 @@ async def expired():
             guild_id = row.get("guild_id")
             if str(guild_id) != str(curr_guild_id):
                 curr_guild_id = guild_id
-                guild_row = await conn.fetch("SELECT expiry_time,renewal_count from guilds where guild_id=$1", guild_id)
+                guild_row = await conn.fetchrow("SELECT expiry_time,renewal_count from guilds where guild_id=$1", guild_id)
                 expiry = guild_row.get("expiry_time")
                 renew_count = guild_row.get('renewal_count')
             user = await expired_PL.bot.rest.fetch_user(user_id)
@@ -190,7 +190,7 @@ class ButtonNoRepost(flare.Button):
         await ctx.message.edit(components=[])
         conn = await get_database_connection()
 
-        title = conn.fetchval(f"SELECT title from {self.post_type} where id={self.post_id}")
+        title = await conn.fetchval(f"SELECT title from {self.post_type} where id={self.post_id}")
 
         await ctx.respond(
             embed=hikari.Embed(
