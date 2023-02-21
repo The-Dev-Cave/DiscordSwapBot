@@ -12,7 +12,7 @@ selects_plugin = lightbulb.Plugin("Editing Selects")
 
 
 @flare.select(
-    placeholder="Select Any Amount",
+    placeholder="Select 1 To Edit If Needed",
     options=[
         hikari.SelectMenuOption(
             label="title",
