@@ -240,8 +240,14 @@ class ButtonNoPhoto(flare.Button):
 
             # TODO: Add edit post button
         )
-        row1 = await asyncio.gather(flare.Row(edit_select_menu(post_id=self.post_id, post_type= self.post_type, guild_id=self.guild_id)))
-        await ctx.respond(embed=embed, components=[row1, btns_row])
+        # row1 = 
+        await ctx.respond(embed=embed, components=await asyncio.gather(flare.Row(edit_select_menu(post_id=self.post_id, post_type= self.post_type, guild_id=self.guild_id)), flare.Row(
+            ButtonSendPostToMods(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
+            ButtonNewPostPhotos(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
+            ButtonCancel(post_id=self.post_id, post_type=self.post_type, label="Cancel")
+
+            # TODO: Add edit post button
+        )))
         # add send buttons
         # await ctx.respond(embed=embed)
 
