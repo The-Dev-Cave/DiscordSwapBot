@@ -13,6 +13,7 @@ from BotCode.interactions.buttons.buttons_user_bridge import ButtonMarkPostPendi
     ButtonCloseUserBridge, ButtonShowMoreImages
 from BotCode.interactions.modals import ModalPostSellBuyPart1, ModalPostDeny
 from BotCode.interactions.selects.selects import update_post
+from BotCode.interactions.selects.selects_editing import edit_select_menu
 
 buttons_posts_plugin = lightbulb.Plugin("Posts Buttons")
 
@@ -239,7 +240,8 @@ class ButtonNoPhoto(flare.Button):
 
             # TODO: Add edit post button
         )
-        await ctx.respond(embed=embed, component=btns_row)
+        row1 = await flare.Row(await edit_select_menu(ctx, self.post_id, self.post_type, self.guild_id))
+        await ctx.respond(embed=embed, components=[row1, btns_row])
         # add send buttons
         # await ctx.respond(embed=embed)
 

@@ -9,7 +9,7 @@ import lightbulb
 from BotCode.environment.database import get_database_connection
 from BotCode.functions.send_logs import send_public_log
 
-selects_plugin = lightbulb.Plugin("User Bridge Buttons")
+selects_plugin = lightbulb.Plugin("Selects")
 
 
 # @flare.select(
