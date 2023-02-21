@@ -240,7 +240,7 @@ class ButtonNoPhoto(flare.Button):
 
             # TODO: Add edit post button
         )
-        # row1 = 
+        # row1 =
         await ctx.respond(embed=embed, components=await asyncio.gather(flare.Row(edit_select_menu(post_id=self.post_id, post_type= self.post_type, guild_id=self.guild_id)), flare.Row(
             ButtonSendPostToMods(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
             ButtonNewPostPhotos(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
