@@ -514,6 +514,7 @@ class ButtonContactLister(flare.Button):
 
         await ctx.respond("A chat channel is being created.  You will be pinged in it when done",
                           flags=hikari.MessageFlag.EPHEMERAL)
+
         perm_overwrites = [
             hikari.PermissionOverwrite(
                 type=hikari.PermissionOverwriteType.MEMBER,
@@ -534,13 +535,15 @@ class ButtonContactLister(flare.Button):
                 id=self.post_owner_id,
             )
         ]
-        user_name = ctx.member.display_name.split(" ")
+        user_name = ctx.member.display_name
         msg_url = (
             await ctx.bot.rest.fetch_message(
                 ctx.channel_id, ctx.message
             )
         ).make_link(ctx.guild_id)
-        channel_name = f"{user_name[0][0]}{user_name[1]}-{self.post_id}"
+
+        
+        channel_name = f"{user_name[0:10]}-{self.post_id}"
 
         conn = await get_database_connection()
         swap_cat_id = await conn.fetchval(f"Select user_bridge_cat_id from guilds where guild_id={ctx.guild_id}")
