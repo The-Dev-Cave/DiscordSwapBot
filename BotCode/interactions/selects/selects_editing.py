@@ -58,13 +58,13 @@ selects_plugin = lightbulb.Plugin("Editing Selects")
             emoji=None,
             is_default=False,
         ),
-        hikari.SelectMenuOption(
-            label="images",
-            description="Photo(s) for your post",
-            value="images",
-            emoji=None,
-            is_default=False,
-        ),
+        # hikari.SelectMenuOption(
+        #     label="images",
+        #     description="Photo(s) for your post",
+        #     value="images",
+        #     emoji=None,
+        #     is_default=False,
+        # ),
     ],
     min_values=1,
     max_values=1,
@@ -149,8 +149,30 @@ async def edit_select_menu(ctx: flare.MessageContext, post_id: int = 0, post_typ
                     )
                 ))
             )
-        case "images":
-            print()
+        # case "images":
+        #     from BotCode.interactions.buttons.buttons_posts import ButtonNoPhoto, ButtonCancel
+        #
+        #     conn = await get_database_connection()
+        #     conn: asyncpg.Connection
+        #
+        #     await conn.execute(
+        #         f"UPDATE {post_type} set stage=2 where id={post_id}"
+        #     )
+        #     embed = hikari.Embed(
+        #         title="Send the new photo(s) in one message",
+        #         description="Try to post a photo that shows as much of the item as possible and is not blurry. You may add multiple photos at once to your message.  The first attached image will be the main one showed on the post",
+        #         color=0xFFDD00,
+        #     )
+        #     await ctx.message.edit(components=[])
+        #     await ctx.respond(
+        #         embed=embed,
+        #         component=await flare.Row(
+        #             ButtonNoPhoto(post_id=post_id, post_type=post_type, guild_id=guild_id),
+        #             ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel Post")
+        #         ),
+        #     )
+        #
+        #     await conn.close()
 
 
 @flare.select(
