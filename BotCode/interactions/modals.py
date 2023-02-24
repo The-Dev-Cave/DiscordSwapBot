@@ -5,9 +5,12 @@ import flare
 import hikari
 import lightbulb
 
+from BotCode.functions.embeds import buildPostEmbed
 from BotCode.functions.send_logs import send_mod_log
+
 from BotCode.interactions.selects.selects import condition_select_menu
 from BotCode.environment.database import get_database_connection
+
 
 modals_plugin = lightbulb.Plugin("Modals Functions")
 
@@ -254,6 +257,38 @@ class ModalProfileChangeDeny(flare.Modal, title="Profile Update Deny"):
         )
 
         await conn.close()
+
+
+class ModalPostEdit(flare.Modal, title="Profile Update Deny"):
+    post_id: int
+    post_type: str
+    guild_id: int | hikari.Snowflakeish
+    edit_option: str
+
+    async def callback(self, ctx: flare.ModalContext) -> None:
+        # TODO: Price check to be valid number
+        from BotCode.interactions.buttons.buttons_posts import ButtonSendPostToMods, ButtonCancel, ButtonNewPostPhotos
+        from BotCode.interactions.selects.selects_editing import edit_select_menu
+
+        await ctx.defer(False)
+
+        await ctx.interaction.message.edit(components=[])
+
+        conn = await get_database_connection()
+        conn: asyncpg.Connection
+        user_input = ctx.values[0]
+        # await conn.execute("UPDATE $1 set $2=$3 where id=$4", self.post_type, self.edit_option, user_input, self.post_id)
+        await conn.execute(f"UPDATE {self.post_type} set {self.edit_option}=$1 where id={self.post_id}", user_input)
+        embed = await buildPostEmbed(
+            post_id=self.post_id, post_type=self.post_type, user=ctx.user
+        )
+        await ctx.interaction.edit_initial_response(embed=embed, components=await asyncio.gather(
+            flare.Row(edit_select_menu(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id)),
+            flare.Row(
+                ButtonSendPostToMods(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
+                ButtonNewPostPhotos(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
+                ButtonCancel(post_id=self.post_id, post_type=self.post_type, label="Cancel")
+            )))
 
 
 def load(bot: lightbulb.BotApp):
