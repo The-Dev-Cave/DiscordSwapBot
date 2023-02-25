@@ -233,23 +233,29 @@ class ButtonNoPhoto(flare.Button):
             post_id=self.post_id, post_type=self.post_type, user=ctx.user
         )
 
-        btns_row = await flare.Row(
-            ButtonSendPostToMods(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
-            ButtonNewPostPhotos(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
-            ButtonCancel(post_id=self.post_id, post_type=self.post_type, label="Cancel")
+        has_add_imgs = False
+        if self.post_type == "sell":
+            add_imgs = await conn.fetchval(f"SELECT add_images from sell where id={self.post_id}")
+            if add_imgs and (len(add_imgs) > 0):
+                has_add_imgs = True
 
-            # TODO: Add edit post button
-        )
-        # row1 =
-        await ctx.respond(embed=embed, components=await asyncio.gather(flare.Row(edit_select_menu(post_id=self.post_id, post_type= self.post_type, guild_id=self.guild_id)), flare.Row(
-            ButtonSendPostToMods(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
-            ButtonNewPostPhotos(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
-            ButtonCancel(post_id=self.post_id, post_type=self.post_type, label="Cancel")
-
-            # TODO: Add edit post button
-        )))
-        # add send buttons
-        # await ctx.respond(embed=embed)
+        if has_add_imgs:
+            await ctx.interaction.edit_initial_response(embed=embed, components=await asyncio.gather(
+                flare.Row(edit_select_menu(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id)),
+                flare.Row(
+                    ButtonSendPostToMods(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
+                    ButtonNewPostPhotos(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
+                    ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
+                    ButtonCancel(post_id=self.post_id, post_type=self.post_type, label="Cancel")
+                )))
+        else:
+            await ctx.interaction.edit_initial_response(embed=embed, components=await asyncio.gather(
+                flare.Row(edit_select_menu(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id)),
+                flare.Row(
+                    ButtonSendPostToMods(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
+                    ButtonNewPostPhotos(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
+                    ButtonCancel(post_id=self.post_id, post_type=self.post_type, label="Cancel")
+                )))
 
         await conn.close()
 

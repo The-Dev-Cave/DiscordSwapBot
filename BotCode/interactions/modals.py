@@ -267,7 +267,7 @@ class ModalPostEdit(flare.Modal, title="Profile Update Deny"):
 
     async def callback(self, ctx: flare.ModalContext) -> None:
         # TODO: Price check to be valid number
-        from BotCode.interactions.buttons.buttons_posts import ButtonSendPostToMods, ButtonCancel, ButtonNewPostPhotos
+        from BotCode.interactions.buttons.buttons_posts import ButtonSendPostToMods, ButtonCancel, ButtonNewPostPhotos, ButtonShowMoreImages
         from BotCode.interactions.selects.selects_editing import edit_select_menu
 
         await ctx.defer(False)
@@ -282,13 +282,31 @@ class ModalPostEdit(flare.Modal, title="Profile Update Deny"):
         embed = await buildPostEmbed(
             post_id=self.post_id, post_type=self.post_type, user=ctx.user
         )
-        await ctx.interaction.edit_initial_response(embed=embed, components=await asyncio.gather(
-            flare.Row(edit_select_menu(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id)),
-            flare.Row(
-                ButtonSendPostToMods(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
-                ButtonNewPostPhotos(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
-                ButtonCancel(post_id=self.post_id, post_type=self.post_type, label="Cancel")
-            )))
+
+
+        has_add_imgs = False
+        if self.post_type == "sell":
+            add_imgs = await conn.fetchval(f"SELECT add_images from sell where id={self.post_id}")
+            if add_imgs and (len(add_imgs) > 0):
+                has_add_imgs = True
+
+        if has_add_imgs:
+            await ctx.interaction.edit_initial_response(embed=embed, components=await asyncio.gather(
+                flare.Row(edit_select_menu(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id)),
+                flare.Row(
+                    ButtonSendPostToMods(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
+                    ButtonNewPostPhotos(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
+                    ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
+                    ButtonCancel(post_id=self.post_id, post_type=self.post_type, label="Cancel")
+                )))
+        else:
+            await ctx.interaction.edit_initial_response(embed=embed, components=await asyncio.gather(
+                flare.Row(edit_select_menu(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id)),
+                flare.Row(
+                    ButtonSendPostToMods(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
+                    ButtonNewPostPhotos(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
+                    ButtonCancel(post_id=self.post_id, post_type=self.post_type, label="Cancel")
+                )))
 
 
 def load(bot: lightbulb.BotApp):

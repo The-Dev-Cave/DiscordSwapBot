@@ -9,6 +9,7 @@ import lightbulb
 from BotCode.environment.database import get_database_connection
 from BotCode.functions.send_logs import send_public_log
 
+
 selects_plugin = lightbulb.Plugin("Selects")
 
 
@@ -349,13 +350,15 @@ async def payment_methods_select_menu(
         if resp_code == "UPDATE 0":
             await conn.close()
             return
-        await ctx.respond(
+        msg = await (await ctx.respond(
             embeds=[embed, embed_nextstep],
             component=await flare.Row(
                 ButtonNoPhoto(post_id=post_id, post_type=post_type, guild_id=guild_id)
                 , ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel")
             )
-        )
+        )).retrieve_message()
+        await conn.execute(f"UPDATE {post_type} set image='{msg.id}' where id={post_id}")
+
     else:
         resp_code = await conn.execute(
             f"UPDATE {post_type} set payment_methods='{pay_meth}' where id={post_id}"
@@ -367,21 +370,12 @@ async def payment_methods_select_menu(
             post_id=post_id, post_type=post_type, user=ctx.user
         )
         await ctx.message.edit(components=[])
-        # if post_type == "buy":
-        btns_row = await flare.Row(
-            ButtonSendPostToMods(post_id=post_id, post_type=post_type, guild_id=guild_id),
-            ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel")
-            # TODO: Add edit post button
-        )
-        # else:
-        #     btns_row = await flare.Row(
-        #         ButtonSendPostToMods(post_id=post_id, post_type=post_type, guild_id=guild_id),
-        #         ButtonNewPostPhotos(post_id=post_id, post_type=post_type, guild_id=guild_id),
-        #         ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel")
-        #         # TODO: Add edit post button
-        #     )
-        # add send buttons
-        await ctx.respond(embed=embed, component=btns_row)
+        from BotCode.interactions.selects.selects_editing import edit_select_menu
+        await ctx.respond(embed=embed, components=await asyncio.gather(
+                flare.Row(edit_select_menu(post_id=post_id, post_type=post_type, guild_id=guild_id)), flare.Row(
+                    ButtonSendPostToMods(post_id=post_id, post_type=post_type, guild_id=guild_id),
+                    ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel")
+                )))
 
     await conn.close()
 
