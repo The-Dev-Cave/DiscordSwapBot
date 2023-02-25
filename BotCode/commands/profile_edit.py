@@ -6,7 +6,10 @@ import hikari
 
 from BotCode.environment.database import get_database_connection
 from BotCode.functions.embeds import create_profile_embed
-from BotCode.interactions.buttons.buttons_profile_edit import ButtonApproveChange, ButtonDenyChange
+from BotCode.interactions.buttons.buttons_profile_edit import (
+    ButtonApproveChange,
+    ButtonDenyChange,
+)
 
 profile_edit_pl = lightbulb.Plugin("statusUpdater")
 

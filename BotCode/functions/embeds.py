@@ -5,10 +5,12 @@ import datetime as DT
 
 from BotCode.environment.database import get_database_connection
 
-embeds_plugin = lightbulb.Plugin("Lightbulb Bot Events")
+embeds_plugin = lightbulb.Plugin("Make Embeds")
 
 
-async def create_profile_embed(userID: hikari.Snowflake | int, guild_id: hikari.Snowflake | int = None) -> hikari.Embed:
+async def create_profile_embed(
+    userID: hikari.Snowflake | int, guild_id: hikari.Snowflake | int = None
+) -> hikari.Embed:
     conn = await get_database_connection()
     conn: asyncpg.Connection
 
@@ -18,12 +20,17 @@ async def create_profile_embed(userID: hikari.Snowflake | int, guild_id: hikari.
     show_profile = True
 
     if guild_id:
-        guild_set = await conn.fetchrow("SELECT * from guilds where guild_id=$1", guild_id)
+        guild_set = await conn.fetchrow(
+            "SELECT * from guilds where guild_id=$1", guild_id
+        )
         show_ratings = guild_set.get("ratings_enabled")
         show_profile = guild_set.get("profile_enabled")
 
     if (not show_ratings) and (not show_profile):
-        embed = hikari.Embed(title="Profile and Ratings Both Disabled", description="This guild has disabled profiles and ratings so they will not be shown.")
+        embed = hikari.Embed(
+            title="Profile and Ratings Both Disabled",
+            description="This guild has disabled profiles and ratings so they will not be shown.",
+        )
         return embed
 
     if show_profile:
@@ -41,11 +48,14 @@ async def create_profile_embed(userID: hikari.Snowflake | int, guild_id: hikari.
         embed.add_field("Pronouns:", pronouns)
     else:
         user = await embeds_plugin.bot.rest.fetch_user(userID)
-        embed = hikari.Embed(title=f"{user.username}#{user.discriminator} Ratings", description="==================")
+        embed = hikari.Embed(
+            title=f"{user.username}#{user.discriminator} Ratings",
+            description="==================",
+        )
         embed.set_thumbnail(user.display_avatar_url)
 
     if show_ratings:
-        row = (await conn.fetch(f'SELECT * FROM profiles where user_id = {userID}'))[0]
+        row = (await conn.fetch(f"SELECT * FROM profiles where user_id = {userID}"))[0]
         comm_good = int(row.get("comm_rating")[0])
         comm_total = int(row.get("comm_rating")[1])
         resp_good = int(row.get("resp_rating")[0])
@@ -152,7 +162,7 @@ async def buildPostEmbed(post_id: int, post_type: str, user: hikari.User):
     meetup = post_data.get("meetup")
 
     user_data = await conn.fetchrow(
-        f'SELECT first_name, last_name from profiles where user_id={user.id}'
+        f"SELECT first_name, last_name from profiles where user_id={user.id}"
     )
     name = f'{user_data.get("first_name")} {user_data.get("last_name")}'
     embed = hikari.Embed(title=title, description=description).set_author(

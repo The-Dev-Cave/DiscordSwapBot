@@ -11,8 +11,8 @@ from BotCode.functions.send_logs import send_mod_log
 from BotCode.interactions.selects.selects import condition_select_menu
 from BotCode.environment.database import get_database_connection
 
-
 modals_plugin = lightbulb.Plugin("Modals Functions")
+
 
 class CreateProfileModal(flare.Modal, title="Profile Part 1"):
     text_input_fname: flare.TextInput = flare.TextInput(
@@ -40,9 +40,9 @@ class CreateProfileModal(flare.Modal, title="Profile Part 1"):
         )
 
         embed = hikari.Embed(
-                        title="Send an image that you want to use for your user profile for others to identify you",
-                        description="Please have face easily visible and should show shoulders and up. Only one person in the photo.\n It will only be viewable when someone runs the `/viewprofile` command and it IS NOT changing your avatar/pfp for the server itself.",
-                    )
+            title="Send an image that you want to use for your user profile for others to identify you",
+            description="Please have face easily visible and should show shoulders and up. Only one person in the photo.\n It will only be viewable when someone runs the `/viewprofile` command and it IS NOT changing your avatar/pfp for the server itself.",
+        )
         await ctx.respond(embed=embed)
         await conn.execute(
             f"UPDATE profiles set first_name='{fname}', last_name='{lname}', pronouns='{pronouns}', stage=2 where user_id={ctx.user.id}"
@@ -101,10 +101,14 @@ class ModalPostSellBuyPart1(flare.Modal, title="Profile Deny"):
     guild_id: hikari.Snowflake
 
     text_input_title: flare.TextInput = flare.TextInput(
-        label="Title", placeholder="Keep it short, simple, and concise.", style=hikari.TextInputStyle.SHORT
+        label="Title",
+        placeholder="Keep it short, simple, and concise.",
+        style=hikari.TextInputStyle.SHORT,
     )
     text_input_description: flare.TextInput = flare.TextInput(
-        label="Description", placeholder="Include important and relevant details.", style=hikari.TextInputStyle.PARAGRAPH
+        label="Description",
+        placeholder="Include important and relevant details.",
+        style=hikari.TextInputStyle.PARAGRAPH,
     )
 
     async def callback(self, ctx: flare.ModalContext) -> None:
@@ -140,9 +144,7 @@ class ModalPostSellBuyPart1(flare.Modal, title="Profile Deny"):
                 cost = round(float(third_input), 2)
             else:
                 cost = int(third_input)
-            await ctx.interaction.message.edit(
-                components=[]
-            )
+            await ctx.interaction.message.edit(components=[])
             embed.add_field("Cost or Budget", f"{cost}")
 
             await conn.execute(
@@ -165,7 +167,6 @@ class ModalPostSellBuyPart1(flare.Modal, title="Profile Deny"):
         embedNextStep = hikari.Embed(
             title="Item Condition",
             description="Select the item's condition if selling or worse condition you would buy\n",
-
             color=0xFFDD00,
         )
         await ctx.respond(
@@ -173,11 +174,16 @@ class ModalPostSellBuyPart1(flare.Modal, title="Profile Deny"):
             components=await asyncio.gather(
                 flare.Row(
                     condition_select_menu(
-                        post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id
+                        post_id=self.post_id,
+                        post_type=self.post_type,
+                        guild_id=self.guild_id,
                     )
-                ), flare.Row(
-                    ButtonCancel(post_id=self.post_id, post_type=self.post_type, label="Cancel")
-                )
+                ),
+                flare.Row(
+                    ButtonCancel(
+                        post_id=self.post_id, post_type=self.post_type, label="Cancel"
+                    )
+                ),
             ),
         )
 
@@ -221,8 +227,10 @@ class ModalPostDeny(flare.Modal, title="Profile Deny"):
         await ctx.respond(
             "User has been notified of denial", flags=hikari.MessageFlag.EPHEMERAL
         )
-        await send_mod_log(guild_id=ctx.guild_id,
-                           text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has **DENIED** __{post.get('title')}__ for reason:\n```{reason}```")
+        await send_mod_log(
+            guild_id=ctx.guild_id,
+            text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has **DENIED** __{post.get('title')}__ for reason:\n```{reason}```",
+        )
 
         await conn.close()
 
@@ -267,7 +275,12 @@ class ModalPostEdit(flare.Modal, title="Profile Update Deny"):
 
     async def callback(self, ctx: flare.ModalContext) -> None:
         # TODO: Price check to be valid number
-        from BotCode.interactions.buttons.buttons_posts import ButtonSendPostToMods, ButtonCancel, ButtonNewPostPhotos, ButtonShowMoreImages
+        from BotCode.interactions.buttons.buttons_posts import (
+            ButtonSendPostToMods,
+            ButtonCancel,
+            ButtonNewPostPhotos,
+            ButtonShowMoreImages,
+        )
         from BotCode.interactions.selects.selects_editing import edit_select_menu
 
         await ctx.defer(False)
@@ -278,35 +291,85 @@ class ModalPostEdit(flare.Modal, title="Profile Update Deny"):
         conn: asyncpg.Connection
         user_input = ctx.values[0]
         # await conn.execute("UPDATE $1 set $2=$3 where id=$4", self.post_type, self.edit_option, user_input, self.post_id)
-        await conn.execute(f"UPDATE {self.post_type} set {self.edit_option}=$1 where id={self.post_id}", user_input)
+        await conn.execute(
+            f"UPDATE {self.post_type} set {self.edit_option}=$1 where id={self.post_id}",
+            user_input,
+        )
         embed = await buildPostEmbed(
             post_id=self.post_id, post_type=self.post_type, user=ctx.user
         )
 
-
         has_add_imgs = False
         if self.post_type == "sell":
-            add_imgs = await conn.fetchval(f"SELECT add_images from sell where id={self.post_id}")
+            add_imgs = await conn.fetchval(
+                f"SELECT add_images from sell where id={self.post_id}"
+            )
             if add_imgs and (len(add_imgs) > 0):
                 has_add_imgs = True
 
         if has_add_imgs:
-            await ctx.interaction.edit_initial_response(embed=embed, components=await asyncio.gather(
-                flare.Row(edit_select_menu(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id)),
-                flare.Row(
-                    ButtonSendPostToMods(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
-                    ButtonNewPostPhotos(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
-                    ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
-                    ButtonCancel(post_id=self.post_id, post_type=self.post_type, label="Cancel")
-                )))
+            await ctx.interaction.edit_initial_response(
+                embed=embed,
+                components=await asyncio.gather(
+                    flare.Row(
+                        edit_select_menu(
+                            post_id=self.post_id,
+                            post_type=self.post_type,
+                            guild_id=self.guild_id,
+                        )
+                    ),
+                    flare.Row(
+                        ButtonSendPostToMods(
+                            post_id=self.post_id,
+                            post_type=self.post_type,
+                            guild_id=self.guild_id,
+                        ),
+                        ButtonNewPostPhotos(
+                            post_id=self.post_id,
+                            post_type=self.post_type,
+                            guild_id=self.guild_id,
+                        ),
+                        ButtonShowMoreImages(
+                            post_id=self.post_id, post_type=self.post_type
+                        ),
+                        ButtonCancel(
+                            post_id=self.post_id,
+                            post_type=self.post_type,
+                            label="Cancel",
+                        ),
+                    ),
+                ),
+            )
         else:
-            await ctx.interaction.edit_initial_response(embed=embed, components=await asyncio.gather(
-                flare.Row(edit_select_menu(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id)),
-                flare.Row(
-                    ButtonSendPostToMods(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
-                    ButtonNewPostPhotos(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
-                    ButtonCancel(post_id=self.post_id, post_type=self.post_type, label="Cancel")
-                )))
+            await ctx.interaction.edit_initial_response(
+                embed=embed,
+                components=await asyncio.gather(
+                    flare.Row(
+                        edit_select_menu(
+                            post_id=self.post_id,
+                            post_type=self.post_type,
+                            guild_id=self.guild_id,
+                        )
+                    ),
+                    flare.Row(
+                        ButtonSendPostToMods(
+                            post_id=self.post_id,
+                            post_type=self.post_type,
+                            guild_id=self.guild_id,
+                        ),
+                        ButtonNewPostPhotos(
+                            post_id=self.post_id,
+                            post_type=self.post_type,
+                            guild_id=self.guild_id,
+                        ),
+                        ButtonCancel(
+                            post_id=self.post_id,
+                            post_type=self.post_type,
+                            label="Cancel",
+                        ),
+                    ),
+                ),
+            )
 
 
 def load(bot: lightbulb.BotApp):

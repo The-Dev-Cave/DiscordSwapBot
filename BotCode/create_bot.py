@@ -7,9 +7,7 @@ import lightbulb
 from lightbulb.ext import tasks
 from dotenv import load_dotenv
 
-bot_root_directory = (
-    f'{os.getcwd()}'
-)
+bot_root_directory = f"{os.getcwd()}"
 
 
 async def create_bot() -> lightbulb.BotApp:
@@ -19,7 +17,7 @@ async def create_bot() -> lightbulb.BotApp:
     bot = lightbulb.BotApp(
         token=BOT_TOKEN,
         intents=hikari.Intents.ALL_UNPRIVILEGED | hikari.Intents.GUILD_MEMBERS,
-        help_class=None
+        help_class=None,
     )
 
     @bot.command()
@@ -27,7 +25,8 @@ async def create_bot() -> lightbulb.BotApp:
     @lightbulb.implements(lightbulb.SlashCommand)
     async def _foo(ctx: lightbulb.SlashContext) -> None:
         ctx.bot.reload_extensions(*ctx.bot.extensions)
-        await ctx.respond('Done', flags=hikari.MessageFlag.EPHEMERAL)
+        await ctx.respond("Done", flags=hikari.MessageFlag.EPHEMERAL)
+
     flare.install(bot)
     tasks.load(bot)
 

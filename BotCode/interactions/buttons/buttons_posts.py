@@ -9,8 +9,12 @@ import lightbulb
 from BotCode.environment.database import get_database_connection
 from BotCode.functions.embeds import buildPostEmbed
 from BotCode.functions.send_logs import send_mod_log
-from BotCode.interactions.buttons.buttons_user_bridge import ButtonMarkPostPending, ButtonMarkPostSold, \
-    ButtonCloseUserBridge, ButtonShowMoreImages
+from BotCode.interactions.buttons.buttons_user_bridge import (
+    ButtonMarkPostPending,
+    ButtonMarkPostSold,
+    ButtonCloseUserBridge,
+    ButtonShowMoreImages,
+)
 from BotCode.interactions.modals import ModalPostSellBuyPart1, ModalPostDeny
 from BotCode.interactions.selects.selects import update_post
 from BotCode.interactions.selects.selects_editing import edit_select_menu
@@ -47,7 +51,9 @@ class ButtonCreatePost(flare.Button):
         types = {"sell": 1, "buy": 2}
 
         making_post = (
-            await conn.fetch(f"SELECT making_post from profiles where user_id={user_id}")
+            await conn.fetch(
+                f"SELECT making_post from profiles where user_id={user_id}"
+            )
         )[0].get("making_post")
 
         if making_post:
@@ -58,8 +64,12 @@ class ButtonCreatePost(flare.Button):
             await conn.close()
             return
 
-        profile_required = await conn.fetchval("SELECT profile_required from guilds where guild_id=$1", ctx.guild_id)
-        profile_stage = await conn.fetchval("SELECT stage from profiles where user_id=$1", ctx.user.id)
+        profile_required = await conn.fetchval(
+            "SELECT profile_required from guilds where guild_id=$1", ctx.guild_id
+        )
+        profile_stage = await conn.fetchval(
+            "SELECT stage from profiles where user_id=$1", ctx.user.id
+        )
         if profile_required and (profile_stage != 4):
             await ctx.respond(
                 "This guild requires a profile to be made. Please use </profile create:1234> to make your profile or go to https://swapbot.thedevcave.xyz)",
@@ -68,7 +78,7 @@ class ButtonCreatePost(flare.Button):
             await conn.close()
             return
 
-        if post_type == 'sell':
+        if post_type == "sell":
             await conn.execute(
                 rf"INSERT into sell (author_id, stage, guild_id) values ({str(user_id)},1, {ctx.guild_id})"
             )
@@ -104,7 +114,9 @@ class ButtonCreatePost(flare.Button):
             await ctx.user.send(
                 embed=embed,
                 component=await flare.Row(
-                    ButtonPostPart1(post_id=post_id, post_type=post_type, guild_id=ctx.guild_id),
+                    ButtonPostPart1(
+                        post_id=post_id, post_type=post_type, guild_id=ctx.guild_id
+                    ),
                     ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel"),
                 ),
             )
@@ -157,7 +169,9 @@ class ButtonCancel(flare.Button):
         user_id = ctx.user.id
 
         await conn.execute(rf"DELETE from {post_type} where id = {post_id}")
-        await conn.execute(rf"UPDATE profiles set making_post=0 where user_id = {user_id}")
+        await conn.execute(
+            rf"UPDATE profiles set making_post=0 where user_id = {user_id}"
+        )
 
         await ctx.message.edit(components=None)
         embed = hikari.Embed(
@@ -173,7 +187,9 @@ class ButtonPostPart1(flare.Button):
     post_type: str
     guild_id: hikari.Snowflake
 
-    def __init__(self, post_id: int, post_type: str, guild_id: hikari.Snowflake, *args, **kwargs):
+    def __init__(
+        self, post_id: int, post_type: str, guild_id: hikari.Snowflake, *args, **kwargs
+    ):
         super().__init__(*args, **kwargs)
         self.style = hikari.ButtonStyle.SUCCESS
         self.label = "Start Post"
@@ -186,7 +202,9 @@ class ButtonPostPart1(flare.Button):
         self.guild_id = guild_id
 
     async def callback(self, ctx: flare.MessageContext) -> None:
-        modal = ModalPostSellBuyPart1(post_type=self.post_type, post_id=self.post_id, guild_id=self.guild_id)
+        modal = ModalPostSellBuyPart1(
+            post_type=self.post_type, post_id=self.post_id, guild_id=self.guild_id
+        )
 
         if self.post_type == "trading":
             modal.append(
@@ -197,9 +215,7 @@ class ButtonPostPart1(flare.Button):
                 )
             )
         else:
-            modal.append(
-                flare.TextInput(label="Cost/Budget", placeholder="Ex. 10")
-            )
+            modal.append(flare.TextInput(label="Cost/Budget", placeholder="Ex. 10"))
 
         await modal.send(ctx.interaction)
 
@@ -235,27 +251,75 @@ class ButtonNoPhoto(flare.Button):
 
         has_add_imgs = False
         if self.post_type == "sell":
-            add_imgs = await conn.fetchval(f"SELECT add_images from sell where id={self.post_id}")
+            add_imgs = await conn.fetchval(
+                f"SELECT add_images from sell where id={self.post_id}"
+            )
             if add_imgs and (len(add_imgs) > 0):
                 has_add_imgs = True
 
         if has_add_imgs:
-            await ctx.interaction.edit_initial_response(embed=embed, components=await asyncio.gather(
-                flare.Row(edit_select_menu(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id)),
-                flare.Row(
-                    ButtonSendPostToMods(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
-                    ButtonNewPostPhotos(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
-                    ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
-                    ButtonCancel(post_id=self.post_id, post_type=self.post_type, label="Cancel")
-                )))
+            await ctx.interaction.edit_initial_response(
+                embed=embed,
+                components=await asyncio.gather(
+                    flare.Row(
+                        edit_select_menu(
+                            post_id=self.post_id,
+                            post_type=self.post_type,
+                            guild_id=self.guild_id,
+                        )
+                    ),
+                    flare.Row(
+                        ButtonSendPostToMods(
+                            post_id=self.post_id,
+                            post_type=self.post_type,
+                            guild_id=self.guild_id,
+                        ),
+                        ButtonNewPostPhotos(
+                            post_id=self.post_id,
+                            post_type=self.post_type,
+                            guild_id=self.guild_id,
+                        ),
+                        ButtonShowMoreImages(
+                            post_id=self.post_id, post_type=self.post_type
+                        ),
+                        ButtonCancel(
+                            post_id=self.post_id,
+                            post_type=self.post_type,
+                            label="Cancel",
+                        ),
+                    ),
+                ),
+            )
         else:
-            await ctx.interaction.edit_initial_response(embed=embed, components=await asyncio.gather(
-                flare.Row(edit_select_menu(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id)),
-                flare.Row(
-                    ButtonSendPostToMods(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
-                    ButtonNewPostPhotos(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
-                    ButtonCancel(post_id=self.post_id, post_type=self.post_type, label="Cancel")
-                )))
+            await ctx.interaction.edit_initial_response(
+                embed=embed,
+                components=await asyncio.gather(
+                    flare.Row(
+                        edit_select_menu(
+                            post_id=self.post_id,
+                            post_type=self.post_type,
+                            guild_id=self.guild_id,
+                        )
+                    ),
+                    flare.Row(
+                        ButtonSendPostToMods(
+                            post_id=self.post_id,
+                            post_type=self.post_type,
+                            guild_id=self.guild_id,
+                        ),
+                        ButtonNewPostPhotos(
+                            post_id=self.post_id,
+                            post_type=self.post_type,
+                            guild_id=self.guild_id,
+                        ),
+                        ButtonCancel(
+                            post_id=self.post_id,
+                            post_type=self.post_type,
+                            label="Cancel",
+                        ),
+                    ),
+                ),
+            )
 
         await conn.close()
 
@@ -290,18 +354,24 @@ class ButtonSendPostToMods(flare.Button):
         post_embed = await buildPostEmbed(
             post_id=self.post_id, post_type=self.post_type, user=ctx.user
         )
-        approve_channel = await conn.fetchval(f"Select approval_channel_id from guilds where guild_id={self.guild_id}")
+        approve_channel = await conn.fetchval(
+            f"Select approval_channel_id from guilds where guild_id={self.guild_id}"
+        )
 
         await ctx.message.edit(components=[])
 
-        post_approval: bool = await conn.fetchval("SELECT post_approval from guilds where guild_id=$1", self.guild_id)
+        post_approval: bool = await conn.fetchval(
+            "SELECT post_approval from guilds where guild_id=$1", self.guild_id
+        )
 
         await conn.execute(
             f"UPDATE {self.post_type} set pending_approval={post_approval} where id={self.post_id}"
         )
         row = None
-        if self.post_type == 'sell':
-            row = await conn.fetchrow(f"SELECT add_images from {self.post_type} where id={self.post_id}")
+        if self.post_type == "sell":
+            row = await conn.fetchrow(
+                f"SELECT add_images from {self.post_type} where id={self.post_id}"
+            )
 
         if row and row.get("add_images"):
             btns_row = await flare.Row(
@@ -321,44 +391,83 @@ class ButtonSendPostToMods(flare.Button):
             )
         else:
             row = None
-            if self.post_type == 'sell':
-                row = (await conn.fetchrow(
-                    f"SELECT author_id, title, add_images from {self.post_type} where id={self.post_id}"))
+            if self.post_type == "sell":
+                row = await conn.fetchrow(
+                    f"SELECT author_id, title, add_images from {self.post_type} where id={self.post_id}"
+                )
             else:
-                row = (await conn.fetchrow(f"SELECT author_id, title from {self.post_type} where id={self.post_id}"))
+                row = await conn.fetchrow(
+                    f"SELECT author_id, title from {self.post_type} where id={self.post_id}"
+                )
             lister_id = row.get("author_id")
             post_title = row.get("title")
             user = await ctx.bot.rest.fetch_member(self.guild_id, lister_id)
 
             row_chan = await conn.fetchrow(
-                f"Select buy_channel_id,sell_channel_id from guilds where guild_id={self.guild_id}")
+                f"Select buy_channel_id,sell_channel_id from guilds where guild_id={self.guild_id}"
+            )
 
-            post_types_dict = {"sell": row_chan.get('sell_channel_id'), "buy": row_chan.get('buy_channel_id')}
+            post_types_dict = {
+                "sell": row_chan.get("sell_channel_id"),
+                "buy": row_chan.get("buy_channel_id"),
+            }
 
-            embed = await buildPostEmbed(post_id=self.post_id, post_type=self.post_type, user=user)
+            embed = await buildPostEmbed(
+                post_id=self.post_id, post_type=self.post_type, user=user
+            )
 
             if row.get("add_images"):
                 btns_row = await flare.Row(
-                    ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
-                    ButtonContactLister(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id,
-                                        post_title=post_title),
-                    ButtonUpdatePost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id),
-                    ButtonReportPost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id)
+                    ButtonShowMoreImages(
+                        post_id=self.post_id, post_type=self.post_type
+                    ),
+                    ButtonContactLister(
+                        post_id=self.post_id,
+                        post_type=self.post_type,
+                        post_owner_id=user.id,
+                        post_title=post_title,
+                    ),
+                    ButtonUpdatePost(
+                        post_id=self.post_id,
+                        post_type=self.post_type,
+                        post_owner_id=user.id,
+                    ),
+                    ButtonReportPost(
+                        post_id=self.post_id,
+                        post_type=self.post_type,
+                        post_owner_id=user.id,
+                    ),
                 )
             else:
                 btns_row = await flare.Row(
-                    ButtonContactLister(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id,
-                                        post_title=post_title),
-                    ButtonUpdatePost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id),
-                    ButtonReportPost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id)
+                    ButtonContactLister(
+                        post_id=self.post_id,
+                        post_type=self.post_type,
+                        post_owner_id=user.id,
+                        post_title=post_title,
+                    ),
+                    ButtonUpdatePost(
+                        post_id=self.post_id,
+                        post_type=self.post_type,
+                        post_owner_id=user.id,
+                    ),
+                    ButtonReportPost(
+                        post_id=self.post_id,
+                        post_type=self.post_type,
+                        post_owner_id=user.id,
+                    ),
                 )
 
-            created_message = await ctx.bot.rest.create_message(channel=post_types_dict[self.post_type], embed=embed,
-                                                                component=btns_row)
+            created_message = await ctx.bot.rest.create_message(
+                channel=post_types_dict[self.post_type], embed=embed, component=btns_row
+            )
 
             await conn.execute(
-                f"UPDATE {self.post_type} set pending_approval=FALSE, message_id={created_message.id}, post_date='{datetime.datetime.today()}' where id={self.post_id}")
-        await conn.execute(f"UPDATE profiles set making_post=0 where user_id={ctx.user.id}")
+                f"UPDATE {self.post_type} set pending_approval=FALSE, message_id={created_message.id}, post_date='{datetime.datetime.today()}' where id={self.post_id}"
+            )
+        await conn.execute(
+            f"UPDATE profiles set making_post=0 where user_id={ctx.user.id}"
+        )
 
         await conn.close()
 
@@ -396,8 +505,14 @@ class ButtonNewPostPhotos(flare.Button):
         await ctx.respond(
             embed=embed,
             component=await flare.Row(
-                ButtonNoPhoto(post_id=self.post_id, post_type=self.post_type, guild_id=self.guild_id),
-                ButtonCancel(post_id=self.post_id, post_type=self.post_type, label="Cancel Post")
+                ButtonNoPhoto(
+                    post_id=self.post_id,
+                    post_type=self.post_type,
+                    guild_id=self.guild_id,
+                ),
+                ButtonCancel(
+                    post_id=self.post_id, post_type=self.post_type, label="Cancel Post"
+                ),
             ),
         )
 
@@ -426,46 +541,84 @@ class ButtonApprovePost(flare.Button):
         await ctx.message.edit(components=[])
 
         row = None
-        if self.post_type == 'sell':
-            row = (await conn.fetchrow(f"SELECT author_id, title, add_images from {self.post_type} where id={self.post_id}"))
+        if self.post_type == "sell":
+            row = await conn.fetchrow(
+                f"SELECT author_id, title, add_images from {self.post_type} where id={self.post_id}"
+            )
         else:
-            row = (await conn.fetchrow(f"SELECT author_id, title from {self.post_type} where id={self.post_id}"))
+            row = await conn.fetchrow(
+                f"SELECT author_id, title from {self.post_type} where id={self.post_id}"
+            )
         lister_id = row.get("author_id")
         post_title = row.get("title")
         user = await ctx.bot.rest.fetch_member(ctx.guild_id, lister_id)
 
         row_chan = await conn.fetchrow(
-            f"Select buy_channel_id,sell_channel_id from guilds where guild_id={ctx.guild_id}")
+            f"Select buy_channel_id,sell_channel_id from guilds where guild_id={ctx.guild_id}"
+        )
 
-        post_types_dict = {"sell": row_chan.get('sell_channel_id'), "buy": row_chan.get('buy_channel_id')}
+        post_types_dict = {
+            "sell": row_chan.get("sell_channel_id"),
+            "buy": row_chan.get("buy_channel_id"),
+        }
 
-        embed = await buildPostEmbed(post_id=self.post_id, post_type=self.post_type, user=user)
+        embed = await buildPostEmbed(
+            post_id=self.post_id, post_type=self.post_type, user=user
+        )
 
         if row.get("add_images"):
             btns_row = await flare.Row(
                 ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
-                ButtonContactLister(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id,
-                                    post_title=post_title),
-                ButtonUpdatePost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id),
-                ButtonReportPost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id)
+                ButtonContactLister(
+                    post_id=self.post_id,
+                    post_type=self.post_type,
+                    post_owner_id=user.id,
+                    post_title=post_title,
+                ),
+                ButtonUpdatePost(
+                    post_id=self.post_id,
+                    post_type=self.post_type,
+                    post_owner_id=user.id,
+                ),
+                ButtonReportPost(
+                    post_id=self.post_id,
+                    post_type=self.post_type,
+                    post_owner_id=user.id,
+                ),
             )
         else:
             btns_row = await flare.Row(
-                ButtonContactLister(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id,
-                                    post_title=post_title),
-                ButtonUpdatePost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id),
-                ButtonReportPost(post_id=self.post_id, post_type=self.post_type, post_owner_id=user.id)
+                ButtonContactLister(
+                    post_id=self.post_id,
+                    post_type=self.post_type,
+                    post_owner_id=user.id,
+                    post_title=post_title,
+                ),
+                ButtonUpdatePost(
+                    post_id=self.post_id,
+                    post_type=self.post_type,
+                    post_owner_id=user.id,
+                ),
+                ButtonReportPost(
+                    post_id=self.post_id,
+                    post_type=self.post_type,
+                    post_owner_id=user.id,
+                ),
             )
 
-        created_message = await ctx.bot.rest.create_message(channel=post_types_dict[self.post_type], embed=embed,
-                                                            component=btns_row)
+        created_message = await ctx.bot.rest.create_message(
+            channel=post_types_dict[self.post_type], embed=embed, component=btns_row
+        )
 
         await conn.execute(
-            f"UPDATE {self.post_type} set pending_approval=FALSE, message_id={created_message.id}, post_date='{datetime.datetime.today()}' where id={self.post_id}")
+            f"UPDATE {self.post_type} set pending_approval=FALSE, message_id={created_message.id}, post_date='{datetime.datetime.today()}' where id={self.post_id}"
+        )
 
         await ctx.message.delete()
-        await send_mod_log(guild_id=ctx.guild_id,
-                           text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has **APPROVED** __{post_title}__")
+        await send_mod_log(
+            guild_id=ctx.guild_id,
+            text=f"{ctx.author.mention} **({ctx.author.username}#{ctx.author.discriminator})** has **APPROVED** __{post_title}__",
+        )
         await conn.close()
 
 
@@ -500,7 +653,9 @@ class ButtonContactLister(flare.Button):
     post_owner_id: int
     post_title: str
 
-    def __init__(self, post_id, post_type, post_title, post_owner_id: int, *args, **kwargs):
+    def __init__(
+        self, post_id, post_type, post_title, post_owner_id: int, *args, **kwargs
+    ):
         super().__init__(*args, **kwargs)
         self.style = hikari.ButtonStyle.SUCCESS
         self.label = "Contact Lister"
@@ -515,78 +670,110 @@ class ButtonContactLister(flare.Button):
 
     async def callback(self, ctx: flare.MessageContext) -> None:
         if ctx.user.id == self.post_owner_id:
-            await ctx.respond("You can't create a chat channel with yourself", flags=hikari.MessageFlag.EPHEMERAL)
+            await ctx.respond(
+                "You can't create a chat channel with yourself",
+                flags=hikari.MessageFlag.EPHEMERAL,
+            )
             return
 
-        await ctx.respond("A chat channel is being created.  You will be pinged in it when done",
-                          flags=hikari.MessageFlag.EPHEMERAL)
+        await ctx.respond(
+            "A chat channel is being created.  You will be pinged in it when done",
+            flags=hikari.MessageFlag.EPHEMERAL,
+        )
 
         perm_overwrites = [
             hikari.PermissionOverwrite(
                 type=hikari.PermissionOverwriteType.MEMBER,
                 allow=(
-                        hikari.Permissions.VIEW_CHANNEL
-                        | hikari.Permissions.READ_MESSAGE_HISTORY
-                        | hikari.Permissions.SEND_MESSAGES
+                    hikari.Permissions.VIEW_CHANNEL
+                    | hikari.Permissions.READ_MESSAGE_HISTORY
+                    | hikari.Permissions.SEND_MESSAGES
                 ),
                 id=ctx.user.id,
             ),
             hikari.PermissionOverwrite(
                 type=hikari.PermissionOverwriteType.MEMBER,
                 allow=(
-                        hikari.Permissions.VIEW_CHANNEL
-                        | hikari.Permissions.READ_MESSAGE_HISTORY
-                        | hikari.Permissions.SEND_MESSAGES
+                    hikari.Permissions.VIEW_CHANNEL
+                    | hikari.Permissions.READ_MESSAGE_HISTORY
+                    | hikari.Permissions.SEND_MESSAGES
                 ),
                 id=self.post_owner_id,
-            )
+            ),
         ]
         user_name = ctx.member.display_name
         msg_url = (
-            await ctx.bot.rest.fetch_message(
-                ctx.channel_id, ctx.message
-            )
+            await ctx.bot.rest.fetch_message(ctx.channel_id, ctx.message)
         ).make_link(ctx.guild_id)
 
-        
         channel_name = f"{user_name[0:10]}-{self.post_id}"
 
         conn = await get_database_connection()
-        swap_cat_id = await conn.fetchval(f"Select user_bridge_cat_id from guilds where guild_id={ctx.guild_id}")
+        swap_cat_id = await conn.fetchval(
+            f"Select user_bridge_cat_id from guilds where guild_id={ctx.guild_id}"
+        )
 
-        channel = await ctx.bot.rest.create_guild_text_channel(guild=ctx.guild_id,
-                                                               name=channel_name,
-                                                               permission_overwrites=perm_overwrites,
-                                                               category=swap_cat_id)
-        embed = hikari.Embed(title="Welcome to the user bridge!",
-                             description=f"Only the lister can mark as pending or sold and neither will close the channel\nMarking as sold will close other channels connect to this post\nRun `/viewprofile user` to see basic info about the other person and their photo for identification\n[Link to Original Post]({msg_url})",
-                             color=0x00FF00,
-                             url=msg_url)
+        channel = await ctx.bot.rest.create_guild_text_channel(
+            guild=ctx.guild_id,
+            name=channel_name,
+            permission_overwrites=perm_overwrites,
+            category=swap_cat_id,
+        )
+        embed = hikari.Embed(
+            title="Welcome to the user bridge!",
+            description=f"Only the lister can mark as pending or sold and neither will close the channel\nMarking as sold will close other channels connect to this post\nRun `/viewprofile user` to see basic info about the other person and their photo for identification\n[Link to Original Post]({msg_url})",
+            color=0x00FF00,
+            url=msg_url,
+        )
         row = None
-        if self.post_type == 'sell':
-            row = await conn.fetchrow(f"SELECT add_images from {self.post_type} where id={self.post_id}")
+        if self.post_type == "sell":
+            row = await conn.fetchrow(
+                f"SELECT add_images from {self.post_type} where id={self.post_id}"
+            )
         if row and row.get("add_images"):
-            btns_row = await flare.Row(ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
-                                       ButtonMarkPostPending(post_id=self.post_id, post_type=self.post_type,
-                                                             post_owner_id=self.post_owner_id),
-                                       ButtonMarkPostSold(post_id=self.post_id, post_type=self.post_type,
-                                                          post_owner_id=self.post_owner_id, int_party_id=ctx.user.id),
-                                       ButtonCloseUserBridge(post_id=self.post_id, post_type=self.post_type,
-                                                             post_owner_id=self.post_owner_id, int_party_id=ctx.user.id)
-                                       )
+            btns_row = await flare.Row(
+                ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
+                ButtonMarkPostPending(
+                    post_id=self.post_id,
+                    post_type=self.post_type,
+                    post_owner_id=self.post_owner_id,
+                ),
+                ButtonMarkPostSold(
+                    post_id=self.post_id,
+                    post_type=self.post_type,
+                    post_owner_id=self.post_owner_id,
+                    int_party_id=ctx.user.id,
+                ),
+                ButtonCloseUserBridge(
+                    post_id=self.post_id,
+                    post_type=self.post_type,
+                    post_owner_id=self.post_owner_id,
+                    int_party_id=ctx.user.id,
+                ),
+            )
         else:
             btns_row = await flare.Row(
-                                       ButtonMarkPostPending(post_id=self.post_id, post_type=self.post_type,
-                                                             post_owner_id=self.post_owner_id),
-                                       ButtonMarkPostSold(post_id=self.post_id, post_type=self.post_type,
-                                                          post_owner_id=self.post_owner_id, int_party_id=ctx.user.id),
-                                       ButtonCloseUserBridge(post_id=self.post_id, post_type=self.post_type,
-                                                             post_owner_id=self.post_owner_id, int_party_id=ctx.user.id)
-                                       )
+                ButtonMarkPostPending(
+                    post_id=self.post_id,
+                    post_type=self.post_type,
+                    post_owner_id=self.post_owner_id,
+                ),
+                ButtonMarkPostSold(
+                    post_id=self.post_id,
+                    post_type=self.post_type,
+                    post_owner_id=self.post_owner_id,
+                    int_party_id=ctx.user.id,
+                ),
+                ButtonCloseUserBridge(
+                    post_id=self.post_id,
+                    post_type=self.post_type,
+                    post_owner_id=self.post_owner_id,
+                    int_party_id=ctx.user.id,
+                ),
+            )
 
         await channel.send(embed=embed, component=btns_row)
 
-        # add buttons for marking as sold and pending
         await channel.send(
             content=f"Listing: **{self.post_title}**\nLister: <@{self.post_owner_id}>\nInterested Party: {ctx.member.mention}",
             user_mentions=True,
@@ -618,7 +805,10 @@ class ButtonUpdatePost(flare.Button):
 
     async def callback(self, ctx: flare.MessageContext) -> None:
         if ctx.user.id != self.post_owner_id:
-            await ctx.respond("You must be the post lister to update it", flags=hikari.MessageFlag.EPHEMERAL)
+            await ctx.respond(
+                "You must be the post lister to update it",
+                flags=hikari.MessageFlag.EPHEMERAL,
+            )
             return
 
         await ctx.respond(
@@ -626,7 +816,7 @@ class ButtonUpdatePost(flare.Button):
             components=await asyncio.gather(
                 flare.Row(update_post(post_id=self.post_id, post_type=self.post_type)),
             ),
-            flags=hikari.MessageFlag.EPHEMERAL
+            flags=hikari.MessageFlag.EPHEMERAL,
         )
 
 
@@ -652,22 +842,34 @@ class ButtonReportPost(flare.Button):
         #     await ctx.respond("You must be the post lister to update it", flags=hikari.MessageFlag.EPHEMERAL)
         #     return
 
-        await ctx.respond(content="Report sent to mods", flags=hikari.MessageFlag.EPHEMERAL)
+        await ctx.respond(
+            content="Report sent to mods", flags=hikari.MessageFlag.EPHEMERAL
+        )
 
         conn = await get_database_connection()
-        row = await conn.fetchrow(f"SELECT * from {self.post_type} where id=$1", self.post_id)
-        guild_data = await conn.fetchrow("SELECT sell_channel_id, buy_channel_id from guilds where guild_id=$1", ctx.guild_id)
+        row = await conn.fetchrow(
+            f"SELECT * from {self.post_type} where id=$1", self.post_id
+        )
+        guild_data = await conn.fetchrow(
+            "SELECT sell_channel_id, buy_channel_id from guilds where guild_id=$1",
+            ctx.guild_id,
+        )
 
-        channel = guild_data.get("sell_channel_id") if self.post_type == "sell" else guild_data.get("buy_channel_id")
+        channel = (
+            guild_data.get("sell_channel_id")
+            if self.post_type == "sell"
+            else guild_data.get("buy_channel_id")
+        )
 
         msg_url = (
-            await ctx.bot.rest.fetch_message(
-                ctx.channel_id, ctx.message
-            )
+            await ctx.bot.rest.fetch_message(ctx.channel_id, ctx.message)
         ).make_link(ctx.guild_id)
 
         # await send_mod_log(ctx.guild_id, f"{ctx.author.mention} ({ctx.author.username}#{ctx.author.discriminator}) has reported [{row.get('title')}]({msg_url})")
-        await send_mod_log(ctx.guild_id, f"{ctx.author.mention} ({ctx.author.username}#{ctx.author.discriminator}) has reported **__{row.get('title')}__** in <#{channel}>")
+        await send_mod_log(
+            ctx.guild_id,
+            f"{ctx.author.mention} ({ctx.author.username}#{ctx.author.discriminator}) has reported **__{row.get('title')}__** in <#{channel}>",
+        )
 
 
 def load(bot: lightbulb.BotApp):

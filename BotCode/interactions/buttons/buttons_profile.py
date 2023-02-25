@@ -31,11 +31,15 @@ class ButtonCreateProfile(flare.Button):
         conn = await get_database_connection()
         conn: asyncpg.Connection
 
-        row = await conn.fetchrow(f'SELECT user_id from profiles where user_id={ctx.user.id}')
+        row = await conn.fetchrow(
+            f"SELECT user_id from profiles where user_id={ctx.user.id}"
+        )
         if not row:
-            await conn.execute(f'INSERT INTO profiles (user_id) values ({ctx.user.id})')
+            await conn.execute(f"INSERT INTO profiles (user_id) values ({ctx.user.id})")
 
-        data = (await conn.fetch(f'SELECT stage from profiles where user_id={ctx.user.id}'))[0]
+        data = (
+            await conn.fetch(f"SELECT stage from profiles where user_id={ctx.user.id}")
+        )[0]
         if int(data.get("stage")):
             await ctx.respond(
                 "Your profile creation is already in progress or completed",
@@ -95,7 +99,7 @@ class ButtonProfileFinish(flare.Button):
         embed = hikari.Embed(
             title="Profile Completed",
             description="Your profile is completed and to edit it, run `/profile edit {PartToEdit}`",
-        )#.set_footer("This image will not be stored by the bot")
+        )  # .set_footer("This image will not be stored by the bot")
 
         await ctx.respond(embed=embed)
         await conn.close()
@@ -130,6 +134,7 @@ class ButtonProfileEdit(flare.Button):
 
 class ButtonSendToMods(flare.Button):
     guild_id: int
+
     def __init__(self, guild_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.style = hikari.ButtonStyle.SUCCESS
@@ -153,7 +158,9 @@ class ButtonSendToMods(flare.Button):
         conn = await get_database_connection()
         conn: asyncpg.Connection
 
-        row = await conn.fetchrow(f"Select approval_channel_id from guilds where guild_id={self.guild_id}")
+        row = await conn.fetchrow(
+            f"Select approval_channel_id from guilds where guild_id={self.guild_id}"
+        )
 
         profile_apprv_chnl = row.get(approval_channel_id)
         await conn.execute(f"UPDATE profiles set stage=6 where user_id={user_id}")
@@ -169,8 +176,7 @@ class ButtonSendToMods(flare.Button):
 
         await ctx.bot.rest.create_message(
             profile_apprv_chnl,
-            embed=(await create_profile_embed(user_id))
-            .add_field(
+            embed=(await create_profile_embed(user_id)).add_field(
                 "Make sure everything is appropriate ",
                 "If the profile looks good and follows Discord Terms Of Service and server rules, go ahead and approve, otherwise deny",
             ),
@@ -211,7 +217,9 @@ class ButtonProfileApprove(flare.Button):
         await ctx.bot.rest.create_message(
             channel=await ctx.bot.rest.create_dm_channel(user_id), embed=embed
         )
-        row = await conn.fetchrow(f"Select 'Mod_Log_Channel_ID', 'Mod_Role_ID' from guilds where guild_id={ctx.guild_id}")
+        row = await conn.fetchrow(
+            f"Select 'Mod_Log_Channel_ID', 'Mod_Role_ID' from guilds where guild_id={ctx.guild_id}"
+        )
         await ctx.bot.rest.create_message(
             channel=row.get("Mod_Log_Channel_ID"),
             content=f"<@&{row.get('Mod_Role_ID')}>\n=============\n<@{user_id}> profile was created/approved",

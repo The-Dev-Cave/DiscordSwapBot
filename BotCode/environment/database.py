@@ -10,8 +10,10 @@ database_plugin = lightbulb.Plugin("Database Functions", include_datastore=True)
 
 
 async def create_pool() -> None:
-    sslctx = ssl.create_default_context(ssl.Purpose.SERVER_AUTH,
-                                        cafile=r"Website/certs/SwapBot-PostgreSQL-ca-certificate.crt")
+    sslctx = ssl.create_default_context(
+        ssl.Purpose.SERVER_AUTH,
+        cafile=r"Website/certs/SwapBot-PostgreSQL-ca-certificate.crt",
+    )
     sslctx.check_hostname = True
     print("Connecting To Database")
     dsn = os.getenv("DATABASE_CONN_STRING")

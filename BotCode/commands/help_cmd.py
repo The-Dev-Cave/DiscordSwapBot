@@ -7,7 +7,9 @@ help_cmd_plugin = lightbulb.Plugin("Commands for initializing bot messages")
 
 @help_cmd_plugin.command()
 @lightbulb.app_command_permissions(dm_enabled=False)
-@lightbulb.command("help", "Get basic info how to use the bot", auto_defer=True, ephemeral=True)
+@lightbulb.command(
+    "help", "Get basic info how to use the bot", auto_defer=True, ephemeral=True
+)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def init_guild(ctx: lightbulb.SlashContext):
     # conn = await get_database_connection()
@@ -24,7 +26,9 @@ async def init_guild(ctx: lightbulb.SlashContext):
 
 
 @help_cmd_plugin.command()
-@lightbulb.app_command_permissions(perms=hikari.Permissions.ADMINISTRATOR, dm_enabled=False)
+@lightbulb.app_command_permissions(
+    perms=hikari.Permissions.ADMINISTRATOR, dm_enabled=False
+)
 @lightbulb.command("admin-help", "Help for admins", auto_defer=True, ephemeral=True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def init_guild(ctx: lightbulb.SlashContext):

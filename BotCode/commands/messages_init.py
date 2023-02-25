@@ -12,7 +12,9 @@ init_commands_plugin = lightbulb.Plugin("Commands for initializing bot messages"
 @lightbulb.Check
 async def user_have_mod_role(context: lightbulb.Context) -> bool:
     conn = await get_database_connection()
-    role_id = await conn.fetchval("select mod_role_id from guilds where guild_id=$1", context.guild_id)
+    role_id = await conn.fetchval(
+        "select mod_role_id from guilds where guild_id=$1", context.guild_id
+    )
     roles = context.member.role_ids
     return roles.__contains__(role_id)
 
@@ -34,8 +36,12 @@ async def cmd_init(ctx: lightbulb.SlashContext) -> None:
     )
     embed.color = 0xFFDD00
     buttons = await flare.Row(
-        ButtonCreatePost(post_type="sell", label="I'm Looking To Sell", guild_id=ctx.guild_id),
-        ButtonCreatePost(post_type="buy", label="I'm Looking To Buy", guild_id=ctx.guild_id),
+        ButtonCreatePost(
+            post_type="sell", label="I'm Looking To Sell", guild_id=ctx.guild_id
+        ),
+        ButtonCreatePost(
+            post_type="buy", label="I'm Looking To Buy", guild_id=ctx.guild_id
+        ),
     )
 
     await init_commands_plugin.bot.rest.create_message(
@@ -77,7 +83,10 @@ async def cmd_intProfile(ctx: lightbulb.SlashContext):
 @cmd_init.set_error_handler()
 @cmd_intProfile.set_error_handler()
 async def mod_role_error_handler(event: lightbulb.CommandErrorEvent) -> bool:
-    await event.context.respond(f"Must have the role set as the mod role {event.bot.get_me().mention} and have administrator to run this command", flags=hikari.MessageFlag.EPHEMERAL)
+    await event.context.respond(
+        f"Must have the role set as the mod role {event.bot.get_me().mention} and have administrator to run this command",
+        flags=hikari.MessageFlag.EPHEMERAL,
+    )
     return True
 
 

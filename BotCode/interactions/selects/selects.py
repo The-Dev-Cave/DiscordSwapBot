@@ -9,7 +9,6 @@ import lightbulb
 from BotCode.environment.database import get_database_connection
 from BotCode.functions.send_logs import send_public_log
 
-
 selects_plugin = lightbulb.Plugin("Selects")
 
 
@@ -189,9 +188,13 @@ selects_plugin = lightbulb.Plugin("Selects")
     ],
 )
 async def condition_select_menu(
-        ctx: flare.MessageContext, post_id: int = 0, post_type: str = "No Type", guild_id: hikari.Snowflake = 123
+    ctx: flare.MessageContext,
+    post_id: int = 0,
+    post_type: str = "No Type",
+    guild_id: hikari.Snowflake = 123,
 ):
     from BotCode.interactions.buttons.buttons_posts import ButtonCancel
+
     conn = await get_database_connection()
     conn: asyncpg.Connection
 
@@ -218,9 +221,10 @@ async def condition_select_menu(
                 meetup_select_menu(
                     post_type=post_type, post_id=post_id, guild_id=guild_id
                 )
-            ), flare.Row(
+            ),
+            flare.Row(
                 ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel")
-            )
+            ),
         ),
     )
     await conn.close()
@@ -236,16 +240,20 @@ async def condition_select_menu(
         "Can Pickup (Paid)",
         "Meet Up",
         "Shipping (Add. Cost)",
-        "Shipping (No Add. Cost)"
+        "Shipping (No Add. Cost)",
     ],
     min_values=1,
     max_values=5,
 )
 async def meetup_select_menu(
-        ctx: flare.MessageContext, post_id: int = 0, post_type: str = "No Type", guild_id: hikari.Snowflake = 123
+    ctx: flare.MessageContext,
+    post_id: int = 0,
+    post_type: str = "No Type",
+    guild_id: hikari.Snowflake = 123,
 ):
     from BotCode.interactions.buttons.buttons_posts import ButtonNoPhoto
     from BotCode.interactions.buttons.buttons_posts import ButtonCancel
+
     conn = await get_database_connection()
     conn: asyncpg.Connection
 
@@ -292,10 +300,13 @@ async def meetup_select_menu(
         embeds=[embed, embed_nextpart],
         components=await asyncio.gather(
             flare.Row(
-                payment_methods_select_menu(post_type=post_type, post_id=post_id, guild_id=guild_id)
-            ), flare.Row(
+                payment_methods_select_menu(
+                    post_type=post_type, post_id=post_id, guild_id=guild_id
+                )
+            ),
+            flare.Row(
                 ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel")
-            )
+            ),
         ),
     )
     await conn.close()
@@ -318,7 +329,10 @@ async def meetup_select_menu(
     max_values=5,
 )
 async def payment_methods_select_menu(
-        ctx: flare.MessageContext, post_id: int = 0, post_type: str = "No Type", guild_id: hikari.Snowflake = 123
+    ctx: flare.MessageContext,
+    post_id: int = 0,
+    post_type: str = "No Type",
+    guild_id: hikari.Snowflake = 123,
 ):
     from BotCode.interactions.buttons.buttons_posts import (
         ButtonNoPhoto,
@@ -328,6 +342,7 @@ async def payment_methods_select_menu(
 
     from BotCode.functions.embeds import buildPostEmbed
     from BotCode.interactions.buttons.buttons_posts import ButtonCancel
+
     conn = await get_database_connection()
     conn: asyncpg.Connection
 
@@ -350,14 +365,20 @@ async def payment_methods_select_menu(
         if resp_code == "UPDATE 0":
             await conn.close()
             return
-        msg = await (await ctx.respond(
-            embeds=[embed, embed_nextstep],
-            component=await flare.Row(
-                ButtonNoPhoto(post_id=post_id, post_type=post_type, guild_id=guild_id)
-                , ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel")
+        msg = await (
+            await ctx.respond(
+                embeds=[embed, embed_nextstep],
+                component=await flare.Row(
+                    ButtonNoPhoto(
+                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    ),
+                    ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel"),
+                ),
             )
-        )).retrieve_message()
-        await conn.execute(f"UPDATE {post_type} set image='{msg.id}' where id={post_id}")
+        ).retrieve_message()
+        await conn.execute(
+            f"UPDATE {post_type} set image='{msg.id}' where id={post_id}"
+        )
 
     else:
         resp_code = await conn.execute(
@@ -371,11 +392,23 @@ async def payment_methods_select_menu(
         )
         await ctx.message.edit(components=[])
         from BotCode.interactions.selects.selects_editing import edit_select_menu
-        await ctx.respond(embed=embed, components=await asyncio.gather(
-                flare.Row(edit_select_menu(post_id=post_id, post_type=post_type, guild_id=guild_id)), flare.Row(
-                    ButtonSendPostToMods(post_id=post_id, post_type=post_type, guild_id=guild_id),
-                    ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel")
-                )))
+
+        await ctx.respond(
+            embed=embed,
+            components=await asyncio.gather(
+                flare.Row(
+                    edit_select_menu(
+                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    )
+                ),
+                flare.Row(
+                    ButtonSendPostToMods(
+                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    ),
+                    ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel"),
+                ),
+            ),
+        )
 
     await conn.close()
 
@@ -410,50 +443,77 @@ async def payment_methods_select_menu(
 @flare.select(
     placeholder="Select What To Update",
     options=[
-        hikari.SelectMenuOption(label="Edit Post (Not Implemented)", value="edit",
-                                description="Edit post information (Not Implemented)", emoji=None,
-                                is_default=False),
-        hikari.SelectMenuOption(label="(Un)Mark As Pending", value="pending", description="Mark post as pending",
-                                emoji=None, is_default=False),
-        hikari.SelectMenuOption(label="Mark As Sold", value="sold", description="Mark sold in log & delete post",
-                                emoji=None, is_default=False),
-        hikari.SelectMenuOption(label="Remove Listing", value="remove", description="Remove listing, but not sold",
-                                emoji=None, is_default=False),
-    ]
+        hikari.SelectMenuOption(
+            label="Edit Post (Not Implemented)",
+            value="edit",
+            description="Edit post information (Not Implemented)",
+            emoji=None,
+            is_default=False,
+        ),
+        hikari.SelectMenuOption(
+            label="(Un)Mark As Pending",
+            value="pending",
+            description="Mark post as pending",
+            emoji=None,
+            is_default=False,
+        ),
+        hikari.SelectMenuOption(
+            label="Mark As Sold",
+            value="sold",
+            description="Mark sold in log & delete post",
+            emoji=None,
+            is_default=False,
+        ),
+        hikari.SelectMenuOption(
+            label="Remove Listing",
+            value="remove",
+            description="Remove listing, but not sold",
+            emoji=None,
+            is_default=False,
+        ),
+    ],
 )
 async def update_post(
-        ctx: flare.MessageContext, post_id: int = 0, post_type: str = "No Type"
+    ctx: flare.MessageContext, post_id: int = 0, post_type: str = "No Type"
 ):
     conn = await get_database_connection()
     selcected_value = ctx.values[0]
     row = await conn.fetchrow(
-        f"Select buy_channel_id,sell_channel_id,user_bridge_cat_id from guilds where guild_id={ctx.guild_id}")
-    swap_cat_id = row.get('user_bridge_cat_id')
+        f"Select buy_channel_id,sell_channel_id,user_bridge_cat_id from guilds where guild_id={ctx.guild_id}"
+    )
+    swap_cat_id = row.get("user_bridge_cat_id")
     # Change select menu for edit post to choose what to edit
     # Change to button to ask if sure to change pending, sold, or to remove
     #   and let them know to click dismiss message to cancel / finish
     match selcected_value:
         case "edit":
             await ctx.edit_response(content="Not implemented yet", components=[])
-            await ctx.edit_response(component=await asyncio.gather(
-                flare.Row(edit_post(post_id=post_id, post_type=post_type)),
-            ))
+            await ctx.edit_response(
+                component=await asyncio.gather(
+                    flare.Row(edit_post(post_id=post_id, post_type=post_type)),
+                )
+            )
         case "pending":
 
-            post_types_dict = {"sell": row.get('sell_channel_id'), "buy": row.get('buy_channel_id')}
+            post_types_dict = {
+                "sell": row.get("sell_channel_id"),
+                "buy": row.get("buy_channel_id"),
+            }
 
             try:
                 row = await conn.fetchrow(
-                    f"Select message_id, post_status, title, author_id from {post_type} where id={post_id}")
+                    f"Select message_id, post_status, title, author_id from {post_type} where id={post_id}"
+                )
                 pending = row.get("post_status")
 
                 msg = await ctx.bot.rest.fetch_message(
                     post_types_dict.get(post_type), row.get("message_id")
                 )
             except:
-                await ctx.respond("Post no longer able to be marked as pending",
-                                  flags=hikari.MessageFlag.EPHEMERAL,
-                                  )
+                await ctx.respond(
+                    "Post no longer able to be marked as pending",
+                    flags=hikari.MessageFlag.EPHEMERAL,
+                )
                 await conn.close()
                 return
 
@@ -467,27 +527,38 @@ async def update_post(
                 await conn.execute(
                     f"update {post_type} set post_status=1 where id={post_id}"
                 )
-                await ctx.edit_response(content="Post marked as pending and any open chats have been notified",
-                                        components=[])
-                await send_public_log(guild_id=ctx.guild_id,
-                                      text=f"**{post_type.upper()}:** <@{row.get('author_id')}> **UPDATED** listing __{row.get('title')}__ to **PENDING**")
+                await ctx.edit_response(
+                    content="Post marked as pending and any open chats have been notified",
+                    components=[],
+                )
+                await send_public_log(
+                    guild_id=ctx.guild_id,
+                    text=f"**{post_type.upper()}:** <@{row.get('author_id')}> **UPDATED** listing __{row.get('title')}__ to **PENDING**",
+                )
                 channels = ctx.bot.cache.get_guild_channels_view_for_guild(ctx.guild_id)
 
                 test2 = itertools.groupby(
-                    filter(lambda c: isinstance(c[1], hikari.GuildTextChannel), channels.items()),
+                    filter(
+                        lambda c: isinstance(c[1], hikari.GuildTextChannel),
+                        channels.items(),
+                    ),
                     key=lambda c: c[1].parent_id,
                 )
                 for item in test2:
                     cat_id = item[0]
                     if cat_id == swap_cat_id:
                         for i in item[1]:
-                            if (str(post_id) in str(i[1].name)) and (str(i[0]) != str(ctx.channel_id)):
-                                await ctx.bot.rest.create_message(channel=i[0],
-                                                                  embed=hikari.Embed(
-                                                                      title="Post has been marked as **PENDING**",
-                                                                      description="",
-                                                                      color=0xFFDD00)
-                                                                  )
+                            if (str(post_id) in str(i[1].name)) and (
+                                str(i[0]) != str(ctx.channel_id)
+                            ):
+                                await ctx.bot.rest.create_message(
+                                    channel=i[0],
+                                    embed=hikari.Embed(
+                                        title="Post has been marked as **PENDING**",
+                                        description="",
+                                        color=0xFFDD00,
+                                    ),
+                                )
                         break
 
             else:
@@ -498,72 +569,103 @@ async def update_post(
                 await conn.execute(
                     f"update {post_type} set post_status=0 where id={post_id}"
                 )
-                await ctx.edit_response(content="Post no longer marked as pending", components=[])
+                await ctx.edit_response(
+                    content="Post no longer marked as pending", components=[]
+                )
                 channels = ctx.bot.cache.get_guild_channels_view_for_guild(ctx.guild_id)
-                await send_public_log(guild_id=ctx.guild_id,
-                                      text=f"**{post_type.upper()}:** <@{row.get('author_id')}> **UPDATED** listing __{row.get('title')}__ to **AVAILABLE**")
+                await send_public_log(
+                    guild_id=ctx.guild_id,
+                    text=f"**{post_type.upper()}:** <@{row.get('author_id')}> **UPDATED** listing __{row.get('title')}__ to **AVAILABLE**",
+                )
 
                 test2 = itertools.groupby(
-                    filter(lambda c: isinstance(c[1], hikari.GuildTextChannel), channels.items()),
+                    filter(
+                        lambda c: isinstance(c[1], hikari.GuildTextChannel),
+                        channels.items(),
+                    ),
                     key=lambda c: c[1].parent_id,
                 )
                 for item in test2:
                     cat_id = item[0]
                     if cat_id == swap_cat_id:
                         for i in item[1]:
-                            if (str(post_id) in str(i[1].name)) and (str(i[0]) != str(ctx.channel_id)):
-                                await ctx.bot.rest.create_message(channel=i[0],
-                                                                  embed=hikari.Embed(
-                                                                      title="Post has been marked as **AVAILABLE**",
-                                                                      description="",
-                                                                      color=0x00FF00)
-                                                                  )
+                            if (str(post_id) in str(i[1].name)) and (
+                                str(i[0]) != str(ctx.channel_id)
+                            ):
+                                await ctx.bot.rest.create_message(
+                                    channel=i[0],
+                                    embed=hikari.Embed(
+                                        title="Post has been marked as **AVAILABLE**",
+                                        description="",
+                                        color=0x00FF00,
+                                    ),
+                                )
                         break
         case "sold":
             await ctx.edit_response(
                 "Post has been marked as sold and removed from respective post channel and user bridge chats related to this post have been closed",
-                components=[])
+                components=[],
+            )
 
-            row = await conn.fetchrow(f"SELECT message_id, title, author_id from {post_type} where id={post_id}")
-            await send_public_log(guild_id=ctx.guild_id,
-                                  text=f"**{post_type.upper()}:** <@{row.get('author_id')}> has **SOLD** listing __{row.get('title')}__")
+            row = await conn.fetchrow(
+                f"SELECT message_id, title, author_id from {post_type} where id={post_id}"
+            )
+            await send_public_log(
+                guild_id=ctx.guild_id,
+                text=f"**{post_type.upper()}:** <@{row.get('author_id')}> has **SOLD** listing __{row.get('title')}__",
+            )
             await ctx.bot.rest.delete_message(ctx.channel_id, row.get("message_id"))
 
             channels = ctx.bot.cache.get_guild_channels_view_for_guild(ctx.guild_id)
 
             test2 = itertools.groupby(
-                filter(lambda c: isinstance(c[1], hikari.GuildTextChannel), channels.items()),
+                filter(
+                    lambda c: isinstance(c[1], hikari.GuildTextChannel),
+                    channels.items(),
+                ),
                 key=lambda c: c[1].parent_id,
             )
             for item in test2:
                 cat_id = item[0]
                 if cat_id == swap_cat_id:
                     for i in item[1]:
-                        if (str(i[1].id) != str(ctx.channel_id)) and (str(post_id) in str(i[1].name)):
+                        if (str(i[1].id) != str(ctx.channel_id)) and (
+                            str(post_id) in str(i[1].name)
+                        ):
                             await ctx.bot.rest.delete_channel(i[1].id)
 
             await conn.execute(f"delete from {post_type} where id={post_id}")
         case "remove":
             await ctx.edit_response(
                 "Post has been removed from the respective post channel and related user bridge chats have been closed",
-                components=[])
+                components=[],
+            )
 
-            row = await conn.fetchrow(f"SELECT message_id, title, author_id from {post_type} where id={post_id}")
-            await send_public_log(guild_id=ctx.guild_id,
-                                  text=f"**{post_type.upper()}:** <@{row.get('author_id')}> has **REMOVED** listing __{row.get('title')}__")
+            row = await conn.fetchrow(
+                f"SELECT message_id, title, author_id from {post_type} where id={post_id}"
+            )
+            await send_public_log(
+                guild_id=ctx.guild_id,
+                text=f"**{post_type.upper()}:** <@{row.get('author_id')}> has **REMOVED** listing __{row.get('title')}__",
+            )
 
             await ctx.bot.rest.delete_message(ctx.channel_id, row.get("message_id"))
 
             channels = ctx.bot.cache.get_guild_channels_view_for_guild(ctx.guild_id)
             test2 = itertools.groupby(
-                filter(lambda c: isinstance(c[1], hikari.GuildTextChannel), channels.items()),
+                filter(
+                    lambda c: isinstance(c[1], hikari.GuildTextChannel),
+                    channels.items(),
+                ),
                 key=lambda c: c[1].parent_id,
             )
             for item in test2:
                 cat_id = item[0]
                 if cat_id == swap_cat_id:
                     for i in item[1]:
-                        if (str(i[1].id) != str(ctx.channel_id)) and (str(post_id) in str(i[1].name)):
+                        if (str(i[1].id) != str(ctx.channel_id)) and (
+                            str(post_id) in str(i[1].name)
+                        ):
                             await ctx.bot.rest.delete_channel(i[1].id)
 
             await conn.execute(f"delete from {post_type} where id={post_id}")
@@ -575,16 +677,37 @@ async def update_post(
     options=[
         # hikari.SelectMenuOption(label="Title", value="title", description="", emoji=None, is_default=False),
         # hikari.SelectMenuOption(label="Description", value="description", description="", emoji=None, is_default=False),
-        hikari.SelectMenuOption(label="Condition", value="condition", description="", emoji=None, is_default=False),
-        hikari.SelectMenuOption(label="Cost/Looking For", value="cost_look", description="", emoji=None,
-                                is_default=False),
-        hikari.SelectMenuOption(label="Payment Methods", value="payment", description="", emoji=None, is_default=False),
+        hikari.SelectMenuOption(
+            label="Condition",
+            value="condition",
+            description="",
+            emoji=None,
+            is_default=False,
+        ),
+        hikari.SelectMenuOption(
+            label="Cost/Looking For",
+            value="cost_look",
+            description="",
+            emoji=None,
+            is_default=False,
+        ),
+        hikari.SelectMenuOption(
+            label="Payment Methods",
+            value="payment",
+            description="",
+            emoji=None,
+            is_default=False,
+        ),
         # hikari.SelectMenuOption(label="Location", value="location", description="", emoji=None, is_default=False),
         # hikari.SelectMenuOption(label="Meetup", value="meetup", description="", emoji=None, is_default=False),
-        hikari.SelectMenuOption(label="Photos", value="photos", description="", emoji=None, is_default=False),
-    ]
+        hikari.SelectMenuOption(
+            label="Photos", value="photos", description="", emoji=None, is_default=False
+        ),
+    ],
 )
-async def edit_post(ctx: flare.MessageContext, post_id: int = 0, post_type: str = "No Type"):
+async def edit_post(
+    ctx: flare.MessageContext, post_id: int = 0, post_type: str = "No Type"
+):
     await ctx.edit_response("Not Implemented", components=[])
     return
     # match ctx.values[0]:

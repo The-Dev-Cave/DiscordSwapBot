@@ -69,8 +69,12 @@ selects_plugin = lightbulb.Plugin("Editing Selects")
     min_values=1,
     max_values=1,
 )
-async def edit_select_menu(ctx: flare.MessageContext, post_id: int = 0, post_type: str = "No Type",
-                           guild_id: hikari.Snowflake = 123):
+async def edit_select_menu(
+    ctx: flare.MessageContext,
+    post_id: int = 0,
+    post_type: str = "No Type",
+    guild_id: hikari.Snowflake = 123,
+):
     if len(ctx.values) == 0:
         await ctx.respond("Select nothing. Please select an item")
 
@@ -78,7 +82,12 @@ async def edit_select_menu(ctx: flare.MessageContext, post_id: int = 0, post_typ
 
     match option:
         case "title":
-            modal = ModalPostEdit(post_id=post_id, post_type=post_type, guild_id=guild_id, edit_option="title")
+            modal = ModalPostEdit(
+                post_id=post_id,
+                post_type=post_type,
+                guild_id=guild_id,
+                edit_option="title",
+            )
             modal.append(
                 flare.TextInput(
                     label="Title",
@@ -88,7 +97,12 @@ async def edit_select_menu(ctx: flare.MessageContext, post_id: int = 0, post_typ
             )
             await modal.send(ctx.interaction)
         case "description":
-            modal = ModalPostEdit(post_id=post_id, post_type=post_type, guild_id=guild_id, edit_option="description")
+            modal = ModalPostEdit(
+                post_id=post_id,
+                post_type=post_type,
+                guild_id=guild_id,
+                edit_option="description",
+            )
             modal.append(
                 flare.TextInput(
                     label="Description",
@@ -99,20 +113,27 @@ async def edit_select_menu(ctx: flare.MessageContext, post_id: int = 0, post_typ
             await modal.send(ctx.interaction)
         case "condition":
             await ctx.message.edit(components=[])
-            await ctx.respond(embed=hikari.Embed(
-                title="Item Condition",
-                description="Select the item's condition if selling or worse condition you would buy\n",
-
-                color=0xFFDD00,
-            ), components=await asyncio.gather(
-                flare.Row(
-                    edit_condition_select_menu(
-                        post_type=post_type, post_id=post_id, guild_id=guild_id
+            await ctx.respond(
+                embed=hikari.Embed(
+                    title="Item Condition",
+                    description="Select the item's condition if selling or worse condition you would buy\n",
+                    color=0xFFDD00,
+                ),
+                components=await asyncio.gather(
+                    flare.Row(
+                        edit_condition_select_menu(
+                            post_type=post_type, post_id=post_id, guild_id=guild_id
+                        )
                     )
-                ))
+                ),
             )
         case "price":
-            modal = ModalPostEdit(post_id=post_id, post_type=post_type, guild_id=guild_id, edit_option="price")
+            modal = ModalPostEdit(
+                post_id=post_id,
+                post_type=post_type,
+                guild_id=guild_id,
+                edit_option="price",
+            )
             modal.append(
                 flare.TextInput(
                     label="Price/Cost",
@@ -123,31 +144,35 @@ async def edit_select_menu(ctx: flare.MessageContext, post_id: int = 0, post_typ
             await modal.send(ctx.interaction)
         case "meetup":
             await ctx.message.edit(components=[])
-            await ctx.respond(embed=hikari.Embed(
-                title="How will interested party get/sell item",
-                description="The options on how the interested party will be able to get/sell the item\n",
-
-                color=0xFFDD00,
-            ), components=await asyncio.gather(
-                flare.Row(
-                    edit_meetup_select_menu(
-                        post_type=post_type, post_id=post_id, guild_id=guild_id
+            await ctx.respond(
+                embed=hikari.Embed(
+                    title="How will interested party get/sell item",
+                    description="The options on how the interested party will be able to get/sell the item\n",
+                    color=0xFFDD00,
+                ),
+                components=await asyncio.gather(
+                    flare.Row(
+                        edit_meetup_select_menu(
+                            post_type=post_type, post_id=post_id, guild_id=guild_id
+                        )
                     )
-                ))
+                ),
             )
         case "payment_methods":
             await ctx.message.edit(components=[])
-            await ctx.respond(embed=hikari.Embed(
-                title="Preferred Payment Methods",
-                description="The payment methods you can use for sending or receiving payments\n",
-
-                color=0xFFDD00,
-            ), components=await asyncio.gather(
-                flare.Row(
-                    edit_payment_methods_select_menu(
-                        post_type=post_type, post_id=post_id, guild_id=guild_id
+            await ctx.respond(
+                embed=hikari.Embed(
+                    title="Preferred Payment Methods",
+                    description="The payment methods you can use for sending or receiving payments\n",
+                    color=0xFFDD00,
+                ),
+                components=await asyncio.gather(
+                    flare.Row(
+                        edit_payment_methods_select_menu(
+                            post_type=post_type, post_id=post_id, guild_id=guild_id
+                        )
                     )
-                ))
+                ),
             )
         # case "images":
         #     from BotCode.interactions.buttons.buttons_posts import ButtonNoPhoto, ButtonCancel
@@ -237,9 +262,18 @@ async def edit_select_menu(ctx: flare.MessageContext, post_id: int = 0, post_typ
     ],
 )
 async def edit_condition_select_menu(
-        ctx: flare.MessageContext, post_id: int = 0, post_type: str = "No Type", guild_id: hikari.Snowflake = 123
+    ctx: flare.MessageContext,
+    post_id: int = 0,
+    post_type: str = "No Type",
+    guild_id: hikari.Snowflake = 123,
 ):
-    from BotCode.interactions.buttons.buttons_posts import ButtonSendPostToMods, ButtonCancel, ButtonNewPostPhotos, ButtonShowMoreImages
+    from BotCode.interactions.buttons.buttons_posts import (
+        ButtonSendPostToMods,
+        ButtonCancel,
+        ButtonNewPostPhotos,
+        ButtonShowMoreImages,
+    )
+
     await ctx.defer(False)
     await ctx.message.edit(components=[])
     conn = await get_database_connection()
@@ -255,32 +289,56 @@ async def edit_condition_select_menu(
         return
     received_embed = hikari.Embed(title="Received Value", description=condition)
 
-    embed = await buildPostEmbed(
-        post_id=post_id, post_type=post_type, user=ctx.user
-    )
+    embed = await buildPostEmbed(post_id=post_id, post_type=post_type, user=ctx.user)
     has_add_imgs = False
     if post_type == "sell":
-        add_imgs = await conn.fetchval(f"SELECT add_images from sell where id={post_id}")
+        add_imgs = await conn.fetchval(
+            f"SELECT add_images from sell where id={post_id}"
+        )
         if add_imgs and (len(add_imgs) > 0):
             has_add_imgs = True
 
     if has_add_imgs:
-        await ctx.interaction.edit_initial_response(embed=embed, components=await asyncio.gather(
-            flare.Row(edit_select_menu(post_id=post_id, post_type=post_type, guild_id=guild_id)),
-            flare.Row(
-                ButtonSendPostToMods(post_id=post_id, post_type=post_type, guild_id=guild_id),
-                ButtonNewPostPhotos(post_id=post_id, post_type=post_type, guild_id=guild_id),
-                ButtonShowMoreImages(post_id=post_id, post_type=post_type),
-                ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel")
-            )))
+        await ctx.interaction.edit_initial_response(
+            embed=embed,
+            components=await asyncio.gather(
+                flare.Row(
+                    edit_select_menu(
+                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    )
+                ),
+                flare.Row(
+                    ButtonSendPostToMods(
+                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    ),
+                    ButtonNewPostPhotos(
+                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    ),
+                    ButtonShowMoreImages(post_id=post_id, post_type=post_type),
+                    ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel"),
+                ),
+            ),
+        )
     else:
-        await ctx.interaction.edit_initial_response(embed=embed, components=await asyncio.gather(
-            flare.Row(edit_select_menu(post_id=post_id, post_type=post_type, guild_id=guild_id)),
-            flare.Row(
-                ButtonSendPostToMods(post_id=post_id, post_type=post_type, guild_id=guild_id),
-                ButtonNewPostPhotos(post_id=post_id, post_type=post_type, guild_id=guild_id),
-                ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel")
-            )))
+        await ctx.interaction.edit_initial_response(
+            embed=embed,
+            components=await asyncio.gather(
+                flare.Row(
+                    edit_select_menu(
+                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    )
+                ),
+                flare.Row(
+                    ButtonSendPostToMods(
+                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    ),
+                    ButtonNewPostPhotos(
+                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    ),
+                    ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel"),
+                ),
+            ),
+        )
 
 
 @flare.select(
@@ -292,15 +350,24 @@ async def edit_condition_select_menu(
         "Can Pickup (Paid)",
         "Meet Up",
         "Shipping (Add. Cost)",
-        "Shipping (No Add. Cost)"
+        "Shipping (No Add. Cost)",
     ],
     min_values=1,
     max_values=5,
 )
 async def edit_meetup_select_menu(
-        ctx: flare.MessageContext, post_id: int = 0, post_type: str = "No Type", guild_id: hikari.Snowflake = 123
+    ctx: flare.MessageContext,
+    post_id: int = 0,
+    post_type: str = "No Type",
+    guild_id: hikari.Snowflake = 123,
 ):
-    from BotCode.interactions.buttons.buttons_posts import ButtonSendPostToMods, ButtonCancel, ButtonNewPostPhotos, ButtonShowMoreImages
+    from BotCode.interactions.buttons.buttons_posts import (
+        ButtonSendPostToMods,
+        ButtonCancel,
+        ButtonNewPostPhotos,
+        ButtonShowMoreImages,
+    )
+
     await ctx.defer(False)
     await ctx.message.edit(components=[])
     conn = await get_database_connection()
@@ -319,32 +386,56 @@ async def edit_meetup_select_menu(
         return
     received_embed = hikari.Embed(title="Received Value", description=selected)
 
-    embed = await buildPostEmbed(
-        post_id=post_id, post_type=post_type, user=ctx.user
-    )
+    embed = await buildPostEmbed(post_id=post_id, post_type=post_type, user=ctx.user)
     has_add_imgs = False
     if post_type == "sell":
-        add_imgs = await conn.fetchval(f"SELECT add_images from sell where id={post_id}")
+        add_imgs = await conn.fetchval(
+            f"SELECT add_images from sell where id={post_id}"
+        )
         if add_imgs and (len(add_imgs) > 0):
             has_add_imgs = True
 
     if has_add_imgs:
-        await ctx.interaction.edit_initial_response(embed=embed, components=await asyncio.gather(
-            flare.Row(edit_select_menu(post_id=post_id, post_type=post_type, guild_id=guild_id)),
-            flare.Row(
-                ButtonSendPostToMods(post_id=post_id, post_type=post_type, guild_id=guild_id),
-                ButtonNewPostPhotos(post_id=post_id, post_type=post_type, guild_id=guild_id),
-                ButtonShowMoreImages(post_id=post_id, post_type=post_type),
-                ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel")
-            )))
+        await ctx.interaction.edit_initial_response(
+            embed=embed,
+            components=await asyncio.gather(
+                flare.Row(
+                    edit_select_menu(
+                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    )
+                ),
+                flare.Row(
+                    ButtonSendPostToMods(
+                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    ),
+                    ButtonNewPostPhotos(
+                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    ),
+                    ButtonShowMoreImages(post_id=post_id, post_type=post_type),
+                    ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel"),
+                ),
+            ),
+        )
     else:
-        await ctx.interaction.edit_initial_response(embed=embed, components=await asyncio.gather(
-            flare.Row(edit_select_menu(post_id=post_id, post_type=post_type, guild_id=guild_id)),
-            flare.Row(
-                ButtonSendPostToMods(post_id=post_id, post_type=post_type, guild_id=guild_id),
-                ButtonNewPostPhotos(post_id=post_id, post_type=post_type, guild_id=guild_id),
-                ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel")
-            )))
+        await ctx.interaction.edit_initial_response(
+            embed=embed,
+            components=await asyncio.gather(
+                flare.Row(
+                    edit_select_menu(
+                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    )
+                ),
+                flare.Row(
+                    ButtonSendPostToMods(
+                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    ),
+                    ButtonNewPostPhotos(
+                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    ),
+                    ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel"),
+                ),
+            ),
+        )
 
 
 @flare.select(
@@ -364,9 +455,18 @@ async def edit_meetup_select_menu(
     max_values=5,
 )
 async def edit_payment_methods_select_menu(
-        ctx: flare.MessageContext, post_id: int = 0, post_type: str = "No Type", guild_id: hikari.Snowflake = 123
+    ctx: flare.MessageContext,
+    post_id: int = 0,
+    post_type: str = "No Type",
+    guild_id: hikari.Snowflake = 123,
 ):
-    from BotCode.interactions.buttons.buttons_posts import ButtonSendPostToMods, ButtonCancel, ButtonNewPostPhotos, ButtonShowMoreImages
+    from BotCode.interactions.buttons.buttons_posts import (
+        ButtonSendPostToMods,
+        ButtonCancel,
+        ButtonNewPostPhotos,
+        ButtonShowMoreImages,
+    )
+
     await ctx.defer(False)
     await ctx.message.edit(components=[])
     conn = await get_database_connection()
@@ -385,32 +485,56 @@ async def edit_payment_methods_select_menu(
         return
     received_embed = hikari.Embed(title="Received Value", description=pay_meth)
 
-    embed = await buildPostEmbed(
-        post_id=post_id, post_type=post_type, user=ctx.user
-    )
+    embed = await buildPostEmbed(post_id=post_id, post_type=post_type, user=ctx.user)
     has_add_imgs = False
     if post_type == "sell":
-        add_imgs = await conn.fetchval(f"SELECT add_images from sell where id={post_id}")
+        add_imgs = await conn.fetchval(
+            f"SELECT add_images from sell where id={post_id}"
+        )
         if add_imgs and (len(add_imgs) > 0):
             has_add_imgs = True
 
     if has_add_imgs:
-        await ctx.interaction.edit_initial_response(embed=embed, components=await asyncio.gather(
-            flare.Row(edit_select_menu(post_id=post_id, post_type=post_type, guild_id=guild_id)),
-            flare.Row(
-                ButtonSendPostToMods(post_id=post_id, post_type=post_type, guild_id=guild_id),
-                ButtonNewPostPhotos(post_id=post_id, post_type=post_type, guild_id=guild_id),
-                ButtonShowMoreImages(post_id=post_id, post_type=post_type),
-                ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel")
-            )))
+        await ctx.interaction.edit_initial_response(
+            embed=embed,
+            components=await asyncio.gather(
+                flare.Row(
+                    edit_select_menu(
+                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    )
+                ),
+                flare.Row(
+                    ButtonSendPostToMods(
+                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    ),
+                    ButtonNewPostPhotos(
+                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    ),
+                    ButtonShowMoreImages(post_id=post_id, post_type=post_type),
+                    ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel"),
+                ),
+            ),
+        )
     else:
-        await ctx.interaction.edit_initial_response(embed=embed, components=await asyncio.gather(
-            flare.Row(edit_select_menu(post_id=post_id, post_type=post_type, guild_id=guild_id)),
-            flare.Row(
-                ButtonSendPostToMods(post_id=post_id, post_type=post_type, guild_id=guild_id),
-                ButtonNewPostPhotos(post_id=post_id, post_type=post_type, guild_id=guild_id),
-                ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel")
-            )))
+        await ctx.interaction.edit_initial_response(
+            embed=embed,
+            components=await asyncio.gather(
+                flare.Row(
+                    edit_select_menu(
+                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    )
+                ),
+                flare.Row(
+                    ButtonSendPostToMods(
+                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    ),
+                    ButtonNewPostPhotos(
+                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    ),
+                    ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel"),
+                ),
+            ),
+        )
 
 
 def load(bot: lightbulb.BotApp):

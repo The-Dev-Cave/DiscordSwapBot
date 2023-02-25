@@ -9,7 +9,8 @@ from BotCode.environment.database import get_database_connection
 from BotCode.functions.embeds import buildPostEmbed
 from BotCode.interactions.buttons.buttons_posts import (
     ButtonSendPostToMods,
-    ButtonNewPostPhotos, ButtonCancel,
+    ButtonNewPostPhotos,
+    ButtonCancel,
 )
 from BotCode.interactions.buttons.buttons_user_bridge import ButtonShowMoreImages
 from BotCode.interactions.selects.selects_editing import edit_select_menu
@@ -70,7 +71,9 @@ async def posts_dm(event: hikari.DMMessageCreateEvent):
                 img_urls += f"{image.url}|"
 
         msg_id = await conn.fetchval(f"SELECT image from sell where id={post_id}")
-        await event.app.rest.edit_message(channel=event.channel_id, message=msg_id, components=[])
+        await event.app.rest.edit_message(
+            channel=event.channel_id, message=msg_id, components=[]
+        )
 
         await conn.execute(
             f"UPDATE {post_type} set stage=3,image='{first_img.url}',add_images='{img_urls}' where id={post_id}"
@@ -80,21 +83,51 @@ async def posts_dm(event: hikari.DMMessageCreateEvent):
         )
         if (len(event.message.attachments) > 1) and (img_urls != ""):
             # remove components from msg9
-            await event.author.send(embed=embed, components=await asyncio.gather(
-                flare.Row(edit_select_menu(post_id=post_id, post_type=post_type, guild_id=guild_id)), flare.Row(
-                    ButtonSendPostToMods(post_id=post_id, post_type=post_type, guild_id=guild_id),
-                    ButtonNewPostPhotos(post_id=post_id, post_type=post_type, guild_id=guild_id),
-                    ButtonShowMoreImages(post_id=post_id, post_type=post_type),
-                    ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel")
-                )))
+            await event.author.send(
+                embed=embed,
+                components=await asyncio.gather(
+                    flare.Row(
+                        edit_select_menu(
+                            post_id=post_id, post_type=post_type, guild_id=guild_id
+                        )
+                    ),
+                    flare.Row(
+                        ButtonSendPostToMods(
+                            post_id=post_id, post_type=post_type, guild_id=guild_id
+                        ),
+                        ButtonNewPostPhotos(
+                            post_id=post_id, post_type=post_type, guild_id=guild_id
+                        ),
+                        ButtonShowMoreImages(post_id=post_id, post_type=post_type),
+                        ButtonCancel(
+                            post_id=post_id, post_type=post_type, label="Cancel"
+                        ),
+                    ),
+                ),
+            )
         else:
 
-            await event.author.send(embed=embed, components=await asyncio.gather(
-                flare.Row(edit_select_menu(post_id=post_id, post_type=post_type, guild_id=guild_id)), flare.Row(
-                    ButtonSendPostToMods(post_id=post_id, post_type=post_type, guild_id=guild_id),
-                    ButtonNewPostPhotos(post_id=post_id, post_type=post_type, guild_id=guild_id),
-                    ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel")
-                )))
+            await event.author.send(
+                embed=embed,
+                components=await asyncio.gather(
+                    flare.Row(
+                        edit_select_menu(
+                            post_id=post_id, post_type=post_type, guild_id=guild_id
+                        )
+                    ),
+                    flare.Row(
+                        ButtonSendPostToMods(
+                            post_id=post_id, post_type=post_type, guild_id=guild_id
+                        ),
+                        ButtonNewPostPhotos(
+                            post_id=post_id, post_type=post_type, guild_id=guild_id
+                        ),
+                        ButtonCancel(
+                            post_id=post_id, post_type=post_type, label="Cancel"
+                        ),
+                    ),
+                ),
+            )
         await conn.close()
 
     except:

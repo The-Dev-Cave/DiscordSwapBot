@@ -5,8 +5,9 @@ import lightbulb
 from BotCode.interactions.selects.selects_ratings import stars
 
 buttons_ratings_plugin = lightbulb.Plugin("Database Functions", include_datastore=True)
-class ButtonNoRating(flare.Button):
 
+
+class ButtonNoRating(flare.Button):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.style = hikari.ButtonStyle.DANGER
@@ -36,7 +37,11 @@ class ButtonStartRating(flare.Button):
 
     async def callback(self, ctx: flare.MessageContext) -> None:
         await ctx.message.edit(components=[])
-        await ctx.respond(component=await flare.Row(stars(other_user_id=self.other_user_id, post_type=self.post_type)))
+        await ctx.respond(
+            component=await flare.Row(
+                stars(other_user_id=self.other_user_id, post_type=self.post_type)
+            )
+        )
 
 
 def load(bot: lightbulb.BotApp):

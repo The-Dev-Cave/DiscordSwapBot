@@ -8,7 +8,11 @@ import hikari
 
 from BotCode.environment.database import get_database_connection
 from BotCode.functions.embeds import buildPostEmbed
-from BotCode.interactions.buttons.buttons_posts import ButtonContactLister, ButtonUpdatePost, ButtonReportPost
+from BotCode.interactions.buttons.buttons_posts import (
+    ButtonContactLister,
+    ButtonUpdatePost,
+    ButtonReportPost,
+)
 from BotCode.interactions.buttons.buttons_user_bridge import ButtonShowMoreImages
 
 expired_PL = lightbulb.Plugin("statusUpdater")
@@ -55,9 +59,12 @@ async def expired():
             guild_id = row.get("guild_id")
             if str(guild_id) != str(curr_guild_id):
                 curr_guild_id = guild_id
-                guild_row = await conn.fetchrow("SELECT expiry_time,renewal_count from guilds where guild_id=$1", guild_id)
+                guild_row = await conn.fetchrow(
+                    "SELECT expiry_time,renewal_count from guilds where guild_id=$1",
+                    guild_id,
+                )
                 expiry = guild_row.get("expiry_time")
-                renew_count = guild_row.get('renewal_count')
+                renew_count = guild_row.get("renewal_count")
             user = await expired_PL.bot.rest.fetch_user(user_id)
             if posted_at is None:
                 continue
@@ -66,10 +73,15 @@ async def expired():
                 await conn.execute(
                     f"update {table} set renew_count={expires + 1},notified_expiry=TRUE where id={post_id}"
                 )
-                btns = await flare.Row(ButtonRepost(post_id=post_id, post_type=post_type),
-                                       ButtonNoRepost(post_id=post_id, post_type=post_type))
+                btns = await flare.Row(
+                    ButtonRepost(post_id=post_id, post_type=post_type),
+                    ButtonNoRepost(post_id=post_id, post_type=post_type),
+                )
 
-                row_chnls = await conn.fetchrow("SELECT buy_channel_id,sell_channel_id from guilds where guild_id=$1", guild_id)
+                row_chnls = await conn.fetchrow(
+                    "SELECT buy_channel_id,sell_channel_id from guilds where guild_id=$1",
+                    guild_id,
+                )
 
                 match post_type:
                     # Try catch, error out ping mods
@@ -95,9 +107,7 @@ async def expired():
                         component=btns,
                     )
                 else:
-                    await conn.execute(
-                        f"delete from {table} where id={post_id}"
-                    )
+                    await conn.execute(f"delete from {table} where id={post_id}")
                     await user.send(
                         embed=hikari.Embed(
                             title=f"{title} - Post has expired",
@@ -125,10 +135,14 @@ class ButtonRepost(flare.Button):
     async def callback(self, ctx: flare.MessageContext) -> None:
         conn = await get_database_connection()
         post = None
-        if self.post_type == 'sell':
-            post = await conn.fetchrow(f"SELECT title,author_id,guild_id,add_images from sell where id={self.post_id}")
+        if self.post_type == "sell":
+            post = await conn.fetchrow(
+                f"SELECT title,author_id,guild_id,add_images from sell where id={self.post_id}"
+            )
         else:
-            post = await conn.fetchrow(f"SELECT title,author_id,guild_id from buy where id={self.post_id}")
+            post = await conn.fetchrow(
+                f"SELECT title,author_id,guild_id from buy where id={self.post_id}"
+            )
         await ctx.message.edit(components=[])
         await ctx.respond(
             embed=hikari.Embed(
@@ -145,24 +159,48 @@ class ButtonRepost(flare.Button):
         if post.get("add_images"):
             btns_row = await flare.Row(
                 ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
-                ButtonContactLister(post_id=self.post_id, post_type=self.post_type, post_owner_id=lister,
-                                    post_title=post_title),
-                ButtonUpdatePost(post_id=self.post_id, post_type=self.post_type, post_owner_id=lister),
-                ButtonReportPost(post_id=self.post_id, post_type=self.post_type, post_owner_id=lister)
+                ButtonContactLister(
+                    post_id=self.post_id,
+                    post_type=self.post_type,
+                    post_owner_id=lister,
+                    post_title=post_title,
+                ),
+                ButtonUpdatePost(
+                    post_id=self.post_id, post_type=self.post_type, post_owner_id=lister
+                ),
+                ButtonReportPost(
+                    post_id=self.post_id, post_type=self.post_type, post_owner_id=lister
+                ),
             )
         else:
             btns_row = await flare.Row(
-                ButtonContactLister(post_id=self.post_id, post_type=self.post_type, post_owner_id=lister,
-                                    post_title=post_title),
-                ButtonUpdatePost(post_id=self.post_id, post_type=self.post_type, post_owner_id=lister),
-                ButtonReportPost(post_id=self.post_id, post_type=self.post_type, post_owner_id=lister)
+                ButtonContactLister(
+                    post_id=self.post_id,
+                    post_type=self.post_type,
+                    post_owner_id=lister,
+                    post_title=post_title,
+                ),
+                ButtonUpdatePost(
+                    post_id=self.post_id, post_type=self.post_type, post_owner_id=lister
+                ),
+                ButtonReportPost(
+                    post_id=self.post_id, post_type=self.post_type, post_owner_id=lister
+                ),
             )
 
-        row_chnls = await conn.fetchrow("SELECT buy_channel_id,sell_channel_id from guilds where guild_id=$1", post.get("guild_id"))
-        post_types_channel_dict = {"sell": row_chnls.get('buy_channel_id'), "buy": row_chnls.get('sell_channel_id')}
+        row_chnls = await conn.fetchrow(
+            "SELECT buy_channel_id,sell_channel_id from guilds where guild_id=$1",
+            post.get("guild_id"),
+        )
+        post_types_channel_dict = {
+            "sell": row_chnls.get("buy_channel_id"),
+            "buy": row_chnls.get("sell_channel_id"),
+        }
         msg = await ctx.bot.rest.create_message(
             post_types_channel_dict.get(self.post_type),
-            embed=await buildPostEmbed(post_id=self.post_id, post_type=self.post_type, user=ctx.user),
+            embed=await buildPostEmbed(
+                post_id=self.post_id, post_type=self.post_type, user=ctx.user
+            ),
             component=btns_row,
         )
         await conn.execute(
@@ -190,7 +228,9 @@ class ButtonNoRepost(flare.Button):
         await ctx.message.edit(components=[])
         conn = await get_database_connection()
 
-        title = await conn.fetchval(f"SELECT title from {self.post_type} where id={self.post_id}")
+        title = await conn.fetchval(
+            f"SELECT title from {self.post_type} where id={self.post_id}"
+        )
 
         await ctx.respond(
             embed=hikari.Embed(
