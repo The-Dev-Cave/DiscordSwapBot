@@ -16,7 +16,6 @@ contact_web_plugin = lightbulb.Plugin("Lightbulb Bot Events")
 async def contact_channel_from_web(
     post_id: int, post_type: str, int_party_id: int | hikari.Snowflakeish
 ):
-    # returns response if making channel or error
     conn = await get_database_connection()
 
     post = await conn.fetchrow("Select * from $1 where id =$2", post_type, post_id)
