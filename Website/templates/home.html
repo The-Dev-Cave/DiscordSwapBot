@@ -68,17 +68,32 @@
             </div>
     </header>
     <body>
-        
-        <div name="logged-in" class="centered">
-            <img src="{{avatar_url}}" style="height: 250px; width: 250px; border-radius: 50%; border: 2px solid white" alt="User Avatar URL">
-            <br>
-            <p>Login Successful</p>
-            <p>Logged In As: {{current_user}}<br>UID: {{user_id}}</p>
-            <br>
-            <a href='/testPost' class="button1">Post Test to Guild</a>
-            <br>
-            <a href="/logout" class="button1">Logout</a>
-        </div>   
+        <div class="itemBrowser">
+            <div id="itemBox" class="itemB-child">
+                <img src="static/assets/product_placeholder.png">
+                <div id="itemCard">
+                    <h4 style="display: inline;">Item Title -</h4>
+                    <h5 style="display: inline;">$XX.xx</h5>
+                    <p>This is a 3 line section of the items description which will eventually be cut off when it becomes to long...</p>
+                </div>
+            </div>
+            <div id="itemBox" class="itemB-child">
+                <img src="static/assets/product_placeholder.png">
+                <div id="itemCard">
+                    <h4 style="display: inline;">Item Title -</h4>
+                    <h5 style="display: inline;">$XX.xx</h5>
+                    <p>This is a 3 line section of the items description which will eventually be cut off when it becomes to long...</p>
+                </div>
+            </div>
+            <div id="itemBox" class="itemB-child">
+                <img src="static/assets/product_placeholder.png">
+                <div id="itemCard">
+                    <h4 style="display: inline;">Item Title -</h4>
+                    <h5 style="display: inline;">$XX.xx</h5>
+                    <p>This is a 3 line section of the items description which will eventually be cut off when it becomes to long...</p>
+                </div>
+            </div>   
+        </div>
         <script src="static/scripts/index.js"></script>
     </body>
 </main>
