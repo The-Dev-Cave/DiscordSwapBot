@@ -314,9 +314,10 @@ async def check_author_has_profile(context: lightbulb.Context) -> bool:
 
 @profile_edit_pl.command()
 @lightbulb.option("user", "User to see their profile", type=hikari.User, required=False)
-@lightbulb.command("viewprofile", "See a user's profile", auto_defer=True)
+@lightbulb.command("viewprofile", "See a user's profile")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def cmd_viewProfile(ctx: lightbulb.SlashContext):
+    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
     conn = await get_database_connection()
     user = None
     if ctx.options.user:

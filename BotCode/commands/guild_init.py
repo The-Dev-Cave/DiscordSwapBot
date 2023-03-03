@@ -51,12 +51,12 @@ async def user_have_mod_role(context: lightbulb.Context) -> bool:
 @lightbulb.command(
     "initialize",
     "Create channels and categories for bot features to work",
-    auto_defer=True,
     ephemeral=True,
 )
 @lightbulb.implements(lightbulb.SlashCommand)
 async def init_guild(ctx: lightbulb.SlashContext):
     conn = await get_database_connection()
+    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
 
     row = await conn.fetchrow(
         f"Select guild_id from guilds where guild_id={ctx.guild_id}"
