@@ -319,17 +319,17 @@ async def check_author_has_profile(context: lightbulb.Context) -> bool:
 async def cmd_viewProfile(ctx: lightbulb.SlashContext):
     await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
     conn = await get_database_connection()
-    user = None
-    if ctx.options.user:
-        user = ctx.options.user
-    else:
-        user = ctx.user
+    user = ctx.options.user or ctx.user
+    # if ctx.options.user:
+    #     user = ctx.options.user
+    # else:
+    #     user = ctx.user
 
     row = await conn.fetchrow(
-        f"SELECT user_id from profiles where user_id={user.id} and stage=7"
+        f"SELECT user_id from profiles where user_id={user.id} and stage=4"
     )
 
-    if row and row.get("id"):  # If user has a good profile, return
+    if row and row.get("user_id"):  # If user has a good profile, return
         await ctx.respond(
             embed=await create_profile_embed(user.id),
             flags=hikari.MessageFlag.EPHEMERAL,
@@ -337,7 +337,7 @@ async def cmd_viewProfile(ctx: lightbulb.SlashContext):
     else:
         await ctx.respond(
             flags=hikari.MessageFlag.EPHEMERAL,
-            content=f"{user.mention} has not created their profile or does not have an approved profile",
+            content=f"{user.mention} has not created their profile or something went wrong",
         )
     await conn.close()
 
