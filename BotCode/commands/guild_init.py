@@ -212,6 +212,15 @@ async def init_guild(ctx: lightbulb.SlashContext):
                 ),
             ),
             hikari.PermissionOverwrite(
+                id=ctx.bot.get_me().id,
+                type=PermissionOverwriteType.MEMBER,
+                allow=(
+                        Permissions.VIEW_CHANNEL
+                        | Permissions.READ_MESSAGE_HISTORY
+                        | Permissions.SEND_MESSAGES
+                ),
+            ),
+            hikari.PermissionOverwrite(
                 id=ctx.guild_id,
                 type=PermissionOverwriteType.ROLE,
                 deny=(
@@ -240,6 +249,15 @@ async def init_guild(ctx: lightbulb.SlashContext):
                 ),
             ),
             hikari.PermissionOverwrite(
+                id=ctx.bot.get_me().id,
+                type=PermissionOverwriteType.MEMBER,
+                allow=(
+                        Permissions.VIEW_CHANNEL
+                        | Permissions.READ_MESSAGE_HISTORY
+                        | Permissions.SEND_MESSAGES
+                ),
+            ),
+            hikari.PermissionOverwrite(
                 id=ctx.guild_id,
                 type=PermissionOverwriteType.ROLE,
                 deny=(
@@ -263,6 +281,15 @@ async def init_guild(ctx: lightbulb.SlashContext):
                 type=PermissionOverwriteType.ROLE,
                 allow=(Permissions.VIEW_CHANNEL | Permissions.READ_MESSAGE_HISTORY),
                 deny=(Permissions.SEND_MESSAGES),
+            ),
+            hikari.PermissionOverwrite(
+                id=ctx.bot.get_me().id,
+                type=PermissionOverwriteType.MEMBER,
+                allow=(
+                        Permissions.VIEW_CHANNEL
+                        | Permissions.READ_MESSAGE_HISTORY
+                        | Permissions.SEND_MESSAGES
+                ),
             ),
         ]
         public_logs_chnl = await ctx.bot.rest.create_guild_text_channel(
