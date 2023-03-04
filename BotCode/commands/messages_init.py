@@ -32,7 +32,7 @@ async def cmd_init(ctx: lightbulb.SlashContext) -> None:
         description="To create a listing, click the button that best aligns with what you'd like to do. I will walk you through each process respectively in DM's.\nOr you can go to swap.thedevcave.xyz and make them there",
     )
     embed.set_footer(
-        "This bot is in beta, please let a moderator know if you run into any issues."
+        "This bot is in beta, please join the support server if you run into any issues by looking at bot profile."
     )
     embed.color = 0xFFDD00
     buttons = await flare.Row(
