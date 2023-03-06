@@ -283,8 +283,8 @@ class ModalPostEdit(flare.Modal, title="Profile Update Deny"):
         )
         from BotCode.interactions.selects.selects_editing import edit_select_menu
 
-        # await ctx.defer(False)
-        await ctx.respond(flags=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
+        await ctx.defer(False)
+        # await ctx.respond(flags=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
 
         await ctx.interaction.message.edit(components=[])
 
