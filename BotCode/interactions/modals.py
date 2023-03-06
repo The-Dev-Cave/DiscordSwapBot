@@ -94,7 +94,7 @@ class ModalProfileDeny(flare.Modal, title="Profile Deny"):
 
 
 # noinspection DuplicatedCode,PyTypeChecker
-class ModalPostSellBuyPart1(flare.Modal, title="Profile Deny"):
+class ModalPostSellBuyPart1(flare.Modal, title="Part 1"):
     # user_id: int
     post_id: int
     post_type: str
@@ -188,7 +188,7 @@ class ModalPostSellBuyPart1(flare.Modal, title="Profile Deny"):
         )
 
 
-class ModalPostDeny(flare.Modal, title="Profile Deny"):
+class ModalPostDeny(flare.Modal, title="Post Deny"):
     # msg_id: int
     post_type: str
     post_id: int
@@ -267,7 +267,7 @@ class ModalProfileChangeDeny(flare.Modal, title="Profile Update Deny"):
         await conn.close()
 
 
-class ModalPostEdit(flare.Modal, title="Profile Update Deny"):
+class ModalPostEdit(flare.Modal, title="Post Edit"):
     post_id: int
     post_type: str
     guild_id: int | hikari.Snowflakeish
