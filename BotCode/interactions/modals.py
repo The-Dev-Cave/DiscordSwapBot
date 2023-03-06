@@ -341,35 +341,61 @@ class ModalPostEdit(flare.Modal, title="Profile Update Deny"):
                 ),
             )
         else:
-            await ctx.interaction.edit_initial_response(
-                embed=embed,
-                components=await asyncio.gather(
-                    flare.Row(
-                        edit_select_menu(
-                            post_id=self.post_id,
-                            post_type=self.post_type,
-                            guild_id=self.guild_id,
-                        )
+            if self.post_type == "sell":
+                await ctx.interaction.edit_initial_response(
+                    embed=embed,
+                    components=await asyncio.gather(
+                        flare.Row(
+                            edit_select_menu(
+                                post_id=self.post_id,
+                                post_type=self.post_type,
+                                guild_id=self.guild_id,
+                            )
+                        ),
+                        flare.Row(
+                            ButtonSendPostToMods(
+                                post_id=self.post_id,
+                                post_type=self.post_type,
+                                guild_id=self.guild_id,
+                            ),
+                            ButtonNewPostPhotos(
+                                post_id=self.post_id,
+                                post_type=self.post_type,
+                                guild_id=self.guild_id,
+                            ),
+                            ButtonCancel(
+                                post_id=self.post_id,
+                                post_type=self.post_type,
+                                label="Cancel",
+                            ),
+                        ),
                     ),
-                    flare.Row(
-                        ButtonSendPostToMods(
-                            post_id=self.post_id,
-                            post_type=self.post_type,
-                            guild_id=self.guild_id,
+                )
+            else:
+                await ctx.interaction.edit_initial_response(
+                    embed=embed,
+                    components=await asyncio.gather(
+                        flare.Row(
+                            edit_select_menu(
+                                post_id=self.post_id,
+                                post_type=self.post_type,
+                                guild_id=self.guild_id,
+                            )
                         ),
-                        ButtonNewPostPhotos(
-                            post_id=self.post_id,
-                            post_type=self.post_type,
-                            guild_id=self.guild_id,
-                        ),
-                        ButtonCancel(
-                            post_id=self.post_id,
-                            post_type=self.post_type,
-                            label="Cancel",
+                        flare.Row(
+                            ButtonSendPostToMods(
+                                post_id=self.post_id,
+                                post_type=self.post_type,
+                                guild_id=self.guild_id,
+                            ),
+                            ButtonCancel(
+                                post_id=self.post_id,
+                                post_type=self.post_type,
+                                label="Cancel",
+                            ),
                         ),
                     ),
-                ),
-            )
+                )
 
 
 def load(bot: lightbulb.BotApp):
