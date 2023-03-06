@@ -240,7 +240,7 @@ class ButtonNoPhoto(flare.Button):
     async def callback(self, ctx: flare.MessageContext) -> None:
         conn = await get_database_connection()
         conn: asyncpg.Connection
-        await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
+        await ctx.respond(flags=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
 
         await conn.execute(
             f"UPDATE {self.post_type} set image='nophoto' where id={self.post_id}"
