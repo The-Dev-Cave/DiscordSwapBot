@@ -72,7 +72,7 @@ class ButtonCreatePost(flare.Button):
         )
         if profile_required and (profile_stage != 4):
             await ctx.respond(
-                "This guild requires a profile to be made. Please use </profile create:1234> to make your profile or go to https://swapbot.thedevcave.xyz)",
+                "This guild requires a profile to be made. Please use </profile create:1234> to make your profile or go to https://swapbot.thedevcave.xyz",
                 flags=hikari.MessageFlag.EPHEMERAL,
             )
             await conn.close()
