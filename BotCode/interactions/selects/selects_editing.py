@@ -417,26 +417,43 @@ async def edit_meetup_select_menu(
             ),
         )
     else:
-        await ctx.interaction.edit_initial_response(
-            embed=embed,
-            components=await asyncio.gather(
-                flare.Row(
-                    edit_select_menu(
-                        post_id=post_id, post_type=post_type, guild_id=guild_id
-                    )
-                ),
-                flare.Row(
-                    ButtonSendPostToMods(
-                        post_id=post_id, post_type=post_type, guild_id=guild_id
+        if post_type == "sell":
+            await ctx.interaction.edit_initial_response(
+                embed=embed,
+                components=await asyncio.gather(
+                    flare.Row(
+                        edit_select_menu(
+                            post_id=post_id, post_type=post_type, guild_id=guild_id
+                        )
                     ),
-                    ButtonNewPostPhotos(
-                        post_id=post_id, post_type=post_type, guild_id=guild_id
+                    flare.Row(
+                        ButtonSendPostToMods(
+                            post_id=post_id, post_type=post_type, guild_id=guild_id
+                        ),
+                        ButtonNewPostPhotos(
+                            post_id=post_id, post_type=post_type, guild_id=guild_id
+                        ),
+                        ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel"),
                     ),
-                    ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel"),
                 ),
-            ),
-        )
-
+            )
+        else:
+            await ctx.interaction.edit_initial_response(
+                embed=embed,
+                components=await asyncio.gather(
+                    flare.Row(
+                        edit_select_menu(
+                            post_id=post_id, post_type=post_type, guild_id=guild_id
+                        )
+                    ),
+                    flare.Row(
+                        ButtonSendPostToMods(
+                            post_id=post_id, post_type=post_type, guild_id=guild_id
+                        ),
+                        ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel"),
+                    ),
+                ),
+            )
 
 @flare.select(
     placeholder="Select Payment Methods",
