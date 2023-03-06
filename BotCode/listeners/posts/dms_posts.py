@@ -81,7 +81,7 @@ async def posts_dm(event: hikari.DMMessageCreateEvent):
     embed = await buildPostEmbed(
         post_id=post_id, post_type=post_type, user=event.author
     )
-    if (len(event.message.attachments) > 1) and (img_urls != ""):
+    if (len(event.message.attachments) >= 1) and (img_urls != ""):
         # remove components from msg9
         await event.author.send(
             embed=embed,
@@ -106,7 +106,6 @@ async def posts_dm(event: hikari.DMMessageCreateEvent):
             ),
         )
     else:
-
         await event.author.send(
             embed=embed,
             components=await asyncio.gather(
