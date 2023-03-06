@@ -20,6 +20,7 @@ async def help_pub(ctx: lightbulb.SlashContext):
     HELP_MESSAGE = f"""
     How To Make A Post:
      - Have DMs allowed from the server so <@{bot_id}> can DM you to make your post
+     - You can also go to [swapbot.thedevcave.xyz](swapbot.thedevcave.xyz)
      - Go to the designated channel for making a post and select which post type you want to make
      - Follow prompts from the bot to create the post
     """

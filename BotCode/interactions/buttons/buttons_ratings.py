@@ -20,6 +20,7 @@ class ButtonNoRating(flare.Button):
         await ctx.respond("No rating will be submitted")
 
 
+# noinspection PyTypeChecker
 class ButtonStartRating(flare.Button):
     other_user_id: int
     post_type: str
