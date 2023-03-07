@@ -106,12 +106,12 @@ async def contact():
         my_user = await client.fetch_my_user()
 
         row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
-        fName = row.get('first_name')
-        lName = row.get('last_name')
 
         if row == None:
             return redirect("/noprofile")
         else:
+            fName = row.get('first_name')
+            lName = row.get('last_name')
             pfpImg = row.get('profile_picture')
             if pfpImg == None:
                 pfpImg = 'static/assets/profile_placeholder.jpg'
@@ -129,13 +129,12 @@ async def profile():
         my_user = await client.fetch_my_user()
         row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
         if row == None:
-            return redirect("/noprofile")
+            return redirect("/make-profile")
         else:
-            if row.get('profile_picture') == None:
+            pfpImg = row.get('profile_picture')
+            if pfpImg == None:
                 pfpImg = 'static/assets/profile_placeholder.jpg'
-            else:
-                pfpImg = row.get('profile_picture')
-            return await render_template("profile.html", current_user=my_user, avatar_url=my_user.avatar_url,
+            return await render_template("profile.html", current_user=my_user, avatar_url=pfpImg,
                                         user_id=my_user.id, current_name=my_user.username, 
                                         first_name=row.get('first_name'), last_name=row.get('last_name'),
                                         pronouns=row.get('pronouns'), email=row.get('email'), pfp=pfpImg)
@@ -204,9 +203,9 @@ async def submitInfo():
         pNouns = prof.get("pnouns")
         email = prof.get("email")
 
-        print(fName + ' | ' + pNouns + ' | ' + pNouns + ' | ' + email)
-        print("Submit Successful")
-        print('PFP SUBMIT: ' + session['pfpURL'])
+        # print(fName + ' | ' + pNouns + ' | ' + pNouns + ' | ' + email)
+        # print("Submit Successful")
+        # print('PFP SUBMIT: ' + session['pfpURL'])
         async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
             my_user = await client.fetch_my_user()
             row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
@@ -251,8 +250,17 @@ async def construction():
 
     async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
         my_user = await client.fetch_my_user()
-        return await render_template("construction.html", current_user=my_user, avatar_url=my_user.avatar_url,
-                                     user_id=my_user.id, current_name=my_user.username)
+
+        row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
+
+        if row == None:
+            return redirect("/noprofile")
+        else:
+            pfpImg = row.get('profile_picture')
+            if pfpImg == None:
+                pfpImg = 'static/assets/profile_placeholder.jpg'
+            return await render_template("construction.html", current_user=my_user, avatar_url=pfpImg,
+                                        user_id=my_user.id, current_name=my_user.username)
 
 
 async def background_task():
@@ -275,9 +283,15 @@ async def callback():
     session['token'] = access_token
 
     async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
-        user = await client.fetch_my_user()
-        session['uid'] = user.id
-        session['pfpURL'] = None
+        my_user = await client.fetch_my_user()
+        row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
+
+        session['uid'] = my_user.id
+
+        if row == None:
+            session['pfpURL'] = None
+        else:
+            session['pfpURL'] = row.get('profile_picture')
         print('AUTHORIZATION')
 
     async with app.discord_rest.acquire(BOT_TOKEN, hikari.TokenType.BOT) as bot_client:

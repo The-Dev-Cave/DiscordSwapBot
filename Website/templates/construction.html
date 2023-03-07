@@ -1,14 +1,72 @@
 <!doctype html>
 <html lang="en">
-<head>
-    <link rel="icon" type="image/x-icon" href="static/assets/favicon.ico">
-    <link rel="stylesheet" href="static/css/styles.css">
-    <link rel="stylesheet" href="static/css/buttons.css">
-    <link rel="stylesheet" href="static/css/mobile.css">
-    <link rel="stylesheet" href="static/css/desktop.css">
-    <title>Login - My Webpage</title>
-</head>
+    <head>
+        <meta charset="UTF-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    
+        <link rel="icon" type="image/x-icon" href="static/assets/favicon.ico">
+    
+        <link rel="stylesheet" href="static/css/styles.css">
+        <link rel="stylesheet" href="static/css/buttons.css">
+        <link rel="stylesheet" href="static/css/navbar.css">
+    
+        <link rel="stylesheet" href="static/css/mobile.css">
+        <link rel="stylesheet" href="static/css/desktop.css">
+        <title>Construction - SwapBot</title>
+    
+    </head>
 <main>
+    <header>
+        <!-- FULL LENGTH BANNER -->
+        <div id="brand"><img src="static/assets/logo.png" class="logo" alt="SwapBot"><a href="/">SwapBot Dashbaord</a></div>
+            <!-- MAIN MENU -->
+            <nav>
+                <ul>
+                    <li><a href="/home">Home</a></li>
+                    <li><a href="/construction">Features</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    <img src="{{avatar_url}}" class="user-pic" alt="Profile Menu" onclick="toggleMenu()">
+                </ul>
+
+                <!-- PROFILE SUB-MENU -->
+                <div class="sub-menu-wrap" id="subMenu">
+                    <div class="sub-menu">
+                        <div class="user-info">
+                            <img src="{{avatar_url}}">
+                            <h3>{{first_name}} {{last_name}}</h3>
+                        </div>
+                        <hr>
+                        <a href="/profile" class="sub-menu-link">
+                            <img src="static/assets/setting.png" style="height: 30px; width: 30px; border-radius: 50%;">
+                            <p>Edit Profile</p>
+                            <span>></span>
+                        </a>
+                        <a href="/logout" class="sub-menu-link">
+                            <img src="static/assets/logout.png" style="height: 30px; width: 30px; border-radius: 50%;">
+                            <p>Logout</p>
+                            <span>></span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- MOBILE MENU -->
+            <div id="hamburger-icon" onclick="toggleMobileMenu(this)">
+                <div class="bar1"></div>
+                <div class="bar2"></div>
+                <div class="bar3"></div>
+                <ul class="mobile-menu">
+                    <li><a href="/home">Home</a></li>
+                    <li><a href="/construction">Features</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    <li><a href="/profile">Edit Profile</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                </ul>
+            </div>
+    </header>
     <body>
         <!-- <script type="text/javascript">
             var toConstruction = function (event){
@@ -21,7 +79,7 @@
         </script> -->
         <div class="centered">
             <img src="static/assets/construction.png" alt="Under Construction" class="constructionImg">
-            <h1>Site<br>Under Construction</h1>
+            <h1>Under Construction</h1>
         </div>        
     </body>
 </main>

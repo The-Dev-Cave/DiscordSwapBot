@@ -29,7 +29,7 @@ body {
     background-color: rgb(54,57,62);
     color: white;
     font-family: "Nasalization Rg";
-    z-index: auto;
+    z-index: 1;
 }
 
 footer {
@@ -116,13 +116,24 @@ footer:hover a {
     padding: 1em 1em;
     width: 30%;
     float: left;
+    cursor: pointer;
 }
 
 #itemBox img {
-    object-fit: cover; 
+    object-fit: cover;
     width: 100%;
-    height: auto; 
+    aspect-ratio: 1/1; 
     border-radius: 1em;
+}
+
+#itemBox a.nostyle:link {
+    text-decoration: inherit;
+    color: inherit;
+}
+
+#itemBox a.nostyle:visited {
+    text-decoration: inherit;
+    color: inherit;
 }
 
 #itemCard{
@@ -132,6 +143,7 @@ footer:hover a {
     width: 100%;
     height: auto;
 }
+
 
 #itemCard p {
     overflow: hidden;

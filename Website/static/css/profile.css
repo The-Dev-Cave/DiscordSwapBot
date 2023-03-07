@@ -130,6 +130,7 @@ a.button1 {
     border: 2px solid #282b30;
     padding: 2em 2em;
     width: 50%;
+    z-index: -1;
 }
 
 @media screen and (min-width: 720px) and (max-width: 1080px){
