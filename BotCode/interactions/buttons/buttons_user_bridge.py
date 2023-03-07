@@ -102,7 +102,6 @@ class ButtonMarkPostPending(flare.Button):
                         if (str(self.post_id) in str(i[1].name)) and (
                             str(i[0]) != str(ctx.channel_id)
                         ):
-                            print(i[0])
                             await ctx.bot.rest.create_message(
                                 channel=i[0],
                                 embed=hikari.Embed(
@@ -200,7 +199,7 @@ class ButtonMarkPostSold(flare.Button):
         swap_cat_id = row.get("user_bridge_cat_id")
 
         row = await conn.fetchrow(
-            f"Select message_id from {self.post_type} where id={self.post_id}"
+            f"Select message_id,title from {self.post_type} where id={self.post_id}"
         )
         try:
 
@@ -348,8 +347,24 @@ class ButtonCloseUserBridge(flare.Button):
                 ),
                 id=self.post_owner_id,
             ),
+            hikari.PermissionOverwrite(
+                type=hikari.PermissionOverwriteType.MEMBER,
+                allow=(
+                    hikari.Permissions.VIEW_CHANNEL
+                    | hikari.Permissions.READ_MESSAGE_HISTORY
+                ),
+                id=buttons_user_bridge_plugin.bot.get_me().id,
+            ),
+            hikari.PermissionOverwrite(
+                type=hikari.PermissionOverwriteType.ROLE,
+                deny=(
+                    hikari.Permissions.VIEW_CHANNEL
+                    | hikari.Permissions.READ_MESSAGE_HISTORY
+                    | hikari.Permissions.SEND_MESSAGES
+                ),
+                id=ctx.guild_id,
+            ),
         ]
-
         await ctx.get_channel().edit(permission_overwrites=perm_overwrites)
 
         await ctx.respond(
