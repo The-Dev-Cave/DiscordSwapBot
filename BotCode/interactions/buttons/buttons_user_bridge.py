@@ -102,6 +102,7 @@ class ButtonMarkPostPending(flare.Button):
                         if (str(self.post_id) in str(i[1].name)) and (
                             str(i[0]) != str(ctx.channel_id)
                         ):
+                            print(i[0])
                             await ctx.bot.rest.create_message(
                                 channel=i[0],
                                 embed=hikari.Embed(
