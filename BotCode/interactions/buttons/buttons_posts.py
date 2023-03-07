@@ -702,6 +702,24 @@ class ButtonContactLister(flare.Button):
                 ),
                 id=self.post_owner_id,
             ),
+            hikari.PermissionOverwrite(
+                type=hikari.PermissionOverwriteType.MEMBER,
+                allow=(
+                    hikari.Permissions.VIEW_CHANNEL
+                    | hikari.Permissions.READ_MESSAGE_HISTORY
+                    | hikari.Permissions.SEND_MESSAGES
+                ),
+                id=buttons_posts_plugin.bot.get_me().id,
+            ),
+            hikari.PermissionOverwrite(
+                type=hikari.PermissionOverwriteType.ROLE,
+                deny=(
+                    hikari.Permissions.VIEW_CHANNEL
+                    | hikari.Permissions.READ_MESSAGE_HISTORY
+                    | hikari.Permissions.SEND_MESSAGES
+                ),
+                id=ctx.guild_id,
+            ),
         ]
         user_name = ctx.member.display_name
         msg_url = (

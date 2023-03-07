@@ -120,7 +120,9 @@ async def init_guild(ctx: lightbulb.SlashContext):
         allow=(
             Permissions.VIEW_CHANNEL
             | Permissions.READ_MESSAGE_HISTORY
-            | Permissions.SEND_MESSAGES
+            | Permissions.SEND_MESSAGES |
+            Permissions.MANAGE_CHANNELS
+            # | Permissions.MANAGE
         ),
     )
 
