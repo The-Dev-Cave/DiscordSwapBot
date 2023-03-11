@@ -144,25 +144,25 @@
 <!--                    <p>This is a 3 line section of the items description which will eventually be cut off when it becomes to long...</p>-->
 <!--                </div>-->
 <!--            </div>-->
-            {%for i in data_sell%}
+            {%for data in data_sell%}
                 <div id="itemBox" class="itemB-child">
-                    <img src={{i["image"]}}>
+                    <img src={{data["image"]}}>
                     <div id="itemCard">
-                        <h4 style="display: inline;">[SELL] {{i["title"]}} -</h4>
-                        <h5 style="display: inline;">${{i["price"]}}</h5>
-                        <p>{{i["description"]}}</p>
+                        <h4 style="display: inline;">[SELL] {{data["title"]}} -</h4>
+                        <h5 style="display: inline;">${{data["price"]}}</h5>
+                        <p>{{data["description"]}}</p>
                     </div>
                 </div>
             {%endfor%}
 
-            {%for i in data_buy%}
+            {%for data in data_buy%}
                 <div id="itemBox" class="itemB-child">
-<!--                    <img src={{i["image"]}}>-->
+<!--                    <img src={{data["image"]}}>-->
                     <img src="static/assets/product_placeholder.png">
                     <div id="itemCard">
-                        <h4 style="display: inline;">[BUY] {{i["title"]}} -</h4>
-                        <h5 style="display: inline;">${{i["price"]}}</h5>
-                        <p>{{i["description"]}}</p>
+                        <h4 style="display: inline;">[BUY] {{data["title"]}} -</h4>
+                        <h5 style="display: inline;">${{data["price"]}}</h5>
+                        <p>{{data["description"]}}</p>
                     </div>
                 </div>
             {%endfor%}
