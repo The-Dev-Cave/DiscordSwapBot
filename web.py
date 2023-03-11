@@ -70,12 +70,14 @@ async def home():
             return redirect("/noprofile")
         else:
             pfpImg = row.get('profile_picture')
+            data_sell = await app.swapbotDBpool.fetch(f"Select * from sell")
+            data_buy = await app.swapbotDBpool.fetch(f"Select * from buy")
             if pfpImg == None:
                 pfpImg = 'static/assets/profile_placeholder.jpg'
             return await render_template("home.html", current_user=my_user,
                                         user_id=my_user.id, current_name=my_user.username, 
                                         first_name=row.get('first_name'), last_name=row.get('last_name'),
-                                        avatar_url=pfpImg)
+                                        avatar_url=pfpImg, data_sell=data_sell, data_buy=data_buy)
 
 @app.route("/about")
 async def about():
