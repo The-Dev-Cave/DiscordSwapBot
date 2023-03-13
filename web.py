@@ -29,9 +29,6 @@ async def starting():
     app.discord_rest = hikari.RESTApp()
     await app.discord_rest.start()
 
-    sslctx = ssl.create_default_context(ssl.Purpose.SERVER_AUTH,
-                                        cafile=r"Website/certs/SwapBot-PostgreSQL-ca-certificate.crt")
-    sslctx.check_hostname = True
     print("Connecting To Database")
     dsn = os.getenv("DATABASE_CONN_STRING")
 
@@ -39,7 +36,6 @@ async def starting():
         dsn=dsn,
         max_size=200,
         max_inactive_connection_lifetime=10,
-        ssl=sslctx,
     )
     print("pool connected and created")
     app.swapbotDBpool = pool
