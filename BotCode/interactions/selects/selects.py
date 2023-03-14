@@ -253,7 +253,7 @@ async def meetup_select_menu(
 ):
     from BotCode.interactions.buttons.buttons_posts import ButtonNoPhoto
     from BotCode.interactions.buttons.buttons_posts import ButtonCancel
-
+    await ctx.defer(False)
     conn = await get_database_connection()
     conn: asyncpg.Connection
 

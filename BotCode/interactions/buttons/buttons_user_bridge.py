@@ -397,14 +397,15 @@ class ButtonShowMoreImages(flare.Button):
         self.post_type = post_type
 
     async def callback(self, ctx: flare.MessageContext) -> None:
+        await ctx.defer(False)
         conn = await get_database_connection()
         row = await conn.fetchrow(
             f"SELECT add_images from {self.post_type} where id={self.post_id}"
         )
-        response = "Click `dismiss message` at bottom of interaction to remove this message||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​|| _ _ _ _ _ _\n"
-        for i in row.get("add_images").split("|"):
-            response += f"{i}\n"
-        await ctx.respond(response, flags=hikari.MessageFlag.EPHEMERAL)
+        response = "Click `dismiss message` at bottom of interaction to remove this message"
+        data = row.get("add_images").split("|")
+        data.pop()
+        await ctx.respond(response, flags=hikari.MessageFlag.EPHEMERAL, attachments=data)
 
 
 def load(bot: lightbulb.BotApp):
