@@ -61,7 +61,7 @@ async def home():
 
     async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
         my_user = await client.fetch_my_user()
-        row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
+        row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1 and stage=4", my_user.id)
         if row == None:
             return redirect("/noprofile")
         else:
@@ -151,7 +151,7 @@ async def makeProf():
             pfpImg = session['pfpURL']
 
         my_user = await client.fetch_my_user()
-        row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
+        row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1 and stage=4", my_user.id)
         if row == None:
             print('PAGE LOAD: ' + pfpImg)
             return await render_template("make-profile.html", current_user=my_user, avatar_url=pfpImg,
@@ -208,9 +208,9 @@ async def submitInfo():
             my_user = await client.fetch_my_user()
             row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
             if row == None:
-                await app.swapbotDBpool.execute("INSERT INTO profiles (first_name, last_name, pronouns, email, user_id, profile_picture) VALUES ($1, $2, $3, $4, $5, $6)", fName, lName, pNouns, email, session['uid'], session['pfpURL'])
+                await app.swapbotDBpool.execute("INSERT INTO profiles (first_name, last_name, pronouns, email, user_id, profile_picture, stage) VALUES ($1, $2, $3, $4, $5, $6, 4)", fName, lName, pNouns, email, session['uid'], session['pfpURL'])
             else:
-                await app.swapbotDBpool.execute("UPDATE profiles set first_name=$1, last_name=$2, pronouns=$3, email=$4, profile_picture=$6 where user_id=$5", fName, lName, pNouns, email, session['uid'], session['pfpURL'])
+                await app.swapbotDBpool.execute("UPDATE profiles set first_name=$1, last_name=$2, pronouns=$3, email=$4, profile_picture=$6, stage=4 where user_id=$5", fName, lName, pNouns, email, session['uid'], session['pfpURL'], 4)
         return redirect("/profile")
 
 
