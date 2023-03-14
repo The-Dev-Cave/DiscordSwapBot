@@ -50,19 +50,11 @@ class ButtonCreatePost(flare.Button):
 
         types = {"sell": 1, "buy": 2}
 
-        making_post = (
-            await conn.fetch(
-                f"SELECT making_post from profiles where user_id={user_id}"
-            )
-        )[0].get("making_post")
-
-        if making_post:
-            await ctx.respond(
-                "You have a post in progress. Cancel the current one or finish the one in progress to make a new post",
-                flags=hikari.MessageFlag.EPHEMERAL,
-            )
-            await conn.close()
-            return
+        row = await conn.fetchrow(
+            f"SELECT user_id from profiles where user_id={ctx.user.id}"
+        )
+        if not row:
+            await conn.execute(f"INSERT INTO profiles (user_id) values ({ctx.user.id})")
 
         profile_required = await conn.fetchval(
             "SELECT profile_required from guilds where guild_id=$1", ctx.guild_id
@@ -73,6 +65,20 @@ class ButtonCreatePost(flare.Button):
         if profile_required and (profile_stage != 4):
             await ctx.respond(
                 "This guild requires a profile to be made. Please use </profile create:1234> to make your profile or go to https://swapbot.thedevcave.xyz",
+                flags=hikari.MessageFlag.EPHEMERAL,
+            )
+            await conn.close()
+            return
+
+        making_post = (
+            await conn.fetch(
+                f"SELECT making_post from profiles where user_id={user_id}"
+            )
+        )[0].get("making_post")
+
+        if making_post:
+            await ctx.respond(
+                "You have a post in progress. Cancel the current one or finish the one in progress to make a new post",
                 flags=hikari.MessageFlag.EPHEMERAL,
             )
             await conn.close()
