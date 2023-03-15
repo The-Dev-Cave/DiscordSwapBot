@@ -25,11 +25,15 @@
     box-sizing: border-box;
 }
 
+header {
+    z-index: 1;
+}
+
 body {
     background-color: rgb(54,57,62);
     color: white;
     font-family: "Nasalization Rg";
-    z-index: 1;
+    z-index: 0;
 }
 
 
