@@ -1,4 +1,5 @@
 let subMenu = document.getElementById("subMenu");
+
 function toggleMenu(){
     subMenu.classList.toggle("open-menu");
 }
@@ -30,3 +31,48 @@ function detectMob() {
 // };
 // window.addEventListener('resize', toConstruction, false);
 // window.addEventListener('load', toConstruction, false);
+
+function on(title) {
+    // console.log(this.event.target.classList.contains('over-div'))
+
+    // console.log("toggle on")
+    document.getElementById('page-container').style.overflowY = "hidden";
+    document.getElementById('listingBrowser').style.overflowY = "hidden";
+    document.getElementById(title).style.display = "block";
+    document.body.style.overflowY = "hidden";
+}
+
+function off(title) {
+    // console.log(this.event.target.classList.contains('over-div'))
+    if (this.event.target.classList.contains('over-div')) {
+        // console.log("toggle off")
+        document.getElementById(title).style.display = "none";
+        document.getElementById('page-container').style.overflowY = "auto";
+        document.getElementById('listingBrowser').style.overflowY = "auto";
+        document.body.style.overflowY = "auto";
+    }
+}
+
+
+
+let slideIndex = 1;
+// showSlides(slideIndex);
+
+function plusSlides(n, id) {
+  showSlides(slideIndex += n, id);
+}
+
+function currentSlide(n, title) {
+  showSlides(slideIndex = n, id);
+}
+
+function showSlides(n, id="") {
+  let i;
+  let slides = document.getElementsByClassName(`mySlides-${id}`);
+  if (n > slides.length) {slideIndex = 1}
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+    slides[i].style.display = "none";
+  }
+  slides[slideIndex-1].style.display = "block";
+}
