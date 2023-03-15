@@ -68,6 +68,7 @@
             </div>
     </header>
     <body>
+        <div id="page-container">
         <div id="listingBrowser">
 <!--            <div id="itemBox" class="itemB-child">-->
 <!--                <a href="discord://discordapp.com/channels/1064697295561560074/1082394761211695125/1082447146592247918" target="_blank" rel="noopener noreferrer" class="nostyle">-->
@@ -146,7 +147,11 @@
 <!--            </div>-->
             {%for data in data_sell%}
                 <div id="itemBox" class="itemB-child">
+                    {%if data["image"] == "nophoto"%}
+                    <img src="static/assets/product_placeholder.png">
+                    {%else%}
                     <img src={{data["image"]}}>
+                    {%endif%}
                     <div id="itemCard">
                         <h4 style="display: inline;">[SELL] {{data["title"]}} -</h4>
                         <h5 style="display: inline;">${{data["price"]}}</h5>
@@ -167,11 +172,11 @@
                 </div>
             {%endfor%}
         </div>
+        <footer class="footer">
+            &copy; Copyright 2023 by <a href="https://swapbot.thedevcave.xyz/">TheDevCave</a>
+        </footer>
         <script src="static/scripts/index.js"></script>
+        </div>
     </body>
 </main>
-<footer class="footer">
-    <br>
-    &copy; Copyright 2023 by <a href="https://swapbot.thedevcave.xyz/">TheDevCave</a>
-</footer>
 </html>

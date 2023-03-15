@@ -66,8 +66,8 @@ async def home():
             return redirect("/noprofile")
         else:
             pfpImg = row.get('profile_picture')
-            data_sell = await app.swapbotDBpool.fetch(f"Select * from sell")
-            data_buy = await app.swapbotDBpool.fetch(f"Select * from buy")
+            data_sell = await app.swapbotDBpool.fetch(f"Select * from sell where post_date IS NOT NULL and notified_expiry = FALSE")
+            data_buy = await app.swapbotDBpool.fetch(f"Select * from buy where post_date IS NOT NULL and notified_expiry = FALSE")
             if pfpImg == None:
                 pfpImg = 'static/assets/profile_placeholder.jpg'
             return await render_template("home.html", current_user=my_user,
