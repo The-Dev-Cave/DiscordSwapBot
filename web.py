@@ -70,7 +70,6 @@ async def home():
             data_buy = await app.swapbotDBpool.fetch(f"Select * from buy where post_date IS NOT NULL and notified_expiry = FALSE")
             if pfpImg == None:
                 pfpImg = 'static/assets/profile_placeholder.jpg'
-            print(data_sell[1]["add_images"].split("|"))
             return await render_template("home.html", current_user=my_user,
                                         user_id=my_user.id, current_name=my_user.username, 
                                         first_name=row.get('first_name'), last_name=row.get('last_name'),

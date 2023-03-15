@@ -164,8 +164,7 @@ footer:hover a {
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
+    -webkit-line-clamp: 50;
     -webkit-box-orient: vertical;
 }
 
@@ -179,7 +178,7 @@ footer:hover a {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(59, 59, 59, 0.5);
+    background-color: rgba(0, 0, 0, 0.85);
     z-index: 2;
     cursor: pointer;
     text-align: center;
@@ -189,13 +188,13 @@ footer:hover a {
 }
 
 .overlay img {
-    margin-bottom: 30px;
-    margin-top: 0;
+    margin-bottom: auto;
+    margin-top: auto;
     margin-left: auto;
     margin-right: auto;
     cursor: default;
     /*border-radius: 10px;*/
-    /*object-fit: cover;*/
+    object-fit: contain;
     width: 40%;
     aspect-ratio: 1/1;
     border-radius: 1em;
@@ -210,8 +209,8 @@ footer:hover a {
     height: 100vh;
 
     display: flex;
-    flex-direction: column;
-    flex-basis: auto;
+    flex-direction: row;
+    /*flex-basis: content;*/
     justify-content: center;
 }
 
@@ -219,11 +218,20 @@ footer:hover a {
     border-radius: 1em;
     background-color: #282b30;
     padding: .5em .5em;
-    width: 75%;
+    width: 33%;
     height: auto;
+    /*margin-left: 5%;*/
+    /*margin-right: 0;*/
+    cursor: default;
+    flex-basis: 34%;
+
+
+    /*height: fit-content;*/
+    min-height: 100px;
+    margin-bottom: auto;
+    margin-top: auto;
     margin-left: auto;
     margin-right: auto;
-    cursor: default;
 }
 
 
@@ -231,11 +239,11 @@ footer:hover a {
     overflow-y: scroll;
     text-overflow: clip;
     display: -webkit-box;
-    -webkit-line-clamp: 5;
-    line-clamp: 5;
+    -webkit-line-clamp: 30;
     -webkit-box-orient: vertical;
-    margin: 15px;
+    /*margin: 15px;*/
     text-align: left;
+
 }
 
 /* width */
@@ -262,7 +270,7 @@ footer:hover a {
 
 
 .mySlides {
-    display: none
+    display: none;
 }
 
 /*img {vertical-align: middle;}*/
@@ -271,8 +279,14 @@ footer:hover a {
 .slideshow-container {
     max-width: 40%;
     position: relative;
+    /*margin-left: 10%;*/
+    /*margin-right: 10%;*/
+    margin-bottom: auto;
+    margin-top: auto;
     margin-left: auto;
     margin-right: auto;
+    flex-basis: 50%;
+    height: fit-content;
 }
 
 /* Next & previous buttons */
