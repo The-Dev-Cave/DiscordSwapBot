@@ -210,7 +210,7 @@ async def submitInfo():
             if row == None:
                 await app.swapbotDBpool.execute("INSERT INTO profiles (first_name, last_name, pronouns, email, user_id, profile_picture, stage) VALUES ($1, $2, $3, $4, $5, $6, 4)", fName, lName, pNouns, email, session['uid'], session['pfpURL'])
             else:
-                await app.swapbotDBpool.execute("UPDATE profiles set first_name=$1, last_name=$2, pronouns=$3, email=$4, profile_picture=$6, stage=4 where user_id=$5", fName, lName, pNouns, email, session['uid'], session['pfpURL'], 4)
+                await app.swapbotDBpool.execute("UPDATE profiles set first_name=$1, last_name=$2, pronouns=$3, email=$4, profile_picture=$6, stage=4 where user_id=$5", fName, lName, pNouns, email, session['uid'], session['pfpURL'])
         return redirect("/profile")
 
 
