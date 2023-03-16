@@ -9,7 +9,7 @@ from BotCode.environment.database import get_database_connection
 selects_ratings_plugin = lightbulb.Plugin("User Bridge Buttons")
 
 
-@flare.select(
+@flare.text_select(
     placeholder="Overall Rating /5 Stars",
     options=[
         hikari.SelectMenuOption(
@@ -57,7 +57,7 @@ async def stars(ctx: flare.MessageContext, other_user_id: int, post_type: str):
     await ctx.message.edit(components=[])
 
 
-@flare.select(
+@flare.text_select(
     placeholder="Select What Was Good",
     options=[
         hikari.SelectMenuOption(
@@ -133,7 +133,7 @@ async def good_menu(
     )
 
 
-@flare.select(
+@flare.text_select(
     placeholder="Select What Was Bad",
     options=[
         hikari.SelectMenuOption(

@@ -76,3 +76,24 @@ function showSlides(n, id="") {
   }
   slides[slideIndex-1].style.display = "block";
 }
+
+
+function myFunction(post_id, int_party_id, my_user_id) {
+  var popup = document.getElementById(`myPopup-${post_id}`);
+
+  if (int_party_id == my_user_id){
+      popup.textContent = "Can't Make Channels With Self"
+  } else {
+      popup.textContent = "Chat Channel Being Created In Post's Server\nPinged When Done"
+  }
+
+  popup.classList.toggle("show");
+
+  new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(popup.classList.toggle("show"));
+    }, 7000);
+  });
+
+
+}

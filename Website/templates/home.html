@@ -72,7 +72,7 @@
         <div id="listingBrowser">
             {%for data in data_sell%}
                 {%if data["add_images"]%}
-                <div id="itemBox" class="itemB-child" onclick="on(`overlay-{{data['title']}}`); showSlides(1, {{data['id']}});">
+                <div id="itemBox" class="itemB-child" onclick="on(`overlay-{{data['title']}}`); showSlides(1, {{data['id']}})">
                 {%else%}
                     <div id="itemBox" class="itemB-child" onclick="on(`overlay-{{data['title']}}`)">
                 {%endif%}
@@ -99,7 +99,7 @@
                                 <div class='slideshow-container'>
 
                                     <div class='mySlides mySlides-{{data["id"]}} fade'>
-                                      <img src={{data["image"]}} style="width:100%">
+                                        <img src={{data["image"]}} style="width:100%">
                                     </div>
 
                                     {% for image in data["add_images"].split("|")%}
@@ -116,11 +116,22 @@
                                 <img src={{data["image"]}}>
                             {%endif%}
                     {%endif%}
+                        <div class="itemData-Overlay">
                     <div id="itemCard-overlay">
                         <h4 style="display: inline;">[SELL] {{data["title"]}} -</h4>
                         <h5 style="display: inline;">${{data["price"]}}</h5>
                         <p>{{data["description"]}}</p>
                     </div>
+                        <a class="button popup" onclick="btnOnClick('SELL', {{data['id']}}); myFunction({{data['id']}}, {{user_id}}, {{data['author_id']}})">Contact Lister
+                            <span class="popuptext" id="myPopup-{{data['id']}}">A Simple Popup!</span></a>
+                                <script>
+                                    function btnOnClick(posttype, postid) {
+                                        xhttp = new XMLHttpRequest();
+                                        xhttp.open("GET", `/contact-lister/${posttype}/${postid}/{{user_id}}`, true);
+                                        xhttp.send();
+                                }
+                                </script>
+                        </div>
                     </div>
                 </div>
             {%endfor%}
@@ -140,10 +151,23 @@
                     <div class="over-div">
 
                         <img src="static/assets/product_placeholder.png">
-                        <div id="itemCard-overlay">
-                            <h4 style="display: inline;">[BUY] {{data["title"]}} -</h4>
-                            <h5 style="display: inline;">${{data["price"]}}</h5>
-                            <p>{{data["description"]}}</p>
+
+                        <div class="itemData-Overlay">
+                            <div id="itemCard-overlay">
+                                <h4 style="display: inline;">[BUY] {{data["title"]}} -</h4>
+                                <h5 style="display: inline;">${{data["price"]}}</h5>
+                                <p>{{data["description"]}}</p>
+                            </div>
+
+                            <a class="button popup" onclick="btnOnClick('BUY', {{data['id']}}); myFunction({{data['id']}}, {{user_id}}, {{data['author_id']}})">Contact Lister
+                                <span class="popuptext" id="myPopup-{{data['id']}}">A Simple Popup!</span></a>
+                                <script>
+                                    function btnOnClick(posttype, postid) {
+                                        xhttp = new XMLHttpRequest();
+                                        xhttp.open("GET", `/contact-lister/${posttype}/${postid}/{{user_id}}`, true);
+                                        xhttp.send();
+                                }
+                                </script>
                         </div>
                     </div>
                 </div>
@@ -154,6 +178,7 @@
         </footer>
         <script src="static/scripts/index.js"></script>
         </div>
+    </div>
     </body>
 </main>
 </html>

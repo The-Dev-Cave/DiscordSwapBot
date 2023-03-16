@@ -12,7 +12,7 @@ from BotCode.functions.send_logs import send_public_log
 selects_plugin = lightbulb.Plugin("Selects")
 
 
-# @flare.select(
+# @flare.text_select(
 #     placeholder="Select The School You Are Affiliated With",
 #     options=[
 #         "Prefer Not To Say",
@@ -45,7 +45,7 @@ selects_plugin = lightbulb.Plugin("Selects")
 
 
 # noinspection PyTypeChecker
-# @flare.select(
+# @flare.text_select(
 #     placeholder="Select City You Mainly Live In",
 #     options=[
 #         "Bountiful",
@@ -126,7 +126,7 @@ selects_plugin = lightbulb.Plugin("Selects")
 
 
 # noinspection PyTypeChecker
-@flare.select(
+@flare.text_select(
     placeholder="Select Condition",
     options=[
         hikari.SelectMenuOption(
@@ -231,7 +231,7 @@ async def condition_select_menu(
 
 
 # noinspection PyTypeChecker
-@flare.select(
+@flare.text_select(
     placeholder="Select Any Amount",
     options=[
         "Can Deliver (Free)",
@@ -312,7 +312,7 @@ async def meetup_select_menu(
     await conn.close()
 
 
-@flare.select(
+@flare.text_select(
     placeholder="Select Payment Methods",
     options=[
         "Cash",
@@ -440,7 +440,7 @@ async def payment_methods_select_menu(
 
 
 # noinspection PyTypeChecker
-@flare.select(
+@flare.text_select(
     placeholder="Select What To Update",
     options=[
         hikari.SelectMenuOption(
@@ -672,7 +672,7 @@ async def update_post(
     await conn.close()
 
 
-@flare.select(
+@flare.text_select(
     placeholder="Choose What To Edit",
     options=[
         # hikari.SelectMenuOption(label="Title", value="title", description="", emoji=None, is_default=False),

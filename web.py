@@ -1,5 +1,4 @@
-import logging, os, sys, ssl, asyncpg, hikari, json
-from io import BytesIO
+import logging, os, sys, asyncpg, hikari
 from dotenv import load_dotenv
 
 from quart import Quart, session, render_template, redirect, request
@@ -71,7 +70,7 @@ async def home():
             if pfpImg == None:
                 pfpImg = 'static/assets/profile_placeholder.jpg'
             return await render_template("home.html", current_user=my_user,
-                                        user_id=my_user.id, current_name=my_user.username, 
+                                        user_id=session['uid'], current_name=my_user.username,
                                         first_name=row.get('first_name'), last_name=row.get('last_name'),
                                         avatar_url=pfpImg, data_sell=data_sell, data_buy=data_buy)
 
@@ -303,6 +302,18 @@ async def callback():
 
     app.add_background_task(background_task)
 
+    return redirect("/home")
+
+
+async def create_channels(post_type: str, post_id: int):
+    from Website.contact_from_web import contact_channel_from_web
+    await contact_channel_from_web(post_id=post_id, post_type=post_type, int_party_id=session['uid'], restApp=app.discord_rest, conn=await app.swapbotDBpool.acquire())
+
+
+@app.route("/contact-lister/<posttype>/<postid>/<intid>")
+async def contact_lister(posttype, postid, intid):
+    app.add_background_task(create_channels, posttype, postid)
+    # await create_channels(post_type=posttype, post_id=postid)
     return redirect("/home")
 
 

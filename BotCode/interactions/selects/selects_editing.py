@@ -13,7 +13,7 @@ from BotCode.interactions.modals import ModalPostEdit
 selects_plugin = lightbulb.Plugin("Editing Selects")
 
 
-@flare.select(
+@flare.text_select(
     placeholder="Select 1 To Edit",
     options=[
         hikari.SelectMenuOption(
@@ -200,7 +200,7 @@ async def edit_select_menu(
         #     await conn.close()
 
 
-@flare.select(
+@flare.text_select(
     placeholder="Select Condition",
     options=[
         hikari.SelectMenuOption(
@@ -341,7 +341,7 @@ async def edit_condition_select_menu(
         )
 
 
-@flare.select(
+@flare.text_select(
     placeholder="Select Any Amount",
     options=[
         "Can Deliver (Free)",
@@ -455,7 +455,7 @@ async def edit_meetup_select_menu(
                 ),
             )
 
-@flare.select(
+@flare.text_select(
     placeholder="Select Payment Methods",
     options=[
         "Cash",
