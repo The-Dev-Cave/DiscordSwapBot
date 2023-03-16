@@ -194,7 +194,7 @@ async def condition_select_menu(
     guild_id: hikari.Snowflake = 123,
 ):
     from BotCode.interactions.buttons.buttons_posts import ButtonCancel
-
+    await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     conn = await get_database_connection()
     conn: asyncpg.Connection
 
@@ -253,7 +253,7 @@ async def meetup_select_menu(
 ):
     from BotCode.interactions.buttons.buttons_posts import ButtonNoPhoto
     from BotCode.interactions.buttons.buttons_posts import ButtonCancel
-    await ctx.defer(False)
+    await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     conn = await get_database_connection()
     conn: asyncpg.Connection
 
@@ -342,7 +342,7 @@ async def payment_methods_select_menu(
 
     from BotCode.functions.embeds import buildPostEmbed
     from BotCode.interactions.buttons.buttons_posts import ButtonCancel
-
+    await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     conn = await get_database_connection()
     conn: asyncpg.Connection
 

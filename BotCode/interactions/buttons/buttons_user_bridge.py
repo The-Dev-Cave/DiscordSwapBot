@@ -180,6 +180,7 @@ class ButtonMarkPostSold(flare.Button):
         self.int_party_id = int_party_id
 
     async def callback(self, ctx: flare.MessageContext) -> None:
+        await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         if ctx.user.id != self.post_owner_id:
             await ctx.respond(
                 "You must be the lister to mark as sold",
@@ -397,7 +398,7 @@ class ButtonShowMoreImages(flare.Button):
         self.post_type = post_type
 
     async def callback(self, ctx: flare.MessageContext) -> None:
-        await ctx.defer(False)
+        await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         conn = await get_database_connection()
         row = await conn.fetchrow(
             f"SELECT add_images from {self.post_type} where id={self.post_id}"

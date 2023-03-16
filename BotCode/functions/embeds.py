@@ -155,8 +155,10 @@ async def buildPostEmbed(post_id: int, post_type: str, user: hikari.User):
     if post_type == "trading":
         looking_for = post_data.get("looking_for")
     else:
-        price = str(post_data.get("price"))
-        price.removesuffix(".0")
+        # print(post_data.get('price'))
+        # print(round(post_data.get("price"), 2))
+        price = round(post_data.get("price"), 2)
+        # price.removesuffix(".0")
     condition = post_data.get("condition")
     # location = post_data.get("location")
     meetup = post_data.get("meetup")

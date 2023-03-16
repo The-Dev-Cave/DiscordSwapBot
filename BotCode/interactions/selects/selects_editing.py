@@ -75,6 +75,7 @@ async def edit_select_menu(
     post_type: str = "No Type",
     guild_id: hikari.Snowflake = 123,
 ):
+
     if len(ctx.values) == 0:
         await ctx.respond("Select nothing. Please select an item")
 
@@ -112,6 +113,7 @@ async def edit_select_menu(
             )
             await modal.send(ctx.interaction)
         case "condition":
+            await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
             await ctx.message.edit(components=[])
             await ctx.respond(
                 embed=hikari.Embed(
@@ -143,6 +145,7 @@ async def edit_select_menu(
             )
             await modal.send(ctx.interaction)
         case "meetup":
+            await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
             await ctx.message.edit(components=[])
             await ctx.respond(
                 embed=hikari.Embed(
@@ -159,6 +162,7 @@ async def edit_select_menu(
                 ),
             )
         case "payment_methods":
+            await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
             await ctx.message.edit(components=[])
             await ctx.respond(
                 embed=hikari.Embed(
@@ -274,7 +278,7 @@ async def edit_condition_select_menu(
         ButtonShowMoreImages,
     )
 
-    await ctx.defer(False)
+    await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_UPDATE)
     await ctx.message.edit(components=[])
     conn = await get_database_connection()
     conn: asyncpg.Connection
@@ -368,7 +372,7 @@ async def edit_meetup_select_menu(
         ButtonShowMoreImages,
     )
 
-    await ctx.defer(False)
+    await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_UPDATE)
     await ctx.message.edit(components=[])
     conn = await get_database_connection()
     conn: asyncpg.Connection
@@ -484,7 +488,7 @@ async def edit_payment_methods_select_menu(
         ButtonShowMoreImages,
     )
 
-    await ctx.defer(False)
+    await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_UPDATE)
     await ctx.message.edit(components=[])
     conn = await get_database_connection()
     conn: asyncpg.Connection

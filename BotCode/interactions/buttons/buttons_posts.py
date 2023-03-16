@@ -40,7 +40,7 @@ class ButtonCreatePost(flare.Button):
     async def callback(self, ctx: flare.MessageContext):
         await ctx.defer(
             flags=hikari.MessageFlag.EPHEMERAL,
-            response_type=hikari.ResponseType.MESSAGE_CREATE,
+            response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE,
         )
         conn = await get_database_connection()
         conn: asyncpg.Connection
@@ -167,6 +167,7 @@ class ButtonCancel(flare.Button):
         self.post_type = post_type
 
     async def callback(self, ctx: flare.MessageContext):
+        await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         conn = await get_database_connection()
         conn: asyncpg.Connection
         post_id = self.post_id
@@ -246,7 +247,7 @@ class ButtonNoPhoto(flare.Button):
     async def callback(self, ctx: flare.MessageContext) -> None:
         conn = await get_database_connection()
         conn: asyncpg.Connection
-        await ctx.defer(False)
+        await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_UPDATE)
 
         await conn.execute(
             f"UPDATE {self.post_type} set image='nophoto' where id={self.post_id}"
@@ -349,6 +350,7 @@ class ButtonSendPostToMods(flare.Button):
         self.guild_id = guild_id
 
     async def callback(self, ctx: flare.MessageContext) -> None:
+        await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         conn = await get_database_connection()
         conn: asyncpg.Connection
 
@@ -497,10 +499,10 @@ class ButtonNewPostPhotos(flare.Button):
         self.guild_id = guild_id
 
     async def callback(self, ctx: flare.MessageContext) -> None:
+        await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         conn = await get_database_connection()
         conn: asyncpg.Connection
 
-        await ctx.defer(False)
 
         embed = hikari.Embed(
             title="Send the new photo(s) in one message",

@@ -113,7 +113,7 @@ class ModalPostSellBuyPart1(flare.Modal, title="Part 1"):
 
     async def callback(self, ctx: flare.ModalContext) -> None:
         from BotCode.interactions.buttons.buttons_posts import ButtonCancel
-
+        await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         conn = await get_database_connection()
         conn: asyncpg.Connection
 
@@ -148,7 +148,7 @@ class ModalPostSellBuyPart1(flare.Modal, title="Part 1"):
             embed.add_field("Cost or Budget", f"{cost}")
 
             await conn.execute(
-                rf"UPDATE {self.post_type} set title='{title}',description='{description}',price='{cost}' where id={self.post_id}"
+                rf"UPDATE {self.post_type} set title='{title}',description='{description}',price=ROUND(CAST('{cost}' AS NUMERIC), 2) where id={self.post_id}"
             )
 
         else:
@@ -283,14 +283,36 @@ class ModalPostEdit(flare.Modal, title="Post Edit"):
         )
         from BotCode.interactions.selects.selects_editing import edit_select_menu
 
-        await ctx.defer(False)
         # await ctx.respond(flags=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
+        user_input = ctx.values[0]
+
+        if self.edit_option in ['title']:
+            self.edit_option = self.edit_option.title()
+
+        if self.edit_option in ['price']:
+            cost: int | float = 0
+            if (
+                    not (user_input.isdigit() or user_input.replace(".", "", 1).isdigit())
+            ) or user_input.__contains__("-"):
+                await ctx.respond(
+                    hikari.Embed(
+                        title="Not a valid cost input",
+                        description="Must be an integer or decimal",
+                    )
+                )
+                return
+            if user_input.replace(".", "", 1).isdigit():
+                user_input = round(float(user_input), 2)
+            else:
+                user_input = int(user_input)
+
 
         await ctx.interaction.message.edit(components=[])
 
+        await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
+
         conn = await get_database_connection()
         conn: asyncpg.Connection
-        user_input = ctx.values[0]
         # await conn.execute("UPDATE $1 set $2=$3 where id=$4", self.post_type, self.edit_option, user_input, self.post_id)
         await conn.execute(
             f"UPDATE {self.post_type} set {self.edit_option}=$1 where id={self.post_id}",
@@ -309,7 +331,8 @@ class ModalPostEdit(flare.Modal, title="Post Edit"):
                 has_add_imgs = True
 
         if has_add_imgs:
-            await ctx.interaction.edit_initial_response(
+            await ctx.interaction.create_initial_response(
+                response_type=hikari.ResponseType.MESSAGE_CREATE,
                 embed=embed,
                 components=await asyncio.gather(
                     flare.Row(
@@ -343,7 +366,8 @@ class ModalPostEdit(flare.Modal, title="Post Edit"):
             )
         else:
             if self.post_type == "sell":
-                await ctx.interaction.edit_initial_response(
+                await ctx.interaction.create_initial_response(
+                    response_type=hikari.ResponseType.MESSAGE_CREATE,
                     embed=embed,
                     components=await asyncio.gather(
                         flare.Row(
