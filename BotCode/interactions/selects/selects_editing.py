@@ -94,6 +94,7 @@ async def edit_select_menu(
                     label="Title",
                     placeholder="New Post Title",
                     style=hikari.TextInputStyle.SHORT,
+                    max_length=30
                 )
             )
             await modal.send(ctx.interaction)
@@ -141,6 +142,7 @@ async def edit_select_menu(
                     label="Price/Cost",
                     placeholder="Price of item or amount willing to pay",
                     style=hikari.TextInputStyle.SHORT,
+                    max_length=10
                 )
             )
             await modal.send(ctx.interaction)

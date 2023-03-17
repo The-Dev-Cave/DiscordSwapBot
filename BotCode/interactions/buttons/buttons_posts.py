@@ -224,7 +224,7 @@ class ButtonPostPart1(flare.Button):
                 )
             )
         else:
-            modal.append(flare.TextInput(label="Cost/Budget", placeholder="Ex. 10"))
+            modal.append(flare.TextInput(label="Cost/Budget", placeholder="Ex. 10", max_length=10))
 
         await modal.send(ctx.interaction)
 

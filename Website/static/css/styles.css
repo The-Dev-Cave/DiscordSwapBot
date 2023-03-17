@@ -132,6 +132,10 @@ footer:hover a {
     min-width: 180px;
     float: left;
     cursor: pointer;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 #itemBox img {
@@ -157,6 +161,7 @@ footer:hover a {
     padding: .5em .5em;
     width: 100%;
     height: auto;
+    margin-top: 15px;
 }
 
 
@@ -164,7 +169,7 @@ footer:hover a {
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
 }
 
@@ -221,7 +226,7 @@ footer:hover a {
     background-color: #282b30;
     padding: 1em 1em;
     width: 90%;
-    height: 35vh;
+    min-height: 35vh;
     margin-left: auto;
     margin-right: auto;
     cursor: default;

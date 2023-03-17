@@ -104,6 +104,7 @@ class ModalPostSellBuyPart1(flare.Modal, title="Part 1"):
         label="Title",
         placeholder="Keep it short, simple, and concise.",
         style=hikari.TextInputStyle.SHORT,
+        max_length=30
     )
     text_input_description: flare.TextInput = flare.TextInput(
         label="Description",
@@ -274,7 +275,6 @@ class ModalPostEdit(flare.Modal, title="Post Edit"):
     edit_option: str
 
     async def callback(self, ctx: flare.ModalContext) -> None:
-        # TODO: Price check to be valid number
         from BotCode.interactions.buttons.buttons_posts import (
             ButtonSendPostToMods,
             ButtonCancel,
