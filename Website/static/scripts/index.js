@@ -55,26 +55,30 @@ function off(title) {
 
 
 
-let slideIndex = 1;
+let slideIndex = {};
 // showSlides(slideIndex);
 
 function plusSlides(n, id) {
-  showSlides(slideIndex += n, id);
+  showSlides(slideIndex[id] += n, id);
 }
 
 function currentSlide(n, title) {
-  showSlides(slideIndex = n, id);
+  showSlides(slideIndex[id] = n, id);
 }
 
 function showSlides(n, id="") {
+    if (!(id in slideIndex)){
+        slideIndex[id] = 1
+    }
+
   let i;
   let slides = document.getElementsByClassName(`mySlides-${id}`);
-  if (n > slides.length) {slideIndex = 1}
-  if (n < 1) {slideIndex = slides.length}
+  if (n > slides.length) {slideIndex[id] = 1}
+  if (n < 1) {slideIndex[id] = slides.length}
   for (i = 0; i < slides.length; i++) {
     slides[i].style.display = "none";
   }
-  slides[slideIndex-1].style.display = "block";
+  slides[slideIndex[id]-1].style.display = "block";
 }
 
 
@@ -82,9 +86,9 @@ function myFunction(post_id, int_party_id, my_user_id) {
   var popup = document.getElementById(`myPopup-${post_id}`);
 
   if (int_party_id == my_user_id){
-      popup.textContent = "Can't Make Channels With Self"
+      popup.innerHTML = "Can't Make Channels With Yourself"
   } else {
-      popup.textContent = "Chat Channel Being Created In Post's Server\nPinged When Done"
+      popup.innerHTML = "Chat Channel Being Created In Post's Server If Not Already Made<br>You Will Be Pinged When Done"
   }
 
   popup.classList.toggle("show");

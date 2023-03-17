@@ -1,4 +1,6 @@
 import asyncio
+import itertools
+
 import asyncpg
 import flare
 import hikari
@@ -687,7 +689,7 @@ class ButtonContactLister(flare.Button):
             return
 
         await ctx.respond(
-            "A chat channel is being created.  You will be pinged in it when done",
+            "A chat channel is being created if not already exists.  You will be pinged in it when done",
             flags=hikari.MessageFlag.EPHEMERAL,
         )
 
@@ -733,13 +735,28 @@ class ButtonContactLister(flare.Button):
         msg_url = (
             await ctx.bot.rest.fetch_message(ctx.channel_id, ctx.message)
         ).make_link(ctx.guild_id)
-
-        channel_name = f"{user_name[0:10]}-{self.post_id}"
-
         conn = await get_database_connection()
+
+        channel_name = f"{user_name[0:10]}-{self.post_id}".replace(" ", "-").lower()
+
+        channels = ctx.bot.cache.get_guild_channels_view_for_guild(ctx.guild_id)
         swap_cat_id = await conn.fetchval(
             f"Select user_bridge_cat_id from guilds where guild_id={ctx.guild_id}"
         )
+        chnls_grouped = itertools.groupby(
+            filter(
+                lambda c: isinstance(c[1], hikari.GuildTextChannel),
+                channels.items(),
+            ),
+            key=lambda c: c[1].parent_id,
+        )
+        for item in chnls_grouped:
+            cat_id = item[0]
+            if cat_id == swap_cat_id:
+                for i in item[1]:
+                    if str(i[1].name) == channel_name:
+                        return
+                break
 
         channel = await ctx.bot.rest.create_guild_text_channel(
             guild=ctx.guild_id,
@@ -879,7 +896,7 @@ class ButtonReportPost(flare.Button):
             f"SELECT * from {self.post_type} where id=$1", self.post_id
         )
         guild_data = await conn.fetchrow(
-            "SELECT sell_channel_id, buy_channel_id from guilds where guild_id=$1",
+            "SELECT sell_channel_id, buy_channel_id,mod_role_id from guilds where guild_id=$1",
             ctx.guild_id,
         )
 
@@ -896,7 +913,7 @@ class ButtonReportPost(flare.Button):
         # await send_mod_log(ctx.guild_id, f"{ctx.author.mention} ({ctx.author.username}#{ctx.author.discriminator}) has reported [{row.get('title')}]({msg_url})")
         await send_mod_log(
             ctx.guild_id,
-            f"{ctx.author.mention} ({ctx.author.username}#{ctx.author.discriminator}) has reported **__{row.get('title')}__** in <#{channel}>",
+            f"<@&{guild_data.get('mod_role_id')}>{ctx.author.mention} ({ctx.author.username}#{ctx.author.discriminator}) has reported **__{row.get('title')}__** in <#{channel}>",
         )
 
 

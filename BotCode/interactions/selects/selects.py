@@ -355,7 +355,7 @@ async def payment_methods_select_menu(
     if post_type == "sell":
         embed_nextstep = hikari.Embed(
             title="Would you like to add a photo(s) of your item?",
-            description="Try to post a photo that shows as much of the item as possible and is not blurry. You may add multiple photos at once to your message.  The first attached image will be the main one showed on the post",
+            description="Try to post a photo that shows as much of the item as possible and is not blurry. You may add multiple photos at once to your message.  The first attached image will be the main one showed on the post and up to 3 extra photos",
             color=0xFFDD00,
         )
         await ctx.message.edit(components=[])
@@ -548,7 +548,7 @@ async def update_post(
                     cat_id = item[0]
                     if cat_id == swap_cat_id:
                         for i in item[1]:
-                            if (str(post_id) in str(i[1].name)) and (
+                            if (str(i[1].name).endswith(str(post_id))) and (
                                 str(i[0]) != str(ctx.channel_id)
                             ):
                                 await ctx.bot.rest.create_message(
@@ -589,7 +589,7 @@ async def update_post(
                     cat_id = item[0]
                     if cat_id == swap_cat_id:
                         for i in item[1]:
-                            if (str(post_id) in str(i[1].name)) and (
+                            if (str(i[1].name).endswith(str(post_id))) and (
                                 str(i[0]) != str(ctx.channel_id)
                             ):
                                 await ctx.bot.rest.create_message(

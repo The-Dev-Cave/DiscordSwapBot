@@ -99,7 +99,7 @@ class ButtonMarkPostPending(flare.Button):
                 cat_id = item[0]
                 if cat_id == swap_cat_id:
                     for i in item[1]:
-                        if (str(self.post_id) in str(i[1].name)) and (
+                        if (str(i[1].name).endswith(str(self.post_id))) and (
                             str(i[0]) != str(ctx.channel_id)
                         ):
                             await ctx.bot.rest.create_message(
@@ -143,7 +143,7 @@ class ButtonMarkPostPending(flare.Button):
                 cat_id = item[0]
                 if cat_id == swap_cat_id:
                     for i in item[1]:
-                        if (str(self.post_id) in str(i[1].name)) and (
+                        if (str(i[1].name).endswith(str(self.post_id))) and (
                             str(i[0]) != str(ctx.channel_id)
                         ):
                             await ctx.bot.rest.create_message(
@@ -398,7 +398,7 @@ class ButtonShowMoreImages(flare.Button):
         self.post_type = post_type
 
     async def callback(self, ctx: flare.MessageContext) -> None:
-        await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
+        await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
         conn = await get_database_connection()
         row = await conn.fetchrow(
             f"SELECT add_images from {self.post_type} where id={self.post_id}"

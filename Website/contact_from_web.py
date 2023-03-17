@@ -1,3 +1,4 @@
+import itertools
 import os
 
 import flare
@@ -22,12 +23,11 @@ async def contact_channel_from_web(
 
     post_id = int(post_id)
     int_party_id = int(int_party_id)
-    
+
     async with restApp.acquire(BOT_TOKEN, hikari.TokenType.BOT) as bot_client:
         bot_client: hikari.impl.RESTClientImpl
         # conn = await get_database_connection()
         post_type = post_type.lower()
-        print(f"Select * from {post_type} where id={post_id}")
         post = await conn.fetchrow(f"Select * from {post_type} where id={post_id}")
         guild_id = post.get("guild_id")
 
@@ -37,6 +37,31 @@ async def contact_channel_from_web(
 
         if int_party_id == author_id:
             return  # "You can't create a chat channel with yourself"
+
+        member = await bot_client.fetch_member(post.get("guild_id"), int_party_id)
+
+        channel_name = f"{member.display_name[0:10]}-{post_id}".replace(" ", "-").lower()
+
+        # channels = ctx.bot.cache.get_guild_channels_view_for_guild(ctx.guild_id)
+        channels = await bot_client.fetch_guild_channels(post.get("guild_id"))
+        swap_cat_id = await conn.fetchval(
+            f"Select user_bridge_cat_id from guilds where guild_id={post.get('guild_id')}"
+        )
+        chnls_grouped = itertools.groupby(
+            filter(
+                lambda c: isinstance(c, hikari.GuildTextChannel),
+                channels,
+            ),
+            key=lambda c: c.parent_id,
+        )
+        for item in chnls_grouped:
+            cat_id = item[0]
+            if cat_id == swap_cat_id:
+                for i in item[1]:
+                    if str(i.name) == channel_name:
+                        return
+                break
+
 
         perm_overwrites = [
             hikari.PermissionOverwrite(
@@ -58,9 +83,8 @@ async def contact_channel_from_web(
                 id=author_id,
             ),
         ]
-        print(guild_id, int_party_id)
         int_part_mem = await bot_client.fetch_member(
-            guild=guild_id, user=int_party_id  # print out data
+            guild=guild_id, user=int_party_id
         )
 
         user_name = int_part_mem.display_name

@@ -21,7 +21,7 @@ async def send_mod_log(guild_id: int | hikari.Snowflake, text: str) -> None:
         "Select mod_log_channel_id from guilds where guild_id=$1", guild_id
     )
     await conn.close()
-    await logs_plugin.bot.rest.create_message(channel=channel, content=text)
+    await logs_plugin.bot.rest.create_message(channel=channel, content=text, role_mentions=True)
 
 
 def load(bot):
