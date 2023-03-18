@@ -132,7 +132,6 @@ footer:hover a {
     min-width: 180px;
     float: left;
     cursor: pointer;
-
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -171,6 +170,8 @@ footer:hover a {
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
+    margin-top: 10px;
+    margin-bottom: 5px;
 }
 
 
@@ -219,6 +220,7 @@ footer:hover a {
     flex-direction: row;
     /*flex-basis: content;*/
     justify-content: center;
+    overflow-y: auto;
 }
 
 #itemCard-overlay {
@@ -226,23 +228,35 @@ footer:hover a {
     background-color: #282b30;
     padding: 1em 1em;
     width: 90%;
-    min-height: 35vh;
+    min-height: 60vh;
     margin-left: auto;
     margin-right: auto;
     cursor: default;
-
 }
 
 
-#itemCard-overlay p {
+#itemCard-overlay .description{
     overflow-y: scroll;
     text-overflow: clip;
     display: -webkit-box;
-    -webkit-line-clamp: 30;
+    -webkit-line-clamp: 15;
     -webkit-box-orient: vertical;
-    /*margin: 15px;*/
+    margin: 5px;
     text-align: left;
-    height: 29vh;
+    height: 20vh;
+}
+
+#itemCard-overlay p{
+    display: -webkit-box;
+    /*margin: 15px 5px;*/
+    text-align: left;
+    height: auto;
+    white-space: pre-wrap;
+
+    margin-top: 15px;
+    margin-right: 5px;
+    margin-bottom: 0px;
+    margin-left: 5px;
 }
 
 /* width */
@@ -364,15 +378,40 @@ footer:hover a {
     cursor: pointer;
     height: fit-content;
     width: 50%;
-
     display: inline-flex;
     justify-content: center;
     align-items: center;
+    min-width: fit-content;
 }
 
 .button:hover {
     background-color: #317934;
 }
+
+.prof_button {
+    width: 40%;
+    background-color: #5620ff;
+    border: none;
+    border-radius: 0.7em;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    /*display: inline-block;*/
+    /*font-size: 16px;*/
+    margin-top: 10px;
+    cursor: pointer;
+    height: fit-content;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: fit-content;
+}
+
+.prof_button:hover {
+    background-color: #3405cb;
+}
+
 
 .itemData-Overlay {
     display: flex;
@@ -440,4 +479,13 @@ footer:hover a {
 @keyframes fadeIn {
   from {opacity: 0;}
   to {opacity:1 ;}
+}
+
+.underline{
+    text-decoration: underline;
+    text-underline: white;
+}
+
+.bold {
+    font-weight: bold;
 }

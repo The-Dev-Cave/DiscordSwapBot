@@ -350,10 +350,10 @@ async def edit_condition_select_menu(
 @flare.text_select(
     placeholder="Select Any Amount",
     options=[
-        "Can Deliver (Free)",
-        "Can Deliver (Paid)",
-        "Can Pickup (Free)",
-        "Can Pickup (Paid)",
+        "Deliver (Free)",
+        "Deliver (Paid)",
+        "Pickup (Free)",
+        "Pickup (Paid)",
         "Meet Up",
         "Shipping (Add. Cost)",
         "Shipping (No Add. Cost)",

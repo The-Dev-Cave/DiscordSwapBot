@@ -64,9 +64,18 @@ async def home():
         if row == None:
             return redirect("/noprofile")
         else:
+            print(', '.join(f'"{i}"' for i in session['client_guilds']))
+            guilds_str = ', '.join(f"'{i}'" for i in session['client_guilds'])
             pfpImg = row.get('profile_picture')
-            data_sell = await app.swapbotDBpool.fetch(f"Select * from sell where post_date IS NOT NULL and notified_expiry = FALSE")
-            data_buy = await app.swapbotDBpool.fetch(f"Select * from buy where post_date IS NOT NULL and notified_expiry = FALSE")
+            data_sell = await app.swapbotDBpool.fetch(f"select sell.*,CONCAT(first_name, ' ', last_name) AS NAME, "
+                                                      f"CAST((DATE_PART('day', CURRENT_DATE::date) - DATE_PART('day', sell.post_date::date)) AS INT) as DATE_DIFF "
+                                                      f"from profiles JOIN sell on user_id = author_id "
+                                                      f"where post_date IS NOT NULL and notified_expiry = FALSE and sell.guild_id IN ({guilds_str}) order by sell.id")
+            data_buy = await app.swapbotDBpool.fetch(f"select buy.*,CONCAT(first_name, ' ', last_name) AS NAME, "
+                                                     f"CAST((DATE_PART('day', CURRENT_DATE::date) - DATE_PART('day', buy.post_date::date)) AS INT) as DATE_DIFF "
+                                                     f"from profiles JOIN buy on user_id = author_id "
+                                                     f"where post_date IS NOT NULL and notified_expiry = FALSE and buy.guild_id IN ({guilds_str}) order by buy.id")
+
             if pfpImg == None:
                 pfpImg = 'static/assets/profile_placeholder.jpg'
             return await render_template("home.html", current_user=my_user,
@@ -282,7 +291,8 @@ async def callback():
     async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
         my_user = await client.fetch_my_user()
         row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
-
+        # async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+        session['client_guilds'] = [f"{a.id}" for a in (await (client.fetch_my_guilds()))]
         session['uid'] = my_user.id
 
         if row == None:
@@ -300,7 +310,7 @@ async def callback():
             session['EuName'] = elijah.username
             session['ZuName'] = zach.username
 
-    app.add_background_task(background_task)
+    # app.add_background_task(background_task)
 
     return redirect("/home")
 
@@ -314,6 +324,17 @@ async def create_channels(post_type: str, post_id: int):
 async def contact_lister(posttype, postid, intid):
     app.add_background_task(create_channels, posttype, postid)
     # await create_channels(post_type=posttype, post_id=postid)
+    return redirect("/home")
+
+
+async def send_profile(author_id, user_id, guild_id):
+    from Website.contact_from_web import send_user_profile
+    await send_user_profile(author_id, user_id, guild_id, app.discord_rest, await app.swapbotDBpool.acquire())
+
+
+@app.route("/view-profile/<author_id>/<user_id>/<guild_id>")
+async def view_profile(author_id, user_id, guild_id):
+    app.add_background_task(send_profile, author_id, user_id, guild_id)
     return redirect("/home")
 
 

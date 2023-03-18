@@ -83,8 +83,7 @@
                     <img src={{data["image"]}}>
                     {%endif%}
                     <div id="itemCard">
-                        <h4 style="display: inline;">[SELL] {{data["title"]}} -</h4>
-                        <h5 style="display: inline;">${{data["price"]}}</h5>
+                        <h4 style="display: inline;">[SELL] {{data["title"]}} - ${{data["price"]}}</h4>
                         <p>{{data["description"]}}</p>
                     </div>
                 </div>
@@ -118,19 +117,23 @@
                     {%endif%}
                         <div class="itemData-Overlay">
                     <div id="itemCard-overlay">
-                        <h4 style="display: inline;">[SELL] {{data["title"]}} -</h4>
-                        <h5 style="display: inline;">${{data["price"]}}</h5>
-                        <p>{{data["description"]}}</p>
+                        <h4 style="display: inline;">[SELL] {{data["title"]}} -  ${{data["price"]}}</h4>
+                        <h6>Posted {{data["date_diff"]}} day(s) ago</h6>
+                        <p class="underline bold">Details</p>
+                        <p class="underline">Condition:</p>
+                            <p>    {{data['condition']}}</p>
+                        <p class="underline">Exchange:</p>
+                            <p>    {{data['meetup']}}</p>
+                        <p class="underline">Payment Methods:</p>
+                            <p>    {{data["payment_methods"]}}</p>
+                        <p class="underline bold">Description</p>
+                        <p class="description">{{data["description"]}}</p>
+                        <div>Posted By: {{data["name"]}} </div>
+                        <a class="prof_button popup" onclick="btnViewProfile('{{data['author_id']}}', '{{user_id}}', '{{data['guild_id']}}'); profile_popup('{{data['id']}}')">View Profile
+                            <span class="popuptext" id="myPopup-prof-{{data['id']}}">You will DMed the profile info</span></a>
                     </div>
-                        <a class="button popup" onclick="btnOnClick('SELL', {{data['id']}}); myFunction({{data['id']}}, {{user_id}}, {{data['author_id']}})">Contact Lister
+                        <a class="button popup" onclick="btnOnClick('SELL', {{data['id']}}, '{{user_id}}'); contact_popup({{data['id']}}, {{user_id}}, {{data['author_id']}})">Contact Lister
                             <span class="popuptext" id="myPopup-{{data['id']}}">A Simple Popup!</span></a>
-                                <script>
-                                    function btnOnClick(posttype, postid) {
-                                        xhttp = new XMLHttpRequest();
-                                        xhttp.open("GET", `/contact-lister/${posttype}/${postid}/{{user_id}}`, true);
-                                        xhttp.send();
-                                }
-                                </script>
                         </div>
                     </div>
                 </div>
@@ -140,34 +143,37 @@
                 <div id="itemBox" class="itemB-child" onclick="on(`overlay-{{data['title']}}`)">
 <!--                    <img src={{data["image"]}}>-->
 
-                    <img src="static/assets/product_placeholder.png">
-                    <div id="itemCard">
-                        <h4 style="display: inline;">[BUY] {{data["title"]}} -</h4>
-                        <h5 style="display: inline;">${{data["price"]}}</h5>
+<!--                    <img src="static/assets/product_placeholder.png">-->
+                    <div id="itemCard" style="margin-top: 0">
+                        <h4 style="display: inline;">[BUY] {{data["title"]}} - ${{data["price"]}}</h4>
                         <p>{{data["description"]}}</p>
                     </div>
                 </div>
                 <div id='overlay-{{data["title"]}}' class="overlay" onclick="off(`overlay-{{data['title']}}`)">
                     <div class="over-div">
 
-                        <img src="static/assets/product_placeholder.png">
+<!--                        <img src="static/assets/product_placeholder.png">-->
 
                         <div class="itemData-Overlay">
                             <div id="itemCard-overlay">
-                                <h4 style="display: inline;">[BUY] {{data["title"]}} -</h4>
-                                <h5 style="display: inline;">${{data["price"]}}</h5>
-                                <p>{{data["description"]}}</p>
+                                <h4 style="display: inline;">[BUY] {{data["title"]}} - ${{data["price"]}}</h4>
+                                <h6>Posted {{data["date_diff"]}} day(s) ago</h6>
+                                <p class="underline bold">Details</p>
+                                <p class="underline">Condition:</p>
+                                    <p>    {{data['condition']}}</p>
+                                <p class="underline">Exchange:</p>
+                                    <p>    {{data['meetup']}}</p>
+                                <p class="underline">Payment Methods:</p>
+                                    <p>    {{data["payment_methods"]}}</p>
+                                <p class="underline bold">Description</p>
+                                <p class="description">{{data["description"]}}</p>
+                                <div>Posted By: {{data["name"]}} </div>
+                                <a class="prof_button popup" onclick="btnViewProfile('{{data['author_id']}}', '{{user_id}}', '{{data['guild_id']}}'); profile_popup('{{data['id']}}')">View Profile
+                                    <span class="popuptext" id="myPopup-{{data['id']}}">You will DMed the profile info</span></a>
                             </div>
 
-                            <a class="button popup" onclick="btnOnClick('BUY', {{data['id']}}); myFunction({{data['id']}}, {{user_id}}, {{data['author_id']}})">Contact Lister
+                            <a class="button popup" onclick="btnOnClick('BUY', {{data['id']}}, {{user_id}}); contact_popup({{data['id']}}, {{user_id}}, {{data['author_id']}})">Contact Lister
                                 <span class="popuptext" id="myPopup-{{data['id']}}">A Simple Popup!</span></a>
-                                <script>
-                                    function btnOnClick(posttype, postid) {
-                                        xhttp = new XMLHttpRequest();
-                                        xhttp.open("GET", `/contact-lister/${posttype}/${postid}/{{user_id}}`, true);
-                                        xhttp.send();
-                                }
-                                </script>
                         </div>
                     </div>
                 </div>
