@@ -72,15 +72,15 @@
         <div id="listingBrowser">
             {%for data in data_sell%}
                 {%if data["add_images"]%}
-                <div id="itemBox" class="itemB-child" onclick="on(`overlay-{{data['title']}}`); showSlides(1, {{data['id']}})">
+                    <div id="itemBox" class="itemB-child" onclick="on(`overlay-{{data['title']}}`); showSlides(1, {{data['id']}})">
                 {%else%}
                     <div id="itemBox" class="itemB-child" onclick="on(`overlay-{{data['title']}}`)">
                 {%endif%}
 
                     {%if data["image"] == "nophoto"%}
-                    <img src="static/assets/product_placeholder.png">
+                        <img src="static/assets/product_placeholder.png">
                     {%else%}
-                    <img src={{data["image"]}}>
+                        <img src={{data["image"]}}>
                     {%endif%}
                     <div id="itemCard">
                         <h4 style="display: inline;">[SELL] {{data["title"]}} - ${{data["price"]}}</h4>
@@ -94,13 +94,10 @@
                         <img src="static/assets/product_placeholder.png">
                     {%else%}
                             {%if data["add_images"]%}
-
                                 <div class='slideshow-container'>
-
                                     <div class='mySlides mySlides-{{data["id"]}} fade'>
                                         <img src={{data["image"]}} style="width:100%; height:100%">
                                     </div>
-
                                     {% for image in data["add_images"].split("|")%}
                                         {% if image|length > 10 %}
                                             <div class='mySlides mySlides-{{data["id"]}} fade'>
@@ -141,9 +138,6 @@
 
             {%for data in data_buy%}
                 <div id="itemBox" class="itemB-child" onclick="on(`overlay-{{data['title']}}`)">
-<!--                    <img src={{data["image"]}}>-->
-
-<!--                    <img src="static/assets/product_placeholder.png">-->
                     <div id="itemCard" style="margin-top: 0">
                         <h4 style="display: inline;">[BUY] {{data["title"]}} - ${{data["price"]}}</h4>
                         <p>{{data["description"]}}</p>
@@ -151,9 +145,6 @@
                 </div>
                 <div id='overlay-{{data["title"]}}' class="overlay" onclick="off(`overlay-{{data['title']}}`)">
                     <div class="over-div">
-
-<!--                        <img src="static/assets/product_placeholder.png">-->
-
                         <div class="itemData-Overlay">
                             <div id="itemCard-overlay">
                                 <h4 style="display: inline;">[BUY] {{data["title"]}} - ${{data["price"]}}</h4>
