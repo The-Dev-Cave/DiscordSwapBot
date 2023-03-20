@@ -47,10 +47,15 @@ async def stopping():
 
 
 @app.route("/")
+async def main():
+    return redirect("/home")
+
+
+@app.route("/login")
 async def login():
     if 'token' not in session:
         return await render_template("login.html", oauth_uri=OAUTH_URI)
-
+    
     if 'token' in session:
         return redirect("/home")
 
@@ -58,7 +63,7 @@ async def login():
 @app.route("/home")
 async def home():
     if 'token' not in session:
-        return redirect("/")
+        return redirect("/login")
 
     async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
         my_user = await client.fetch_my_user()
