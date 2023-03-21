@@ -118,7 +118,7 @@ class ModalPostSellBuyPart1(flare.Modal, title="Part 1"):
         conn = await get_database_connection()
         conn: asyncpg.Connection
 
-        title = self.text_input_title.value.title()
+        title = self.text_input_title.value
         description = self.text_input_description.value
         third_input = ctx.values[2]
 
@@ -286,8 +286,8 @@ class ModalPostEdit(flare.Modal, title="Post Edit"):
         # await ctx.respond(flags=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         user_input = ctx.values[0]
 
-        if self.edit_option in ['title']:
-            self.edit_option = self.edit_option.title()
+        # if self.edit_option in ['title']:
+        #     self.edit_option = self.edit_option.title()
 
         if self.edit_option in ['price']:
             cost: int | float = 0
