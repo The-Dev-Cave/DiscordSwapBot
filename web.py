@@ -67,11 +67,31 @@ async def home():
 
     async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
         my_user = await client.fetch_my_user()
+
+        row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
+
+        if row == None:
+            return redirect("/noprofile")
+        else:
+            pfpImg = row.get('profile_picture')
+            if pfpImg == None:
+                pfpImg = 'static/assets/profile_placeholder.jpg'
+            return await render_template("construction.html", current_user=my_user, avatar_url=pfpImg,
+                                         user_id=my_user.id, current_name=my_user.username)
+
+
+@app.route("/listings")
+async def listings():
+    if 'token' not in session:
+        return redirect("/login")
+
+    async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+        session['client_guilds'] = [f"{a.id}" for a in (await (client.fetch_my_guilds()))]
+        my_user = await client.fetch_my_user()
         row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1 and stage=4", my_user.id)
         if row == None:
             return redirect("/noprofile")
         else:
-            print(', '.join(f'"{i}"' for i in session['client_guilds']))
             guilds_str = ', '.join(f"'{i}'" for i in session['client_guilds'])
             pfpImg = row.get('profile_picture')
             data_sell = await app.swapbotDBpool.fetch(f"select sell.*,CONCAT(first_name, ' ', last_name) AS NAME, "
@@ -85,7 +105,7 @@ async def home():
 
             if pfpImg == None:
                 pfpImg = 'static/assets/profile_placeholder.jpg'
-            return await render_template("home.html", current_user=my_user,
+            return await render_template("listings.html", current_user=my_user,
                                          user_id=session['uid'], current_name=my_user.username,
                                          first_name=row.get('first_name'), last_name=row.get('last_name'),
                                          avatar_url=pfpImg, data_sell=data_sell, data_buy=data_buy)
