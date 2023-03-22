@@ -133,6 +133,87 @@ class ButtonRepost(flare.Button):
         self.post_type = post_type
 
     async def callback(self, ctx: flare.MessageContext) -> None:
+        await ctx.message.edit(components=[])
+        embed = hikari.Embed(title="Would you like to update price/budget?", description="Click yes to open a popup to input an new number or no to repost with no change")
+
+        btns = await flare.Row(
+            ButtonChangePrice(post_id=self.post_id, post_type=self.post_type),
+            ButtonDontChangePrice(post_id=self.post_id, post_type=self.post_type),
+        )
+
+        await ctx.respond(embed=embed, component=btns)
+
+
+class ButtonNoRepost(flare.Button):
+    post_id: int
+    post_type: str
+
+    def __init__(self, post_id, post_type, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.style = hikari.ButtonStyle.DANGER
+        self.label = "No"
+        self.emoji = None
+        self.disabled = False
+
+        # custom attributes
+        self.post_id = post_id
+        self.post_type = post_type
+
+    async def callback(self, ctx: flare.MessageContext) -> None:
+        await ctx.message.edit(components=[])
+        conn = await get_database_connection()
+
+        title = await conn.fetchval(
+            f"SELECT title from {self.post_type} where id={self.post_id}"
+        )
+
+        await ctx.respond(
+            embed=hikari.Embed(
+                title=f"Your {title} post will not be reposted",
+                description="You will need to make a new post to post it again",
+            )
+        )
+        await conn.execute(f"delete from {self.post_type} where id={self.post_id}")
+        await conn.close()
+
+
+class ButtonChangePrice(flare.Button):
+    post_id: int
+    post_type: str
+
+    def __init__(self, post_id, post_type, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.style = hikari.ButtonStyle.SUCCESS
+        self.label = "Yes"
+        self.emoji = None
+        self.disabled = False
+
+        # custom attributes
+        self.post_id = post_id
+        self.post_type = post_type
+
+    async def callback(self, ctx: flare.MessageContext) -> None:
+        modal = ModalNewCost(post_id=self.post_id, post_type=self.post_type)
+
+        await modal.send(ctx.interaction)
+
+
+class ButtonDontChangePrice(flare.Button):
+    post_id: int
+    post_type: str
+
+    def __init__(self, post_id, post_type, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.style = hikari.ButtonStyle.DANGER
+        self.label = "No"
+        self.emoji = None
+        self.disabled = False
+
+        # custom attributes
+        self.post_id = post_id
+        self.post_type = post_type
+
+    async def callback(self, ctx: flare.MessageContext) -> None:
         conn = await get_database_connection()
         post = None
         if self.post_type == "sell":
@@ -193,8 +274,8 @@ class ButtonRepost(flare.Button):
             post.get("guild_id"),
         )
         post_types_channel_dict = {
-            "sell": row_chnls.get("buy_channel_id"),
-            "buy": row_chnls.get("sell_channel_id"),
+            "buy": row_chnls.get("buy_channel_id"),
+            "sell": row_chnls.get("sell_channel_id"),
         }
         msg = await ctx.bot.rest.create_message(
             post_types_channel_dict.get(self.post_type),
@@ -209,36 +290,112 @@ class ButtonRepost(flare.Button):
         await conn.close()
 
 
-class ButtonNoRepost(flare.Button):
+class ModalNewCost(flare.Modal, title="New Post Cost/Budget"):
     post_id: int
     post_type: str
 
-    def __init__(self, post_id, post_type, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.style = hikari.ButtonStyle.DANGER
-        self.label = "No"
-        self.emoji = None
-        self.disabled = False
+    text_input_cost: flare.TextInput = flare.TextInput(
+        label="New Cost",
+        placeholder="Ex. '10' or '9.50'",
+        style=hikari.TextInputStyle.SHORT,
+        max_length=10
+    )
 
-        # custom attributes
-        self.post_id = post_id
-        self.post_type = post_type
+    async def callback(self, ctx: flare.ModalContext) -> None:
 
-    async def callback(self, ctx: flare.MessageContext) -> None:
-        await ctx.message.edit(components=[])
+        user_input = self.text_input_cost.value
+
+        if (not (user_input.isdigit() or user_input.replace(".", "", 1).isdigit())) or user_input.__contains__("-"):
+            await ctx.respond(
+                hikari.Embed(
+                    title="Not a valid cost input",
+                    description="Must be an integer or decimal",
+                )
+            )
+            return
+        if user_input.replace(".", "", 1).isdigit():
+            user_input = round(float(user_input), 2)
+        else:
+            user_input = int(user_input)
+
         conn = await get_database_connection()
 
-        title = await conn.fetchval(
-            f"SELECT title from {self.post_type} where id={self.post_id}"
+        await conn.execute(
+            rf"UPDATE {self.post_type} set price=ROUND(CAST('{user_input}' AS NUMERIC), 2) where id={self.post_id}"
         )
 
+        post = None
+        if self.post_type == "sell":
+            post = await conn.fetchrow(
+                f"SELECT title,author_id,guild_id,add_images from sell where id={self.post_id}"
+            )
+        else:
+            post = await conn.fetchrow(
+                f"SELECT title,author_id,guild_id from buy where id={self.post_id}"
+            )
+        await ctx.interaction.message.edit(components=[])
         await ctx.respond(
             embed=hikari.Embed(
-                title=f"Your {title} post will not be reposted",
-                description="You will need to make a new post to post it again",
+                title=f"Your {post.get('title')} post is being reposted",
+                description="It will be like a brand new post",
             )
         )
-        await conn.execute(f"delete from {self.post_type} where id={self.post_id}")
+        lister = int(post.get("author_id"))
+        post_title = post.get("title")
+        # btns_row = await flare.Row(
+        #     ButtonContactLister(post_id=self.post_id, post_type=self.post_type, post_owner_id=lister, post_title=post_title),
+        #     ButtonUpdatePost(post_id=self.post_id, post_type=self.post_type, post_owner_id=lister)
+        # )
+        if post.get("add_images"):
+            btns_row = await flare.Row(
+                ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
+                ButtonContactLister(
+                    post_id=self.post_id,
+                    post_type=self.post_type,
+                    post_owner_id=lister,
+                    post_title=post_title,
+                ),
+                ButtonUpdatePost(
+                    post_id=self.post_id, post_type=self.post_type, post_owner_id=lister
+                ),
+                ButtonReportPost(
+                    post_id=self.post_id, post_type=self.post_type, post_owner_id=lister
+                ),
+            )
+        else:
+            btns_row = await flare.Row(
+                ButtonContactLister(
+                    post_id=self.post_id,
+                    post_type=self.post_type,
+                    post_owner_id=lister,
+                    post_title=post_title,
+                ),
+                ButtonUpdatePost(
+                    post_id=self.post_id, post_type=self.post_type, post_owner_id=lister
+                ),
+                ButtonReportPost(
+                    post_id=self.post_id, post_type=self.post_type, post_owner_id=lister
+                ),
+            )
+
+        row_chnls = await conn.fetchrow(
+            "SELECT buy_channel_id,sell_channel_id from guilds where guild_id=$1",
+            post.get("guild_id"),
+        )
+        post_types_channel_dict = {
+            "buy": row_chnls.get("buy_channel_id"),
+            "sell": row_chnls.get("sell_channel_id"),
+        }
+        msg = await ctx.bot.rest.create_message(
+            post_types_channel_dict.get(self.post_type),
+            embed=await buildPostEmbed(
+                post_id=self.post_id, post_type=self.post_type, user=ctx.user
+            ),
+            component=btns_row,
+        )
+        await conn.execute(
+            f"update {self.post_type} set notified_expiry=FALSE,message_id={msg.id},post_date='{datetime.datetime.today()}' where id={self.post_id}"
+        )
         await conn.close()
 
 
