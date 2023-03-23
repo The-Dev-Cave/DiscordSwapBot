@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-__all__: typing.Sequence[str] = ("UserCredentialsStrategy")
+__all__: typing.Sequence[str] = "UserCredentialsStrategy"
 
 import asyncio
 import base64
@@ -72,6 +72,7 @@ if typing.TYPE_CHECKING:
 # new imports
 from hikari import RESTApp
 
+
 class UserCredentialsStrategy(rest_api.TokenStrategy):
     """Strategy class for handling client credential OAuth2 authorization.
 
@@ -82,7 +83,7 @@ class UserCredentialsStrategy(rest_api.TokenStrategy):
         authorize as.
     client_secret : str
         Client secret to use when authorizing.
-    code : str
+    auth_code : str
         Auth code given from Discord when user authorizes
     redirect_uri: str
         The redirect uri that was included in the authorization request
@@ -103,14 +104,14 @@ class UserCredentialsStrategy(rest_api.TokenStrategy):
         "_token",
         "_code",
         "_redirect_uri",
-        "_refresh_token"
+        "_refresh_token",
     )
 
     def __init__(
         self,
         client_id: snowflakes.SnowflakeishOr[guilds.PartialApplication],
         client_secret: str,
-        code: str,
+        auth_code: str,
         redirect_uri: str,
         *,
         scopes: typing.Sequence[typing.Union[applications.OAuth2Scope, str]] = (
@@ -126,7 +127,7 @@ class UserCredentialsStrategy(rest_api.TokenStrategy):
         self._scopes = tuple(scopes)
         self._token: typing.Optional[str] = None
         self._refresh_token = None
-        self._code = code
+        self._code = auth_code
         self._redirect_uri = redirect_uri
 
     @property
@@ -166,11 +167,16 @@ class UserCredentialsStrategy(rest_api.TokenStrategy):
 
                 if not self._token:
                     response = await client.authorize_access_token(
-                        client=self._client_id, client_secret=self._client_secret, code=self._code, redirect_uri=self._redirect_uri
+                        client=self._client_id,
+                        client_secret=self._client_secret,
+                        code=self._code,
+                        redirect_uri=self._redirect_uri,
                     )
                 else:
                     response = await client.refresh_access_token(
-                        client=self._client_id, client_secret=self._client_secret, refresh_token=self._refresh_token,
+                        client=self._client_id,
+                        client_secret=self._client_secret,
+                        refresh_token=self._refresh_token,
                     )
 
             except errors.ClientHTTPResponseError as exc:
@@ -181,7 +187,9 @@ class UserCredentialsStrategy(rest_api.TokenStrategy):
                 raise
 
             # Expires in is lowered a bit in-order to lower the chance of a dead token being used.
-            self._expire_at = time.monotonic() + math.floor(response.expires_in.total_seconds() * 0.99)
+            self._expire_at = time.monotonic() + math.floor(
+                response.expires_in.total_seconds() * 0.99
+            )
             self._token = f"{response.access_token}"
             self._refresh_token = response.refresh_token
             await client.close()
@@ -190,4 +198,5 @@ class UserCredentialsStrategy(rest_api.TokenStrategy):
     def invalidate(self, token: typing.Optional[str] = None) -> None:
         if not token or token == self._token:
             self._expire_at = 0.0
-            # self._token = None
+            self._token = None
+            self._refresh_token = None
