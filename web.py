@@ -65,7 +65,7 @@ async def home():
     if 'token' not in session:
         return redirect("/login")
 
-    async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+    async with app.discord_rest.acquire(await app.token.acquire(app.discord_rest), hikari.TokenType.BEARER) as client:
         my_user = await client.fetch_my_user()
 
         row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
@@ -85,7 +85,7 @@ async def listings():
     if 'token' not in session:
         return redirect("/login")
 
-    async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+    async with app.discord_rest.acquire(await app.token.acquire(app.discord_rest), hikari.TokenType.BEARER) as client:
         session['client_guilds'] = [f"{a.id}" for a in (await (client.fetch_my_guilds()))]
         my_user = await client.fetch_my_user()
         row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1 and stage=4", my_user.id)
@@ -116,7 +116,7 @@ async def about():
     if 'token' not in session:
         return redirect("/")
 
-    async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+    async with app.discord_rest.acquire(await app.token.acquire(app.discord_rest), hikari.TokenType.BEARER) as client:
         my_user = await client.fetch_my_user()
         row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
         if row == None:
@@ -136,7 +136,7 @@ async def contact():
     if 'token' not in session:
         return redirect("/")
 
-    async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+    async with app.discord_rest.acquire(await app.token.acquire(app.discord_rest), hikari.TokenType.BEARER) as client:
         client: hikari.impl.RESTClientImpl
         my_user = await client.fetch_my_user()
 
@@ -162,7 +162,7 @@ async def profile():
     if 'token' not in session:
         return redirect("/make-profile")
 
-    async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+    async with app.discord_rest.acquire(await app.token.acquire(app.discord_rest), hikari.TokenType.BEARER) as client:
         my_user = await client.fetch_my_user()
         row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
         if row == None:
@@ -182,7 +182,7 @@ async def makeProf():
     if 'token' not in session:
         return redirect("/")
 
-    async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+    async with app.discord_rest.acquire(await app.token.acquire(app.discord_rest), hikari.TokenType.BEARER) as client:
         if session['pfpURL'] == None:
             pfpImg = 'static/assets/profile_placeholder.jpg'
         else:
@@ -217,7 +217,7 @@ async def testPost():
     if 'token' not in session:
         return
 
-    async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+    async with app.discord_rest.acquire(await app.token.acquire(app.discord_rest), hikari.TokenType.BEARER) as client:
         my_user = await client.fetch_my_user()
         async with app.discord_rest.acquire(BOT_TOKEN, hikari.TokenType.BOT) as bot_client:
             row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
@@ -243,7 +243,7 @@ async def submitInfo():
         # print(fName + ' | ' + pNouns + ' | ' + pNouns + ' | ' + email)
         # print("Submit Successful")
         # print('PFP SUBMIT: ' + session['pfpURL'])
-        async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+        async with app.discord_rest.acquire(await app.token.acquire(app.discord_rest), hikari.TokenType.BEARER) as client:
             my_user = await client.fetch_my_user()
             row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
             if row == None:
@@ -272,7 +272,7 @@ async def submitPFP():
             dmEmbed = await dmChan.send(embed=pfpProxy)
             session['pfpURL'] = dmEmbed.embeds[0].image.url
 
-            # async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+            # async with app.discord_rest.acquire(await app.token.acquire(app.discord_rest), hikari.TokenType.BEARER) as client:
             #     my_user = await client.fetch_my_user()
             #     row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
             #     if row == None:
@@ -288,7 +288,7 @@ async def construction():
     if 'token' not in session:
         return redirect("/")
 
-    async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+    async with app.discord_rest.acquire(await app.token.acquire(app.discord_rest), hikari.TokenType.BEARER) as client:
         my_user = await client.fetch_my_user()
 
         row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
@@ -304,7 +304,7 @@ async def construction():
 
 
 async def background_task():
-    async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+    async with app.discord_rest.acquire(await app.token.acquire(app.discord_rest), hikari.TokenType.BEARER) as client:
         session['client_guilds'] = [a.id for a in (await (client.fetch_my_guilds()))]
 
 
@@ -314,18 +314,36 @@ async def callback():
     session.permanent = False
 
     code = request.args.get('code')
-    async with app.discord_rest.acquire(None) as r:
-        token = (await r.authorize_access_token(
-            int(CLIENT_ID), CLIENT_SECRET, code, REDIRECT_URI
-        ))
+    # async with app.discord_rest.acquire(None) as r:
+    #     token = (await r.authorize_access_token(
+    #         int(CLIENT_ID), CLIENT_SECRET, code, REDIRECT_URI
+    #     ))
+    #
+    #     access_token = token.access_token
+    # await app.token.acquire(app.discord_rest) = access_token
 
-        access_token = token.access_token
-    session['token'] = access_token
+    # async with app.discord_rest.acquire(await app.token.acquire(app.discord_rest), hikari.TokenType.BEARER) as client:
+    #     my_user = await client.fetch_my_user()
+    #     row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
+    #     # async with app.discord_rest.acquire(await app.token.acquire(app.discord_rest), hikari.TokenType.BEARER) as client:
+    #     session['client_guilds'] = [f"{a.id}" for a in (await (client.fetch_my_guilds()))]
+    #     session['uid'] = my_user.id
+    #
+    #     if row == None:
+    #         session['pfpURL'] = None
+    #     else:
+    #         session['pfpURL'] = row.get('profile_picture')
+    #     print('AUTHORIZATION')
 
-    async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+    from Website.new import UserCredentialsStrategy
+    # from hikari.impl.rest import UserCredentialsStrategy
+    session["token"] = True
+    app.token = UserCredentialsStrategy(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri=REDIRECT_URI, code=code)
+
+    async with app.discord_rest.acquire(await app.token.acquire(app.discord_rest)) as client:
         my_user = await client.fetch_my_user()
         row = await app.swapbotDBpool.fetchrow(f"Select * from profiles where user_id = $1", my_user.id)
-        # async with app.discord_rest.acquire(session['token'], hikari.TokenType.BEARER) as client:
+        # async with app.discord_rest.acquire(await app.token.acquire(app.discord_rest), hikari.TokenType.BEARER) as client:
         session['client_guilds'] = [f"{a.id}" for a in (await (client.fetch_my_guilds()))]
         session['uid'] = my_user.id
 
