@@ -793,7 +793,7 @@ async def edit_post(
                     label="Budget/Price",
                     placeholder="New Post Budget/Price",
                     style=hikari.TextInputStyle.SHORT,
-                    max_length=10
+                    max_length=10,
                 )
             )
             await modal.send(ctx.interaction)
@@ -831,21 +831,34 @@ async def edit_post(
             )
 
             if post:
-                await ctx.edit_response(content=f"Please finish editing your **{post.get('title')}** post's images by DMing them to me")
+                await ctx.edit_response(
+                    content=f"Please finish editing your **{post.get('title')}** post's images by DMing them to me"
+                )
                 await conn.close()
                 return
 
             await conn.execute(f"UPDATE sell set stage=4 where id={post_id}")
             types = {"sell": 3, "buy": 4}
 
-            await conn.execute(f"UPDATE profiles set making_post={types.get(post_type)} where user_id={ctx.user.id}")
+            await conn.execute(
+                f"UPDATE profiles set making_post={types.get(post_type)} where user_id={ctx.user.id}"
+            )
 
             await ctx.edit_response(
                 components=[],
                 embeds=[],
                 content="Please DM me the images you want to use for your post.\n\nThe first image attached will be used as main image on post.",
             )
-            await ctx.author.send("DM the images you want to use for your post.\n\nThe first image attached will be used as main image on post.")
+            from BotCode.interactions.buttons.buttons_posts import ButtonEditNoPhoto
+
+            await ctx.author.send(
+                content="DM the images you want to use for your post.\n\nThe first image attached will be used as main image on post.",
+                component=await flare.Row(
+                    ButtonEditNoPhoto(
+                        post_id=post_id, post_type=post_type, guild_id=ctx.guild_id
+                    )
+                ),
+            )
 
 
 def load(bot: lightbulb.BotApp):

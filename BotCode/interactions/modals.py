@@ -133,7 +133,7 @@ class ModalPostSellBuyPart1(flare.Modal, title="Part 1"):
         if any(self.post_type == ptype for ptype in valid_ptypes):
             cost: int | float = 0
             if (
-                    not (third_input.isdigit() or third_input.replace(".", "", 1).isdigit())
+                not (third_input.isdigit() or third_input.replace(".", "", 1).isdigit())
             ) or third_input.__contains__("-"):
                 await ctx.respond(
                     hikari.Embed(
@@ -293,7 +293,7 @@ class ModalPostEdit(flare.Modal, title="Post Edit"):
         if self.edit_option in ["price"]:
             cost: int | float = 0
             if (
-                    not (user_input.isdigit() or user_input.replace(".", "", 1).isdigit())
+                not (user_input.isdigit() or user_input.replace(".", "", 1).isdigit())
             ) or user_input.__contains__("-"):
                 await ctx.respond(
                     hikari.Embed(
@@ -438,7 +438,7 @@ class ModalPostEditAfterFinish(flare.Modal, title="Post Sent Edit"):
         if self.edit_option in ["price"]:
             cost: int | float = 0
             if (
-                    not (user_input.isdigit() or user_input.replace(".", "", 1).isdigit())
+                not (user_input.isdigit() or user_input.replace(".", "", 1).isdigit())
             ) or user_input.__contains__("-"):
                 await ctx.edit_response(
                     hikari.Embed(

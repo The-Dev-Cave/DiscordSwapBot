@@ -10,7 +10,7 @@ import lightbulb
 
 from BotCode.environment.database import get_database_connection
 from BotCode.functions.embeds import buildPostEmbed
-from BotCode.functions.send_logs import send_mod_log
+from BotCode.functions.send_logs import send_mod_log, send_public_log
 from BotCode.interactions.buttons.buttons_user_bridge import (
     ButtonMarkPostPending,
     ButtonMarkPostSold,
@@ -922,6 +922,67 @@ class ButtonReportPost(flare.Button):
             ctx.guild_id,
             f"<@&{guild_data.get('mod_role_id')}>{ctx.author.mention} ({ctx.author.username}#{ctx.author.discriminator}) has reported **__{row.get('title')}__** in <#{channel}>",
         )
+
+
+class ButtonEditNoPhoto(flare.Button):
+    post_id: int
+    post_type: str
+    guild_id: hikari.Snowflake
+
+    def __init__(self, post_id, post_type, guild_id, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.style = hikari.ButtonStyle.SECONDARY
+        self.label = "No Photo"
+        self.emoji = None
+        self.disabled = False
+
+        # custom attributes
+        self.post_id = post_id
+        self.post_type = post_type
+        self.guild_id = guild_id
+
+    async def callback(self, ctx: flare.MessageContext) -> None:
+        await ctx.message.edit(components=[])
+        await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
+        conn = await get_database_connection()
+        post = await conn.fetchrow(
+            f"SELECT message_id, author_id, title from sell where id={self.post_id}"
+        )
+        guild = await conn.fetchrow(
+            f"SELECT sell_channel_id from guilds where guild_id={self.guild_id}"
+        )
+
+        await conn.execute(f"UPDATE sell set image='nophoto', add_images='', stage=3 where id={self.post_id}")
+        await conn.execute(f"UPDATE profiles set making_post=0 where user_id={ctx.author.id}")
+        await send_public_log(guild_id=self.guild_id, text=f"**{self.post_type.upper()}:** <@{post.get('author_id')}> **UPDATED** listing __{post.get('title')}__ to have **NO IMAGE(S)**")
+        embed = await buildPostEmbed(
+            post_id=self.post_id, post_type=self.post_type, user=ctx.author
+        )
+        btns_row = await flare.Row(
+            ButtonContactLister(
+                post_id=self.post_id,
+                post_type=self.post_type,
+                post_owner_id=ctx.author.id,
+                post_title=post.get("title"),
+            ),
+            ButtonUpdatePost(
+                post_id=self.post_id,
+                post_type=self.post_type,
+                post_owner_id=ctx.author.id,
+            ),
+            ButtonReportPost(
+                post_id=self.post_id,
+                post_type=self.post_type,
+                post_owner_id=ctx.author.id,
+            ),
+        )
+        await buttons_posts_plugin.bot.rest.edit_message(
+            channel=guild.get("sell_channel_id"),
+            message=post.get("message_id"),
+            embed=embed,
+            component=btns_row
+        )
+        await ctx.respond("Post has been edited to have no images")
 
 
 def load(bot: lightbulb.BotApp):

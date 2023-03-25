@@ -160,7 +160,9 @@ async def meetup_edit_select_menu(
         f"SELECT buy_channel_id, sell_channel_id from guilds where guild_id={post.get('guild_id')}"
     )
 
-    await conn.execute(f"UPDATE {post_type} set meetup='{user_input}' where id={post_id}")
+    await conn.execute(
+        f"UPDATE {post_type} set meetup='{user_input}' where id={post_id}"
+    )
 
     embed = await buildPostEmbed(post_id=post_id, post_type=post_type, user=ctx.user)
 
@@ -223,7 +225,9 @@ async def edit_payment_methods_select_menu(
         f"SELECT buy_channel_id, sell_channel_id from guilds where guild_id={post.get('guild_id')}"
     )
 
-    await conn.execute(f"UPDATE {post_type} set payment_methods='{user_input}' where id={post_id}")
+    await conn.execute(
+        f"UPDATE {post_type} set payment_methods='{user_input}' where id={post_id}"
+    )
 
     embed = await buildPostEmbed(post_id=post_id, post_type=post_type, user=ctx.user)
 

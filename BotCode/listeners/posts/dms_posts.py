@@ -12,6 +12,9 @@ from BotCode.interactions.buttons.buttons_posts import (
     ButtonSendPostToMods,
     ButtonNewPostPhotos,
     ButtonCancel,
+    ButtonContactLister,
+    ButtonUpdatePost,
+    ButtonReportPost,
 )
 from BotCode.interactions.buttons.buttons_user_bridge import ButtonShowMoreImages
 from BotCode.interactions.selects.selects_editing import edit_select_menu
@@ -41,7 +44,7 @@ async def posts_dm(event: hikari.DMMessageCreateEvent):
 
     if post_type_int in [1, 2]:
         post = await conn.fetchrow(
-            f"SELECT id, stage, guild_id, message_id from {post_type} where author_id='{event.author.id}' and pending_approval is FALSE and post_date is NULL"
+            f"SELECT id, stage, guild_id, message_id, title from {post_type} where author_id='{event.author.id}' and pending_approval is FALSE and post_date is NULL"
         )
     else:
         post = await conn.fetchrow(
@@ -135,20 +138,74 @@ async def posts_dm(event: hikari.DMMessageCreateEvent):
                 )
 
         if stage == 4:
+
             msg_id = post.get("message_id")
-            await conn.execute(f"UPDATE profiles set making_post=0 where user_id = {event.author.id}")
+            await conn.execute(
+                f"UPDATE profiles set making_post=0 where user_id = {event.author.id}"
+            )
             await conn.execute(
                 f"UPDATE sell set stage=3 where author_id='{event.author.id}' and stage=4"
             )
-            guild = await conn.fetchrow(f"SELECT buy_channel_id, sell_channel_id from guilds where guild_id={guild_id}")
+            guild = await conn.fetchrow(
+                f"SELECT buy_channel_id, sell_channel_id from guilds where guild_id={guild_id}"
+            )
 
             chnl_dict = {
                 "sell": guild.get("sell_channel_id"),
                 "buy": guild.get("buy_channel_id"),
             }
+            if img_urls:
+                btns_row = await flare.Row(
+                    ButtonShowMoreImages(post_id=post_id, post_type=post_type),
+                    ButtonContactLister(
+                        post_id=post_id,
+                        post_type=post_type,
+                        post_owner_id=event.author.id,
+                        post_title=post.get("title"),
+                    ),
+                    ButtonUpdatePost(
+                        post_id=post_id,
+                        post_type=post_type,
+                        post_owner_id=event.author.id,
+                    ),
+                    ButtonReportPost(
+                        post_id=post_id,
+                        post_type=post_type,
+                        post_owner_id=event.author.id,
+                    ),
+                )
+            else:
+                btns_row = await flare.Row(
+                    ButtonShowMoreImages(post_id=post_id, post_type=post_type),
+                    ButtonContactLister(
+                        post_id=post_id,
+                        post_type=post_type,
+                        post_owner_id=event.author.id,
+                        post_title=post.get("title"),
+                    ),
+                    ButtonUpdatePost(
+                        post_id=post_id,
+                        post_type=post_type,
+                        post_owner_id=event.author.id,
+                    ),
+                    ButtonReportPost(
+                        post_id=post_id,
+                        post_type=post_type,
+                        post_owner_id=event.author.id,
+                    ),
+                )
+            await posts_dms_plugin.bot.rest.edit_message(
+                channel=chnl_dict.get(post_type),
+                message=msg_id,
+                embed=embed,
+                component=btns_row,
+            )
+
             await event.author.send("Images received and updated on your post")
-            await posts_dms_plugin.bot.rest.edit_message(channel=chnl_dict.get(post_type), message=msg_id, embed=embed)
-            await send_public_log(guild_id=guild_id, text=f"**{post_type.upper()}:** <@{post.get('author_id')}> **UPDATED** listing __{post.get('title')}__ with new **IMAGE(S)**")
+            await send_public_log(
+                guild_id=guild_id,
+                text=f"**{post_type.upper()}:** <@{post.get('author_id')}> **UPDATED** listing __{post.get('title')}__ with new **IMAGE(S)**",
+            )
         await conn.close()
 
     except:
