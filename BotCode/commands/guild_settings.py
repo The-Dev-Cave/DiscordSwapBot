@@ -675,7 +675,7 @@ async def guild_settings(ctx: lightbulb.SlashContext):
         inline=True,
     )
     embed.add_field(
-        f"Post Renewal = {guild_settings_row.get('renewal_count')} Days",
+        f"Post Renewal = {guild_settings_row.get('renewal_count')} Times",
         "How many times someone can repost without needing to remake it. \n</set renew:1066868724008755251> \n**Default: 3**",
         inline=True,
     )
