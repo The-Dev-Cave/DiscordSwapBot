@@ -104,7 +104,7 @@ class ModalPostSellBuyPart1(flare.Modal, title="Part 1"):
         label="Title",
         placeholder="Keep it short, simple, and concise.",
         style=hikari.TextInputStyle.SHORT,
-        max_length=30
+        max_length=30,
     )
     text_input_description: flare.TextInput = flare.TextInput(
         label="Description",
@@ -114,6 +114,7 @@ class ModalPostSellBuyPart1(flare.Modal, title="Part 1"):
 
     async def callback(self, ctx: flare.ModalContext) -> None:
         from BotCode.interactions.buttons.buttons_posts import ButtonCancel
+
         await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         conn = await get_database_connection()
         conn: asyncpg.Connection
@@ -132,7 +133,7 @@ class ModalPostSellBuyPart1(flare.Modal, title="Part 1"):
         if any(self.post_type == ptype for ptype in valid_ptypes):
             cost: int | float = 0
             if (
-                not (third_input.isdigit() or third_input.replace(".", "", 1).isdigit())
+                    not (third_input.isdigit() or third_input.replace(".", "", 1).isdigit())
             ) or third_input.__contains__("-"):
                 await ctx.respond(
                     hikari.Embed(
@@ -289,7 +290,7 @@ class ModalPostEdit(flare.Modal, title="Post Edit"):
         # if self.edit_option in ['title']:
         #     self.edit_option = self.edit_option.title()
 
-        if self.edit_option in ['price']:
+        if self.edit_option in ["price"]:
             cost: int | float = 0
             if (
                     not (user_input.isdigit() or user_input.replace(".", "", 1).isdigit())
@@ -305,7 +306,6 @@ class ModalPostEdit(flare.Modal, title="Post Edit"):
                 user_input = round(float(user_input), 2)
             else:
                 user_input = int(user_input)
-
 
         await ctx.interaction.message.edit(components=[])
 
@@ -421,6 +421,85 @@ class ModalPostEdit(flare.Modal, title="Post Edit"):
                         ),
                     ),
                 )
+
+
+class ModalPostEditAfterFinish(flare.Modal, title="Post Sent Edit"):
+    post_id: int
+    post_type: str
+    guild_id: int | hikari.Snowflakeish
+    edit_option: str
+
+    async def callback(self, ctx: flare.ModalContext) -> None:
+        from BotCode.functions.send_logs import send_public_log
+
+        user_input = ctx.values[0]
+        conn = await get_database_connection()
+
+        if self.edit_option in ["price"]:
+            cost: int | float = 0
+            if (
+                    not (user_input.isdigit() or user_input.replace(".", "", 1).isdigit())
+            ) or user_input.__contains__("-"):
+                await ctx.edit_response(
+                    hikari.Embed(
+                        title="Not a valid cost input",
+                        description="Must be an integer or decimal",
+                    )
+                )
+                return
+            if user_input.replace(".", "", 1).isdigit():
+                user_input = round(float(user_input), 2)
+            else:
+                user_input = int(user_input)
+        old_title = ""
+        if self.edit_option == "title":
+            old_title = await conn.fetchval(
+                f"SELECT title from {self.post_type} where id={self.post_id}"
+            )
+        await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_UPDATE)
+        await ctx.edit_response(
+            components=[],
+            content="Post is being edited. Free to dismiss message",
+            embeds=[],
+        )
+        conn: asyncpg.Connection
+        # await conn.execute("UPDATE $1 set $2=$3 where id=$4", self.post_type, self.edit_option, user_input, self.post_id)
+        await conn.execute(
+            f"UPDATE {self.post_type} set {self.edit_option}=$1 where id={self.post_id}",
+            user_input,
+        )
+
+        guild = await conn.fetchrow(
+            f"SELECT buy_channel_id, sell_channel_id from guilds where guild_id={self.guild_id}"
+        )
+        post = await conn.fetchrow(
+            f"SELECT message_id, author_id, title from {self.post_type} where id={self.post_id}"
+        )
+
+        embed = await buildPostEmbed(
+            post_id=self.post_id, post_type=self.post_type, user=ctx.user
+        )
+
+        chnl_dict = {
+            "sell": guild.get("sell_channel_id"),
+            "buy": guild.get("buy_channel_id"),
+        }
+
+        msg = await modals_plugin.bot.rest.fetch_message(
+            channel=chnl_dict.get(self.post_type), message=post.get("message_id")
+        )
+        await msg.edit(embeds=[embed], attachments=None)
+
+        if old_title:
+            await send_public_log(
+                self.guild_id,
+                f"**{self.post_type.upper()}:** <@{post.get('author_id')}> **UPDATED** listing __{old_title}__ with a new **{self.edit_option.upper()}** to __{post.get('title')}__",
+            )
+        else:
+            await send_public_log(
+                self.guild_id,
+                f"**{self.post_type.upper()}:** <@{post.get('author_id')}> **UPDATED** listing __{post.get('title')}__ with a new **{self.edit_option.upper()}**",
+            )
 
 
 def load(bot: lightbulb.BotApp):

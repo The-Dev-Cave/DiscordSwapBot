@@ -94,7 +94,7 @@ async def edit_select_menu(
                     label="Title",
                     placeholder="New Post Title",
                     style=hikari.TextInputStyle.SHORT,
-                    max_length=30
+                    max_length=30,
                 )
             )
             await modal.send(ctx.interaction)
@@ -142,7 +142,7 @@ async def edit_select_menu(
                     label="Price/Cost",
                     placeholder="Price of item or amount willing to pay",
                     style=hikari.TextInputStyle.SHORT,
-                    max_length=10
+                    max_length=10,
                 )
             )
             await modal.send(ctx.interaction)
@@ -439,7 +439,9 @@ async def edit_meetup_select_menu(
                         ButtonNewPostPhotos(
                             post_id=post_id, post_type=post_type, guild_id=guild_id
                         ),
-                        ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel"),
+                        ButtonCancel(
+                            post_id=post_id, post_type=post_type, label="Cancel"
+                        ),
                     ),
                 ),
             )
@@ -456,10 +458,13 @@ async def edit_meetup_select_menu(
                         ButtonSendPostToMods(
                             post_id=post_id, post_type=post_type, guild_id=guild_id
                         ),
-                        ButtonCancel(post_id=post_id, post_type=post_type, label="Cancel"),
+                        ButtonCancel(
+                            post_id=post_id, post_type=post_type, label="Cancel"
+                        ),
                     ),
                 ),
             )
+
 
 @flare.text_select(
     placeholder="Select Payment Methods",

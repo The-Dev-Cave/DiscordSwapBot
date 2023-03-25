@@ -7,12 +7,12 @@ help_cmd_plugin = lightbulb.Plugin("Commands for initializing bot messages")
 
 @help_cmd_plugin.command()
 @lightbulb.app_command_permissions(dm_enabled=False)
-@lightbulb.command(
-    "help", "Get basic info how to use the bot", ephemeral=True
-)
+@lightbulb.command("help", "Get basic info how to use the bot", ephemeral=True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def help_pub(ctx: lightbulb.SlashContext):
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
+    await ctx.respond(
+        hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL
+    )
     # conn = await get_database_connection()
     # row = await conn.fetchrow("SELECT * from guilds where guild_id=$1", ctx.guild_id)
     # await conn.close()
@@ -34,7 +34,9 @@ async def help_pub(ctx: lightbulb.SlashContext):
 @lightbulb.command("admin-help", "Help for admins", ephemeral=True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def help_admin(ctx: lightbulb.SlashContext):
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
+    await ctx.respond(
+        hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL
+    )
     conn = await get_database_connection()
     row = await conn.fetchrow("SELECT * from guilds where guild_id=$1", ctx.guild_id)
     await conn.close()

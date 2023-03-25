@@ -33,12 +33,12 @@ async def guild_set():
     perms=hikari.Permissions.ADMINISTRATOR, dm_enabled=False
 )
 @lightbulb.option("days", "1 to 31", type=int, min_value=1, max_value=31, required=True)
-@lightbulb.command(
-    "expiry", "days it takes for a post to expire", ephemeral=True
-)
+@lightbulb.command("expiry", "days it takes for a post to expire", ephemeral=True)
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def expiry(ctx: lightbulb.SlashContext):
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
+    await ctx.respond(
+        hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL
+    )
     guild_id = ctx.guild_id
     days = ctx.options.days
 
@@ -70,7 +70,9 @@ async def expiry(ctx: lightbulb.SlashContext):
 )
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def post_approval(ctx: lightbulb.SlashContext):
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
+    await ctx.respond(
+        hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL
+    )
     guild_id = ctx.guild_id
     option = ctx.options.bool
 
@@ -102,7 +104,9 @@ async def post_approval(ctx: lightbulb.SlashContext):
 )
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def profile_enabled(ctx: lightbulb.SlashContext):
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
+    await ctx.respond(
+        hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL
+    )
     guild_id = ctx.guild_id
     option = ctx.options.bool
 
@@ -158,7 +162,9 @@ async def profile_enabled(ctx: lightbulb.SlashContext):
 )
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def profile_required(ctx: lightbulb.SlashContext):
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
+    await ctx.respond(
+        hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL
+    )
     guild_id = ctx.guild_id
     option = ctx.options.bool
 
@@ -207,7 +213,9 @@ async def profile_required(ctx: lightbulb.SlashContext):
 )
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def ratings_enabled(ctx: lightbulb.SlashContext):
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
+    await ctx.respond(
+        hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL
+    )
     guild_id = ctx.guild_id
     option = ctx.options.bool
 
@@ -246,7 +254,9 @@ async def ratings_enabled(ctx: lightbulb.SlashContext):
 )
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def renew_count(ctx: lightbulb.SlashContext):
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
+    await ctx.respond(
+        hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL
+    )
     guild_id = ctx.guild_id
     times = ctx.options.times
 
@@ -291,7 +301,9 @@ async def renew_count(ctx: lightbulb.SlashContext):
 )
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def buy_channel(ctx: lightbulb.SlashContext):
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
+    await ctx.respond(
+        hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL
+    )
     guild_id = ctx.guild_id
     channel = ctx.options.channel
 
@@ -330,7 +342,9 @@ async def buy_channel(ctx: lightbulb.SlashContext):
 )
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def sell_channel(ctx: lightbulb.SlashContext):
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
+    await ctx.respond(
+        hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL
+    )
     guild_id = ctx.guild_id
     channel = ctx.options.channel
 
@@ -369,7 +383,9 @@ async def sell_channel(ctx: lightbulb.SlashContext):
 )
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def approval_channel(ctx: lightbulb.SlashContext):
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
+    await ctx.respond(
+        hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL
+    )
     guild_id = ctx.guild_id
     channel = ctx.options.channel
 
@@ -410,7 +426,9 @@ async def approval_channel(ctx: lightbulb.SlashContext):
 )
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def pub_logs_chnl(ctx: lightbulb.SlashContext):
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
+    await ctx.respond(
+        hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL
+    )
     guild_id = ctx.guild_id
     channel = ctx.options.channel
 
@@ -449,7 +467,9 @@ async def pub_logs_chnl(ctx: lightbulb.SlashContext):
 )
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def mod_logs_chnl(ctx: lightbulb.SlashContext):
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
+    await ctx.respond(
+        hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL
+    )
     guild_id = ctx.guild_id
     channel = ctx.options.channel
 
@@ -488,7 +508,9 @@ async def mod_logs_chnl(ctx: lightbulb.SlashContext):
 )
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def mod_role(ctx: lightbulb.SlashContext):
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
+    await ctx.respond(
+        hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL
+    )
     guild_id = ctx.guild_id
     role = ctx.options.role
 
@@ -521,7 +543,9 @@ async def mod_role(ctx: lightbulb.SlashContext):
 )
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def usr_brdg_cat(ctx: lightbulb.SlashContext):
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
+    await ctx.respond(
+        hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL
+    )
     guild_id = ctx.guild_id
     category: hikari.TextableGuildChannel = ctx.options.category
     if category and (category.type.__str__() != "GUILD_CATEGORY"):
@@ -594,7 +618,9 @@ async def usr_brdg_cat(ctx: lightbulb.SlashContext):
 @lightbulb.command("settings", "view and change settings for SwapBot")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def guild_settings(ctx: lightbulb.SlashContext):
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
+    await ctx.respond(
+        hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL
+    )
     bot_name = (
         await ctx.bot.rest.fetch_member(ctx.guild_id, ctx.bot.get_me().id)
     ).display_name

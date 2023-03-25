@@ -56,7 +56,9 @@ async def user_have_mod_role(context: lightbulb.Context) -> bool:
 @lightbulb.implements(lightbulb.SlashCommand)
 async def init_guild(ctx: lightbulb.SlashContext):
     conn = await get_database_connection()
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
+    await ctx.respond(
+        hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL
+    )
 
     row = await conn.fetchrow(
         f"Select guild_id from guilds where guild_id={ctx.guild_id}"
@@ -120,8 +122,8 @@ async def init_guild(ctx: lightbulb.SlashContext):
         allow=(
             Permissions.VIEW_CHANNEL
             | Permissions.READ_MESSAGE_HISTORY
-            | Permissions.SEND_MESSAGES |
-            Permissions.MANAGE_CHANNELS
+            | Permissions.SEND_MESSAGES
+            | Permissions.MANAGE_CHANNELS
             # | Permissions.MANAGE
         ),
     )
@@ -217,9 +219,9 @@ async def init_guild(ctx: lightbulb.SlashContext):
                 id=ctx.bot.get_me().id,
                 type=PermissionOverwriteType.MEMBER,
                 allow=(
-                        Permissions.VIEW_CHANNEL
-                        | Permissions.READ_MESSAGE_HISTORY
-                        | Permissions.SEND_MESSAGES
+                    Permissions.VIEW_CHANNEL
+                    | Permissions.READ_MESSAGE_HISTORY
+                    | Permissions.SEND_MESSAGES
                 ),
             ),
             hikari.PermissionOverwrite(
@@ -254,9 +256,9 @@ async def init_guild(ctx: lightbulb.SlashContext):
                 id=ctx.bot.get_me().id,
                 type=PermissionOverwriteType.MEMBER,
                 allow=(
-                        Permissions.VIEW_CHANNEL
-                        | Permissions.READ_MESSAGE_HISTORY
-                        | Permissions.SEND_MESSAGES
+                    Permissions.VIEW_CHANNEL
+                    | Permissions.READ_MESSAGE_HISTORY
+                    | Permissions.SEND_MESSAGES
                 ),
             ),
             hikari.PermissionOverwrite(
@@ -288,9 +290,9 @@ async def init_guild(ctx: lightbulb.SlashContext):
                 id=ctx.bot.get_me().id,
                 type=PermissionOverwriteType.MEMBER,
                 allow=(
-                        Permissions.VIEW_CHANNEL
-                        | Permissions.READ_MESSAGE_HISTORY
-                        | Permissions.SEND_MESSAGES
+                    Permissions.VIEW_CHANNEL
+                    | Permissions.READ_MESSAGE_HISTORY
+                    | Permissions.SEND_MESSAGES
                 ),
             ),
         ]

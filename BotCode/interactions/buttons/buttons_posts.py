@@ -224,7 +224,11 @@ class ButtonPostPart1(flare.Button):
                 )
             )
         else:
-            modal.append(flare.TextInput(label="Cost/Budget", placeholder="Ex. 10", max_length=10))
+            modal.append(
+                flare.TextInput(
+                    label="Cost/Budget", placeholder="Ex. 10", max_length=10
+                )
+            )
 
         await modal.send(ctx.interaction)
 
@@ -252,7 +256,7 @@ class ButtonNoPhoto(flare.Button):
         await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_UPDATE)
 
         await conn.execute(
-            f"UPDATE {self.post_type} set image='nophoto' where id={self.post_id}"
+            f"UPDATE {self.post_type} set image='nophoto', stage=3 where id={self.post_id}"
         )
         await ctx.message.edit(components=[])
         embed = await buildPostEmbed(
@@ -505,26 +509,29 @@ class ButtonNewPostPhotos(flare.Button):
         conn = await get_database_connection()
         conn: asyncpg.Connection
 
-
         embed = hikari.Embed(
             title="Send the new photo(s) in one message",
             description="Try to post a photo that shows as much of the item as possible and is not blurry. You may add multiple photos at once to your message.  The first attached image will be the main one showed on the post",
             color=0xFFDD00,
         )
         await ctx.message.edit(components=[])
-        msg = await (await ctx.respond(
-            embed=embed,
-            component=await flare.Row(
-                ButtonNoPhoto(
-                    post_id=self.post_id,
-                    post_type=self.post_type,
-                    guild_id=self.guild_id,
+        msg = await (
+            await ctx.respond(
+                embed=embed,
+                component=await flare.Row(
+                    ButtonNoPhoto(
+                        post_id=self.post_id,
+                        post_type=self.post_type,
+                        guild_id=self.guild_id,
+                    ),
+                    ButtonCancel(
+                        post_id=self.post_id,
+                        post_type=self.post_type,
+                        label="Cancel Post",
+                    ),
                 ),
-                ButtonCancel(
-                    post_id=self.post_id, post_type=self.post_type, label="Cancel Post"
-                ),
-            ),
-        )).retrieve_message()
+            )
+        ).retrieve_message()
         await conn.execute(
             f"UPDATE sell set stage=2,image={msg.id} where id={self.post_id}"
         )

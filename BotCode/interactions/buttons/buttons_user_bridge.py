@@ -398,15 +398,22 @@ class ButtonShowMoreImages(flare.Button):
         self.post_type = post_type
 
     async def callback(self, ctx: flare.MessageContext) -> None:
-        await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
+        await ctx.defer(
+            response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE,
+            flags=hikari.MessageFlag.EPHEMERAL,
+        )
         conn = await get_database_connection()
         row = await conn.fetchrow(
             f"SELECT add_images from {self.post_type} where id={self.post_id}"
         )
-        response = "Click `dismiss message` at bottom of interaction to remove this message"
+        response = (
+            "Click `dismiss message` at bottom of interaction to remove this message"
+        )
         data = row.get("add_images").split("|")
         data.pop()
-        await ctx.respond(response, flags=hikari.MessageFlag.EPHEMERAL, attachments=data)
+        await ctx.respond(
+            response, flags=hikari.MessageFlag.EPHEMERAL, attachments=data
+        )
 
 
 def load(bot: lightbulb.BotApp):

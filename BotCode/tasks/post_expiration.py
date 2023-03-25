@@ -134,7 +134,10 @@ class ButtonRepost(flare.Button):
 
     async def callback(self, ctx: flare.MessageContext) -> None:
         await ctx.message.edit(components=[])
-        embed = hikari.Embed(title="Would you like to update price/budget?", description="Click yes to open a popup to input an new number or no to repost with no change")
+        embed = hikari.Embed(
+            title="Would you like to update price/budget?",
+            description="Click yes to open a popup to input an new number or no to repost with no change",
+        )
 
         btns = await flare.Row(
             ButtonChangePrice(post_id=self.post_id, post_type=self.post_type),
@@ -298,14 +301,16 @@ class ModalNewCost(flare.Modal, title="New Post Cost/Budget"):
         label="New Cost",
         placeholder="Ex. '10' or '9.50'",
         style=hikari.TextInputStyle.SHORT,
-        max_length=10
+        max_length=10,
     )
 
     async def callback(self, ctx: flare.ModalContext) -> None:
 
         user_input = self.text_input_cost.value
 
-        if (not (user_input.isdigit() or user_input.replace(".", "", 1).isdigit())) or user_input.__contains__("-"):
+        if (
+            not (user_input.isdigit() or user_input.replace(".", "", 1).isdigit())
+        ) or user_input.__contains__("-"):
             await ctx.respond(
                 hikari.Embed(
                     title="Not a valid cost input",

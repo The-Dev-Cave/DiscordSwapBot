@@ -194,6 +194,7 @@ async def condition_select_menu(
     guild_id: hikari.Snowflake = 123,
 ):
     from BotCode.interactions.buttons.buttons_posts import ButtonCancel
+
     await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     conn = await get_database_connection()
     conn: asyncpg.Connection
@@ -253,6 +254,7 @@ async def meetup_select_menu(
 ):
     from BotCode.interactions.buttons.buttons_posts import ButtonNoPhoto
     from BotCode.interactions.buttons.buttons_posts import ButtonCancel
+
     await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     conn = await get_database_connection()
     conn: asyncpg.Connection
@@ -342,6 +344,7 @@ async def payment_methods_select_menu(
 
     from BotCode.functions.embeds import buildPostEmbed
     from BotCode.interactions.buttons.buttons_posts import ButtonCancel
+
     await ctx.defer(response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     conn = await get_database_connection()
     conn: asyncpg.Connection
@@ -487,9 +490,8 @@ async def update_post(
     #   and let them know to click dismiss message to cancel / finish
     match selcected_value:
         case "edit":
-            await ctx.edit_response(content="Not implemented yet", components=[])
             await ctx.edit_response(
-                component=await asyncio.gather(
+                components=await asyncio.gather(
                     flare.Row(edit_post(post_id=post_id, post_type=post_type)),
                 )
             )
@@ -672,51 +674,178 @@ async def update_post(
     await conn.close()
 
 
+# noinspection PyTypeChecker
 @flare.text_select(
-    placeholder="Choose What To Edit",
+    placeholder="Select 1 To Edit",
     options=[
-        # hikari.SelectMenuOption(label="Title", value="title", description="", emoji=None, is_default=False),
-        # hikari.SelectMenuOption(label="Description", value="description", description="", emoji=None, is_default=False),
         hikari.SelectMenuOption(
-            label="Condition",
+            label="title",
+            description="The post's title",
+            value="title",
+            emoji=None,
+            is_default=False,
+        ),
+        hikari.SelectMenuOption(
+            label="description",
+            description="The post's description",
+            value="description",
+            emoji=None,
+            is_default=False,
+        ),
+        hikari.SelectMenuOption(
+            label="condition",
+            description="Condition of item or willing to buy cond.",
             value="condition",
-            description="",
             emoji=None,
             is_default=False,
         ),
         hikari.SelectMenuOption(
-            label="Cost/Looking For",
-            value="cost_look",
-            description="",
+            label="budget/cost",
+            description="Price of item or amount willing to pay",
+            value="price",
             emoji=None,
             is_default=False,
         ),
         hikari.SelectMenuOption(
-            label="Payment Methods",
-            value="payment",
-            description="",
+            label="meetup",
+            description="How will interested party get the item",
+            value="meetup",
             emoji=None,
             is_default=False,
         ),
-        # hikari.SelectMenuOption(label="Location", value="location", description="", emoji=None, is_default=False),
-        # hikari.SelectMenuOption(label="Meetup", value="meetup", description="", emoji=None, is_default=False),
         hikari.SelectMenuOption(
-            label="Photos", value="photos", description="", emoji=None, is_default=False
+            label="payment methods",
+            description="Payment methods to send/receive payment",
+            value="payment_methods",
+            emoji=None,
+            is_default=False,
+        ),
+        hikari.SelectMenuOption(
+            label="images",
+            description="Photo(s) for your post",
+            value="images",
+            emoji=None,
+            is_default=False,
         ),
     ],
+    min_values=1,
+    max_values=1,
 )
 async def edit_post(
     ctx: flare.MessageContext, post_id: int = 0, post_type: str = "No Type"
 ):
-    await ctx.edit_response("Not Implemented", components=[])
-    return
-    # match ctx.values[0]:
-    #     case "title":
-    #         await ctx.bot.rest.create_modal_response(
-    #             interaction=ctx.interaction,
-    #             token=ctx.interaction.token,
-    #             title="Edit Title"
-    #         )
+    from BotCode.interactions.modals import ModalPostEditAfterFinish
+    from BotCode.interactions.selects.selects_edit_sent import (
+        condition_edit_select_menu,
+        meetup_edit_select_menu,
+        edit_payment_methods_select_menu,
+    )
+
+    match ctx.values[0]:
+        case "title":
+            modal = ModalPostEditAfterFinish(
+                post_id=post_id,
+                post_type=post_type,
+                guild_id=ctx.guild_id,
+                edit_option="title",
+            )
+            modal.append(
+                flare.TextInput(
+                    label="Title",
+                    placeholder="New Post Title",
+                    style=hikari.TextInputStyle.SHORT,
+                    max_length=30,
+                )
+            )
+            await modal.send(ctx.interaction)
+        case "description":
+            modal = ModalPostEditAfterFinish(
+                post_id=post_id,
+                post_type=post_type,
+                guild_id=ctx.guild_id,
+                edit_option="description",
+            )
+            modal.append(
+                flare.TextInput(
+                    label="Description",
+                    placeholder="New Post Description",
+                    style=hikari.TextInputStyle.PARAGRAPH,
+                )
+            )
+            await modal.send(ctx.interaction)
+        case "condition":
+            await ctx.edit_response(
+                components=await asyncio.gather(
+                    flare.Row(
+                        condition_edit_select_menu(post_type=post_type, post_id=post_id)
+                    )
+                )
+            )
+        case "price":
+            modal = ModalPostEditAfterFinish(
+                post_id=post_id,
+                post_type=post_type,
+                guild_id=ctx.guild_id,
+                edit_option="price",
+            )
+            modal.append(
+                flare.TextInput(
+                    label="Budget/Price",
+                    placeholder="New Post Budget/Price",
+                    style=hikari.TextInputStyle.SHORT,
+                    max_length=10
+                )
+            )
+            await modal.send(ctx.interaction)
+        case "meetup":
+            await ctx.edit_response(
+                components=await asyncio.gather(
+                    flare.Row(
+                        meetup_edit_select_menu(post_type=post_type, post_id=post_id)
+                    )
+                )
+            )
+        case "payment_methods":
+            await ctx.edit_response(
+                components=await asyncio.gather(
+                    flare.Row(
+                        edit_payment_methods_select_menu(
+                            post_type=post_type, post_id=post_id
+                        )
+                    )
+                )
+            )
+        case "images":
+            if post_type == "buy":
+                await ctx.edit_response(
+                    content="Buy posts do not have images. Select a different option.",
+                    components=await asyncio.gather(
+                        flare.Row(edit_post(post_id=post_id, post_type=post_type)),
+                    ),
+                )
+                return
+            conn = await get_database_connection()
+
+            post = await conn.fetchrow(
+                f"SELECT title from {post_type} where author_id='{ctx.author.id}' and stage=4"
+            )
+
+            if post:
+                await ctx.edit_response(content=f"Please finish editing your **{post.get('title')}** post's images by DMing them to me")
+                await conn.close()
+                return
+
+            await conn.execute(f"UPDATE sell set stage=4 where id={post_id}")
+            types = {"sell": 3, "buy": 4}
+
+            await conn.execute(f"UPDATE profiles set making_post={types.get(post_type)} where user_id={ctx.user.id}")
+
+            await ctx.edit_response(
+                components=[],
+                embeds=[],
+                content="Please DM me the images you want to use for your post.\n\nThe first image attached will be used as main image on post.",
+            )
+            await ctx.author.send("DM the images you want to use for your post.\n\nThe first image attached will be used as main image on post.")
 
 
 def load(bot: lightbulb.BotApp):

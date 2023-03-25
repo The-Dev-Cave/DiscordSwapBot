@@ -190,7 +190,7 @@ async def buildPostEmbed(post_id: int, post_type: str, user: hikari.User):
         embed.add_field("Lister's Preferred Payment Methods", pay_meth)
 
     # embed.add_field("Lister's Location", location)
-    embed.add_field("Meetup", meetup)
+    embed.add_field("Item Transaction", meetup)
     embed.set_footer(
         f"Expires: {(DT.datetime.today() + DT.timedelta(days=7)).strftime('%m-%d-%Y')} | [{post_id}]"
     )
