@@ -447,9 +447,9 @@ async def payment_methods_select_menu(
     placeholder="Select What To Update",
     options=[
         hikari.SelectMenuOption(
-            label="Edit Post (Not Implemented)",
+            label="Edit Post",
             value="edit",
-            description="Edit post information (Not Implemented)",
+            description="Edit post information",
             emoji=None,
             is_default=False,
         ),
