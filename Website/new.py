@@ -111,7 +111,7 @@ class UserCredentialsStrategy(rest_api.TokenStrategy):
         self,
         client_id: snowflakes.SnowflakeishOr[guilds.PartialApplication],
         client_secret: str,
-        auth_code: str,
+        code: str,
         redirect_uri: str,
         *,
         scopes: typing.Sequence[typing.Union[applications.OAuth2Scope, str]] = (
@@ -127,7 +127,7 @@ class UserCredentialsStrategy(rest_api.TokenStrategy):
         self._scopes = tuple(scopes)
         self._token: typing.Optional[str] = None
         self._refresh_token = None
-        self._code = auth_code
+        self._code = code
         self._redirect_uri = redirect_uri
 
     @property
