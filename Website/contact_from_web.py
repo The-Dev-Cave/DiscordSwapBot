@@ -223,16 +223,16 @@ async def create_profile_embed(
 
         if show_ratings:
             row = (await conn.fetch(f"SELECT * FROM profiles where user_id = {userID}"))[0]
-            comm_good = int(row.get("comm_rating")[0])
-            comm_total = int(row.get("comm_rating")[1])
-            resp_good = int(row.get("resp_rating")[0])
-            resp_total = int(row.get("resp_rating")[1])
-            pricing_good = int(row.get("price_rating")[0])
-            pricing_total = int(row.get("price_rating")[1])
-            ontime_good = int(row.get("punct_rating")[0])
-            ontime_total = int(row.get("punct_rating")[1])
-            acc_good = int(row.get("acc_rating")[0])
-            acc_total = int(row.get("acc_rating")[1])
+            comm_good = int(row.get("commgood"))
+            comm_total = int(row.get("commtotal"))
+            resp_good = int(row.get("respgood"))
+            resp_total = int(row.get("resptotal"))
+            pricing_good = int(row.get("pricinggood"))
+            pricing_total = int(row.get("pricingtoal"))
+            ontime_good = int(row.get("ontimegood"))
+            ontime_total = int(row.get("ontimetotal"))
+            acc_good = int(row.get("accgood"))
+            acc_total = int(row.get("acctotal"))
             stars_total = int(row.get("stars"))
             reviews_total = int(row.get("total_ratings"))
 
