@@ -19,7 +19,10 @@ async def create_bot() -> lightbulb.BotApp:
     )
 
     @bot.command()
-    @lightbulb.command("reload", "reload plugins")
+    @lightbulb.command("reload", "reload bot plugins", guilds=[1064697295561560074])
+    @lightbulb.app_command_permissions(
+        perms=hikari.Permissions.ADMINISTRATOR, dm_enabled=False
+    )
     @lightbulb.implements(lightbulb.SlashCommand)
     async def _foo(ctx: lightbulb.SlashContext) -> None:
         ctx.bot.reload_extensions(*ctx.bot.extensions)
