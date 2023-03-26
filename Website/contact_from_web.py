@@ -228,7 +228,7 @@ async def create_profile_embed(
             resp_good = int(row.get("respgood"))
             resp_total = int(row.get("resptotal"))
             pricing_good = int(row.get("pricinggood"))
-            pricing_total = int(row.get("pricingtoal"))
+            pricing_total = int(row.get("pricingtotal"))
             ontime_good = int(row.get("ontimegood"))
             ontime_total = int(row.get("ontimetotal"))
             acc_good = int(row.get("accgood"))
