@@ -137,7 +137,6 @@ async def posts_dm(event: hikari.DMMessageCreateEvent):
                     ),
                 )
 
-        print(stage)
         if stage == 4:
 
             msg_id = post.get("message_id")
@@ -155,7 +154,6 @@ async def posts_dm(event: hikari.DMMessageCreateEvent):
                 "sell": guild.get("sell_channel_id"),
                 "buy": guild.get("buy_channel_id"),
             }
-            print("img urls", img_urls)
             if img_urls != "":
                 btns_row = await flare.Row(
                     ButtonContactLister(
@@ -184,7 +182,6 @@ async def posts_dm(event: hikari.DMMessageCreateEvent):
                         post_owner_id=event.author.id,
                         post_title=post.get("title"),
                     ),
-                    ButtonShowMoreImages(post_id=post_id, post_type=post_type),
                     ButtonReportPost(
                         post_id=post_id,
                         post_type=post_type,
