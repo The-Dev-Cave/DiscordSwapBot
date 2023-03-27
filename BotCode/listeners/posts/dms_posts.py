@@ -137,6 +137,7 @@ async def posts_dm(event: hikari.DMMessageCreateEvent):
                     ),
                 )
 
+        print(stage)
         if stage == 4:
 
             msg_id = post.get("message_id")
