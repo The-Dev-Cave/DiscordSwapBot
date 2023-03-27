@@ -389,7 +389,7 @@ class ButtonShowMoreImages(flare.Button):
     def __init__(self, post_id, post_type, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.style = hikari.ButtonStyle.PRIMARY
-        self.label = "See More Images"
+        self.label = "More Images"
         self.emoji = None
         self.disabled = False
 

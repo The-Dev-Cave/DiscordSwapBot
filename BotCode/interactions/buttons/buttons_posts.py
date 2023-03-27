@@ -433,21 +433,21 @@ class ButtonSendPostToMods(flare.Button):
 
             if row.get("add_images"):
                 btns_row = await flare.Row(
-                    ButtonShowMoreImages(
-                        post_id=self.post_id, post_type=self.post_type
-                    ),
                     ButtonContactLister(
                         post_id=self.post_id,
                         post_type=self.post_type,
                         post_owner_id=user.id,
                         post_title=post_title,
                     ),
-                    ButtonUpdatePost(
+                    ButtonShowMoreImages(
+                        post_id=self.post_id, post_type=self.post_type
+                    ),
+                    ButtonReportPost(
                         post_id=self.post_id,
                         post_type=self.post_type,
                         post_owner_id=user.id,
                     ),
-                    ButtonReportPost(
+                    ButtonUpdatePost(
                         post_id=self.post_id,
                         post_type=self.post_type,
                         post_owner_id=user.id,
@@ -461,12 +461,12 @@ class ButtonSendPostToMods(flare.Button):
                         post_owner_id=user.id,
                         post_title=post_title,
                     ),
-                    ButtonUpdatePost(
+                    ButtonReportPost(
                         post_id=self.post_id,
                         post_type=self.post_type,
                         post_owner_id=user.id,
                     ),
-                    ButtonReportPost(
+                    ButtonUpdatePost(
                         post_id=self.post_id,
                         post_type=self.post_type,
                         post_owner_id=user.id,
@@ -587,19 +587,19 @@ class ButtonApprovePost(flare.Button):
 
         if row.get("add_images"):
             btns_row = await flare.Row(
-                ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
                 ButtonContactLister(
                     post_id=self.post_id,
                     post_type=self.post_type,
                     post_owner_id=user.id,
                     post_title=post_title,
                 ),
-                ButtonUpdatePost(
+                ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
+                ButtonReportPost(
                     post_id=self.post_id,
                     post_type=self.post_type,
                     post_owner_id=user.id,
                 ),
-                ButtonReportPost(
+                ButtonUpdatePost(
                     post_id=self.post_id,
                     post_type=self.post_type,
                     post_owner_id=user.id,
@@ -613,12 +613,12 @@ class ButtonApprovePost(flare.Button):
                     post_owner_id=user.id,
                     post_title=post_title,
                 ),
-                ButtonUpdatePost(
+                ButtonReportPost(
                     post_id=self.post_id,
                     post_type=self.post_type,
                     post_owner_id=user.id,
                 ),
-                ButtonReportPost(
+                ButtonUpdatePost(
                     post_id=self.post_id,
                     post_type=self.post_type,
                     post_owner_id=user.id,
@@ -677,7 +677,7 @@ class ButtonContactLister(flare.Button):
     ):
         super().__init__(*args, **kwargs)
         self.style = hikari.ButtonStyle.SUCCESS
-        self.label = "Contact Lister"
+        self.label = "Contact"
         self.emoji = None
         self.disabled = False
 
@@ -845,8 +845,8 @@ class ButtonUpdatePost(flare.Button):
 
     def __init__(self, post_id, post_type, post_owner_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.style = hikari.ButtonStyle.PRIMARY
-        self.label = "Update Post"
+        self.style = hikari.ButtonStyle.SECONDARY
+        self.label = "EDIT"
         self.emoji = None
         self.disabled = False
 
@@ -880,7 +880,7 @@ class ButtonReportPost(flare.Button):
     def __init__(self, post_id, post_type, post_owner_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.style = hikari.ButtonStyle.DANGER
-        self.label = "Report Post"
+        self.label = "Report"
         self.emoji = None
         self.disabled = False
 
@@ -965,12 +965,12 @@ class ButtonEditNoPhoto(flare.Button):
                 post_owner_id=ctx.author.id,
                 post_title=post.get("title"),
             ),
-            ButtonUpdatePost(
+            ButtonReportPost(
                 post_id=self.post_id,
                 post_type=self.post_type,
                 post_owner_id=ctx.author.id,
             ),
-            ButtonReportPost(
+            ButtonUpdatePost(
                 post_id=self.post_id,
                 post_type=self.post_type,
                 post_owner_id=ctx.author.id,

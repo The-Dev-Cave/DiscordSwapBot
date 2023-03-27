@@ -156,19 +156,19 @@ async def posts_dm(event: hikari.DMMessageCreateEvent):
             }
             if img_urls:
                 btns_row = await flare.Row(
-                    ButtonShowMoreImages(post_id=post_id, post_type=post_type),
                     ButtonContactLister(
                         post_id=post_id,
                         post_type=post_type,
                         post_owner_id=event.author.id,
                         post_title=post.get("title"),
                     ),
-                    ButtonUpdatePost(
+                    ButtonShowMoreImages(post_id=post_id, post_type=post_type),
+                    ButtonReportPost(
                         post_id=post_id,
                         post_type=post_type,
                         post_owner_id=event.author.id,
                     ),
-                    ButtonReportPost(
+                    ButtonUpdatePost(
                         post_id=post_id,
                         post_type=post_type,
                         post_owner_id=event.author.id,
@@ -176,19 +176,19 @@ async def posts_dm(event: hikari.DMMessageCreateEvent):
                 )
             else:
                 btns_row = await flare.Row(
-                    ButtonShowMoreImages(post_id=post_id, post_type=post_type),
                     ButtonContactLister(
                         post_id=post_id,
                         post_type=post_type,
                         post_owner_id=event.author.id,
                         post_title=post.get("title"),
                     ),
-                    ButtonUpdatePost(
+                    ButtonShowMoreImages(post_id=post_id, post_type=post_type),
+                    ButtonReportPost(
                         post_id=post_id,
                         post_type=post_type,
                         post_owner_id=event.author.id,
                     ),
-                    ButtonReportPost(
+                    ButtonUpdatePost(
                         post_id=post_id,
                         post_type=post_type,
                         post_owner_id=event.author.id,

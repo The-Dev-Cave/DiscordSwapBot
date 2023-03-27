@@ -242,17 +242,17 @@ class ButtonDontChangePrice(flare.Button):
         # )
         if post.get("add_images"):
             btns_row = await flare.Row(
-                ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
                 ButtonContactLister(
                     post_id=self.post_id,
                     post_type=self.post_type,
                     post_owner_id=lister,
                     post_title=post_title,
                 ),
-                ButtonUpdatePost(
+                ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
+                ButtonReportPost(
                     post_id=self.post_id, post_type=self.post_type, post_owner_id=lister
                 ),
-                ButtonReportPost(
+                ButtonUpdatePost(
                     post_id=self.post_id, post_type=self.post_type, post_owner_id=lister
                 ),
             )
@@ -264,10 +264,10 @@ class ButtonDontChangePrice(flare.Button):
                     post_owner_id=lister,
                     post_title=post_title,
                 ),
-                ButtonUpdatePost(
+                ButtonReportPost(
                     post_id=self.post_id, post_type=self.post_type, post_owner_id=lister
                 ),
-                ButtonReportPost(
+                ButtonUpdatePost(
                     post_id=self.post_id, post_type=self.post_type, post_owner_id=lister
                 ),
             )
@@ -353,17 +353,17 @@ class ModalNewCost(flare.Modal, title="New Post Cost/Budget"):
         # )
         if post.get("add_images"):
             btns_row = await flare.Row(
-                ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
                 ButtonContactLister(
                     post_id=self.post_id,
                     post_type=self.post_type,
                     post_owner_id=lister,
                     post_title=post_title,
                 ),
-                ButtonUpdatePost(
+                ButtonShowMoreImages(post_id=self.post_id, post_type=self.post_type),
+                ButtonReportPost(
                     post_id=self.post_id, post_type=self.post_type, post_owner_id=lister
                 ),
-                ButtonReportPost(
+                ButtonUpdatePost(
                     post_id=self.post_id, post_type=self.post_type, post_owner_id=lister
                 ),
             )
@@ -375,10 +375,10 @@ class ModalNewCost(flare.Modal, title="New Post Cost/Budget"):
                     post_owner_id=lister,
                     post_title=post_title,
                 ),
-                ButtonUpdatePost(
+                ButtonReportPost(
                     post_id=self.post_id, post_type=self.post_type, post_owner_id=lister
                 ),
-                ButtonReportPost(
+                ButtonUpdatePost(
                     post_id=self.post_id, post_type=self.post_type, post_owner_id=lister
                 ),
             )
