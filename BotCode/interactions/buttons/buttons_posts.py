@@ -226,7 +226,7 @@ class ButtonPostPart1(flare.Button):
         else:
             modal.append(
                 flare.TextInput(
-                    label="Cost/Budget", placeholder="Ex. 10", max_length=10
+                    label="Budget/Cost", placeholder="Ex. 10", max_length=10
                 )
             )
 

@@ -22,7 +22,7 @@ class ButtonMarkPostPending(flare.Button):
     def __init__(self, post_id, post_type, post_owner_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.style = hikari.ButtonStyle.PRIMARY
-        self.label = "Mark As Pending"
+        self.label = "Toggle Pending"
         self.emoji = None
         self.disabled = False
 
@@ -404,15 +404,16 @@ class ButtonShowMoreImages(flare.Button):
         )
         conn = await get_database_connection()
         row = await conn.fetchrow(
-            f"SELECT add_images from {self.post_type} where id={self.post_id}"
+            f"SELECT add_images, title from {self.post_type} where id={self.post_id}"
         )
-        response = (
-            "Click `dismiss message` at bottom of interaction to remove this message"
-        )
+        # response = (
+        #     "Click `dismiss message` at bottom of interaction to remove this message"
+        # )
         data = row.get("add_images").split("|")
         data.pop()
-        await ctx.respond(
-            response, flags=hikari.MessageFlag.EPHEMERAL, attachments=data
+        await ctx.user.send(
+            content=f"**{row.get('title')}** - Additional Images",
+            attachments=data
         )
 
 
