@@ -398,17 +398,14 @@ class ButtonShowMoreImages(flare.Button):
         self.post_type = post_type
 
     async def callback(self, ctx: flare.MessageContext) -> None:
-        await ctx.defer(
-            response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE,
+        await ctx.respond(
             flags=hikari.MessageFlag.EPHEMERAL,
+            content="Check DMs for any additional images"
         )
         conn = await get_database_connection()
         row = await conn.fetchrow(
             f"SELECT add_images, title from {self.post_type} where id={self.post_id}"
         )
-        # response = (
-        #     "Click `dismiss message` at bottom of interaction to remove this message"
-        # )
         data = row.get("add_images").split("|")
         data.pop()
         await ctx.user.send(
