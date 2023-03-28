@@ -18,8 +18,8 @@ from BotCode.interactions.buttons.buttons_user_bridge import ButtonShowMoreImage
 expired_PL = lightbulb.Plugin("statusUpdater")
 
 
-@tasks.task(s=20, auto_start=True, wait_before_execution=True)
-# @tasks.task(tasks.CronTrigger("59 6 * * *"), auto_start=True)
+# @tasks.task(s=20, auto_start=True, wait_before_execution=True)
+@tasks.task(tasks.CronTrigger("59 14 * * *"), auto_start=True)
 async def expired():
     # print("task ran")
     conn = await get_database_connection()
