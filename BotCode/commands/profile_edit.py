@@ -330,10 +330,9 @@ async def cmd_viewProfile(ctx: lightbulb.SlashContext):
     row = await conn.fetchrow(
         f"SELECT user_id from profiles where user_id={user.id} and stage=4"
     )
-
     if row and row.get("user_id"):  # If user has a good profile, return
         await ctx.respond(
-            embed=await create_profile_embed(user.id),
+            embed=await create_profile_embed(user.id, guild_id=ctx.guild_id),
             flags=hikari.MessageFlag.EPHEMERAL,
         )
     else:
