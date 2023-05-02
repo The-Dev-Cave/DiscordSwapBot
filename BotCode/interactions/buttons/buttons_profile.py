@@ -26,7 +26,7 @@ class ButtonCreateProfile(flare.Button):
     async def callback(self, ctx: flare.MessageContext):
         await ctx.defer(
             flags=hikari.MessageFlag.EPHEMERAL,
-            response_type=hikari.ResponseType.MESSAGE_CREATE,
+            response_type=hikari.ResponseType.DEFERRED_MESSAGE_CREATE,
         )
         conn = await get_database_connection()
         conn: asyncpg.Connection
