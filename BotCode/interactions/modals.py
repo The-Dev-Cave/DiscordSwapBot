@@ -366,8 +366,7 @@ class ModalPostEdit(flare.Modal, title="Post Edit"):
             )
         else:
             if self.post_type == "sell":
-                await ctx.interaction.create_initial_response(
-                    response_type=hikari.ResponseType.MESSAGE_CREATE,
+                await ctx.get_channel().send(
                     embed=embed,
                     components=await asyncio.gather(
                         flare.Row(
@@ -397,7 +396,7 @@ class ModalPostEdit(flare.Modal, title="Post Edit"):
                     ),
                 )
             else:
-                await ctx.interaction.edit_initial_response(
+                await ctx.get_channel().send(
                     embed=embed,
                     components=await asyncio.gather(
                         flare.Row(
