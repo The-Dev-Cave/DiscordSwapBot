@@ -331,8 +331,8 @@ class ModalPostEdit(flare.Modal, title="Post Edit"):
                 has_add_imgs = True
 
         if has_add_imgs:
-            await ctx.interaction.create_initial_response(
-                response_type=hikari.ResponseType.MESSAGE_CREATE,
+            await modals_plugin.bot.rest.create_message(ctx.channel_id,
+                # response_type=hikari.ResponseType.MESSAGE_CREATE,
                 embed=embed,
                 components=await asyncio.gather(
                     flare.Row(
@@ -366,7 +366,7 @@ class ModalPostEdit(flare.Modal, title="Post Edit"):
             )
         else:
             if self.post_type == "sell":
-                await ctx.get_channel().send(
+                await modals_plugin.bot.rest.create_message(ctx.channel_id,
                     embed=embed,
                     components=await asyncio.gather(
                         flare.Row(
@@ -396,7 +396,7 @@ class ModalPostEdit(flare.Modal, title="Post Edit"):
                     ),
                 )
             else:
-                await ctx.get_channel().send(
+                await modals_plugin.bot.rest.create_message(ctx.channel_id,
                     embed=embed,
                     components=await asyncio.gather(
                         flare.Row(
